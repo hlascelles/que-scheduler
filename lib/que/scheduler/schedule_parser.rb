@@ -31,6 +31,8 @@ module Que
 
         private
 
+        # Given a job description, the last scheduler run time, and this run time, return all
+        # the instances that should be enqueued for that job class.
         def calculate_missed_runs(desc, last_scheduler_run_time, as_time)
           jobs_for_class = []
           missed_times = []
@@ -52,6 +54,8 @@ module Que
           jobs_for_class
         end
 
+        # Given a cron, and a "last time", return the next Time the event will occur, or nil if it
+        # is after "to".
         def next_run_time(cron, from, to)
           fugit_cron = Fugit::Cron.parse(cron)
           next_time = fugit_cron.next_time(from)

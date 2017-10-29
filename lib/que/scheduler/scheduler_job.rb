@@ -15,22 +15,35 @@ module Que
 
           Que.log({ message: "que-scheduler last ran at #{last_time}." })
 
-          result =
-            ScheduleParser.parse(SchedulerJob.scheduler_config, as_time, last_time, known_jobs)
-          result.missed_jobs.each do |job_class, args_arrays|
-            args_arrays.each { |args|
-              Que.log({ message: "que-scheduler enqueueing #{job_class} with args: #{args}" })
-              job_class.enqueue(*args)
-            }
-          end
-
-          SchedulerJob.enqueue(
-            as_time,
-            result.schedule_dictionary,
-            run_at: as_time + result.seconds_until_next_job
-          )
+          # Obtain the hash of required jobs. Keys are the job classes, and the values are arrays
+          # each containing more arrays for the arguments of that instance.
+          result = enqueue_required_jobs(last_time, as_time, known_jobs)
+          # And enqueue this job again.
+          enqueue_self_again(as_time, result)
           destroy
         end
+      end
+
+      private
+
+      def enqueue_required_jobs(last_time, as_time, known_jobs)
+        result =
+          ScheduleParser.parse(SchedulerJob.scheduler_config, as_time, last_time, known_jobs)
+        result.missed_jobs.each do |job_class, args_arrays|
+          args_arrays.each do |args|
+            Que.log({ message: "que-scheduler enqueueing #{job_class} with args: #{args}" })
+            job_class.enqueue(*args)
+          end
+        end
+        result
+      end
+
+      def enqueue_self_again(as_time, result)
+        SchedulerJob.enqueue(
+          as_time,
+          result.schedule_dictionary,
+          run_at: as_time + result.seconds_until_next_job
+        )
       end
 
       class << self
@@ -42,7 +55,7 @@ module Que
         end
 
         # Convert the config hash into a list of real classes and args, parsing the cron and
-        # unmissable parameters.
+        # "unmissable" parameters.
         def jobs_list(schedule)
           schedule.map do |k, v|
             clazz = Object.const_get(v['class'] || k)
