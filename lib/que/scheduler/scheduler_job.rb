@@ -18,7 +18,12 @@ module Que
           result.missed_jobs.each do |job_class, args_arrays|
             args_arrays.each { |args| job_class.enqueue(*args) }
           end
-          SchedulerJob.enqueue(as_time + result.seconds_until_next_job, result.schedule_dictionary)
+
+          SchedulerJob.enqueue(
+            as_time,
+            result.schedule_dictionary,
+            run_at: as_time + result.seconds_until_next_job
+          )
           destroy
         end
       end

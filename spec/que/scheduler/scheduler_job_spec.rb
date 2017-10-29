@@ -28,7 +28,6 @@ RSpec.describe Que::Scheduler::SchedulerJob do
 
     it 'enqueues nothing having loaded the dictionary on the first run' do
       run_test(nil, [], {}, [])
-      expect_scheduled([], [])
     end
 
     it 'enqueues nothing if it knows about a job, but it is not overdue' do
@@ -92,26 +91,28 @@ RSpec.describe Que::Scheduler::SchedulerJob do
     # This method checks what jobs have been enqueued against a provided list. In addition, the
     # main scheduler job should have enqueued itself.
     def expect_scheduled(list, new_dictionary)
-      out = Que.adapter.jobs.values.flatten.map { |v| { Object.const_get(v.job_class) => v.args } }
-      itself = job_class_and_args_array_to_jobs(
-        QSSJ => [[Time.current + PARSER::SCHEDULER_FREQUENCY, new_dictionary]]
+      itself_jobs = Que.adapter.jobs.delete(Que::Scheduler::SchedulerJob)
+      expect(itself_jobs.count).to eq(1)
+      expect(itself_jobs.first.to_h).to eq(
+        queue: nil,
+        priority: 0,
+        run_at: run_time + PARSER::SCHEDULER_FREQUENCY,
+        job_class: 'Que::Scheduler::SchedulerJob',
+        args: [run_time, new_dictionary]
       )
-      list_as_scheduled_jobs = job_class_and_args_array_to_jobs(list)
-      (list_as_scheduled_jobs + itself).each do |job|
-        expect(out).to include(job)
-        out -= [job]
-      end
-    end
 
-    # The parser returns a hash of what needs to be scheduled, keyed on job class, with the value
-    # being an array of the sets of args to enqueue. Convert that format here to the verbose
-    # expanded format for Que testing.
-    def job_class_and_args_array_to_jobs(list)
-      list.map do |clazz, sets_of_args|
-        sets_of_args.map do |args|
-          [clazz, args]
-        end.to_h
-      end
+      all_enqueued = Que.adapter.jobs.each_key.map do |job_class|
+        job_class_items = Que.adapter.jobs.delete(job_class)
+        args = job_class_items.map do |job_class_item|
+          expect(job_class_item.to_h[:queue]).to eq(nil)
+          expect(job_class_item.to_h[:priority]).to eq(nil)
+          expect(job_class_item.to_h[:run_at]).to eq(nil)
+          expect(job_class_item.to_h[:job_class]).to eq( job_class.to_s)
+          job_class_item.to_h[:args]
+        end
+        [job_class, args]
+      end.to_h
+      expect(all_enqueued).to eq(list)
     end
   end
 
