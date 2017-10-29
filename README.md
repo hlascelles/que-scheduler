@@ -2,7 +2,7 @@ que-scheduler
 ================
 
 [![Build Status](https://travis-ci.org/resque/que-scheduler.svg?branch=master)](https://travis-ci.org/hlascelles/que-scheduler)
-[![Code Climate](https://codeclimate.com/github/hlascelles/que-scheduler/badges/gpa.svg)](https://codeclimate.com/github/hlascelles/que-scheduler)
+[![Code Climate Maintainability](https://api.codeclimate.com/v1/badges/710d2fc5202f95d76e8a/maintainability)](https://codeclimate.com/github/hlascelles/que-scheduler/maintainability)
 
 ### Description
 

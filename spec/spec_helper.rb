@@ -1,6 +1,6 @@
 require 'bundler/setup'
 
-ENV['QUE_SCHEDULER_CONFIG_LOCATION'] = "#{__dir__}/config/schedule.yml"
+ENV['QUE_SCHEDULER_CONFIG_LOCATION'] = "#{__dir__}/config/que_schedule.yml"
 
 require 'que/scheduler'
 require 'pry-byebug'
