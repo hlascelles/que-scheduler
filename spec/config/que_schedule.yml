@@ -1,0 +1,26 @@
+# This scheduler file is compatible with resque-scheduler with one additional feature. If a job is
+# marked as "unmissable: true" then que-scheduler will notice if more than one run for that job has
+# gone by since it was last executed, and it will enqueue that job multiple times, giving the missed
+# times as the first arg in each case.
+
+HalfHourlyTestJob:
+  cron: "0,30 * * * *"
+
+WithArgsTestJob:
+  cron: "40 11 * * *"
+  args:
+    - My Args
+    - 1234
+    - some_hash: true
+
+daily_test_job_specifying_class:
+  class: SpecifiedByClassTestJob
+  cron: "10 3 * * *"
+
+DailyTestJob:
+  cron: "10 6 * * *"
+  unmissable: true
+
+TwiceDailyTestJob:
+  cron: "10 11,16 * * *"
+  unmissable: true

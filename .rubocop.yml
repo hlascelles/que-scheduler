@@ -1,0 +1,20 @@
+AllCops:
+  TargetRubyVersion: 2.4
+  DisplayCopNames: true
+Layout/DotPosition:
+  EnforcedStyle: leading
+Lint/BlockAlignment:
+  EnforcedStyleAlignWith: start_of_block
+Metrics/BlockLength:
+  Exclude:
+    - 'Rakefile'
+    - '**/*.rake'
+    - '**/spec/**/*.rb'
+Metrics/LineLength:
+  Max: 100
+Metrics/MethodLength:
+  Max: 30
+Style/Documentation:
+  Enabled: false
+Style/FrozenStringLiteralComment:
+  Enabled: false

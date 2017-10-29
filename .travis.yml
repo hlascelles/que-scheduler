@@ -1,0 +1,9 @@
+sudo: false
+language: ruby
+rvm:
+  - 2.2
+  - 2.3
+  - 2.4
+before_install: gem install bundler -v 1.15.4
+script:
+  - bundle exec rspec -fd -b -P ./spec/**/*_spec.rb
