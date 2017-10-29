@@ -1,9 +1,8 @@
 que-scheduler
 ================
 
-[![Build Status](https://travis-ci.org/resque/resque-scheduler.svg?branch=master)](https://travis-ci.org/resque/resque-scheduler)
-[![Windows Build Status](https://ci.appveyor.com/api/projects/status/sxvf2086v5j0absb/branch/master?svg=true)](https://ci.appveyor.com/project/resque/resque-scheduler/branch/master)
-[![Code Climate](https://codeclimate.com/github/resque/resque-scheduler/badges/gpa.svg)](https://codeclimate.com/github/resque/resque-scheduler)
+[![Build Status](https://travis-ci.org/resque/que-scheduler.svg?branch=master)](https://travis-ci.org/hlascelles/que-scheduler)
+[![Code Climate](https://codeclimate.com/github/hlascelles/sque-scheduler/badges/gpa.svg)](https://codeclimate.com/github/hlascelles/que-scheduler)
 
 ### Description
 
