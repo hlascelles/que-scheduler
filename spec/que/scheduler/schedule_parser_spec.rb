@@ -89,10 +89,8 @@ RSpec.describe Que::Scheduler::ScheduleParser do
     last_time = Time.zone.parse(last_run_time)
     as_time = last_time + delay_since_last_scheduler
     out = QSSP.parse(Que::Scheduler::SchedulerJob.scheduler_config, as_time, last_time, known_jobs)
-    exp = Que::Scheduler::ScheduleParserResult
-          .new(expect_scheduled, all_keys, QSSP::SCHEDULER_FREQUENCY)
+    exp = Que::Scheduler::ScheduleParserResult.new(expect_scheduled, all_keys)
     expect(out.missed_jobs).to eq(exp.missed_jobs)
     expect(out.schedule_dictionary).to eq(exp.schedule_dictionary)
-    expect(out.seconds_until_next_job).to eq(exp.seconds_until_next_job)
   end
 end

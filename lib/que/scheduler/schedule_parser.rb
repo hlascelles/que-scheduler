@@ -2,11 +2,9 @@ require 'fugit'
 
 module Que
   module Scheduler
-    ScheduleParserResult = Struct.new(:missed_jobs, :schedule_dictionary, :seconds_until_next_job)
+    ScheduleParserResult = Struct.new(:missed_jobs, :schedule_dictionary)
 
     class ScheduleParser
-      SCHEDULER_FREQUENCY = 60
-
       class << self
         def parse(jobs_list, as_time, last_time, known_jobs)
           missed_jobs = {}
@@ -25,8 +23,7 @@ module Que
             missed_jobs[desc[:clazz]] = missed unless missed.empty?
           end
 
-          seconds_until_next_job = SCHEDULER_FREQUENCY # TODO: make it 1 sec after next known run
-          ScheduleParserResult.new(missed_jobs, schedule_dictionary, seconds_until_next_job)
+          ScheduleParserResult.new(missed_jobs, schedule_dictionary)
         end
 
         private

@@ -78,7 +78,7 @@ RSpec.describe Que::Scheduler::SchedulerJob do
     def run_test(last_time, known_jobs, to_schedule, new_dictionary)
       parser_args = [QSSJ.scheduler_config, run_time, last_time || run_time, known_jobs]
       expect(PARSER).to receive(:parse).with(*parser_args).and_return(
-        RESULT.new(to_schedule, new_dictionary, 60)
+        RESULT.new(to_schedule, new_dictionary)
       )
       if last_time
         QSSJ.run(last_time.to_s, known_jobs)
@@ -96,7 +96,7 @@ RSpec.describe Que::Scheduler::SchedulerJob do
       expect(itself_jobs.first.to_h).to eq(
         queue: nil,
         priority: 0,
-        run_at: run_time + PARSER::SCHEDULER_FREQUENCY,
+        run_at: run_time.beginning_of_minute + QSSJ::SCHEDULER_FREQUENCY,
         job_class: 'Que::Scheduler::SchedulerJob',
         args: [run_time, new_dictionary]
       )
