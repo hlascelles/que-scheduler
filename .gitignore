@@ -12,3 +12,4 @@
 .rspec_status
 .idea/
 .byebug_history
+*.gem
