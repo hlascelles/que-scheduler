@@ -55,8 +55,7 @@ module Que
         def next_run_time(cron, from, to)
           fugit_cron = Fugit::Cron.parse(cron)
           next_time = fugit_cron.next_time(from)
-          next_run = next_time.to_local_time
-          next_run <= to ? next_run : nil
+          next_run = next_time.to_local_time.in_time_zone(next_time.zone)
           if cron == '10 6 * * *'
             puts "cron: #{cron}"
             puts "from: #{from}"
@@ -65,6 +64,7 @@ module Que
             puts "next_time: #{next_time}"
             puts "next_run: #{next_run}"
           end
+          next_run <= to ? next_run : nil
         end
       end
     end
