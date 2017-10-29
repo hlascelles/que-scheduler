@@ -66,7 +66,7 @@ clear_leaderboards_contributors:
 DailyBatchReport:
   cron: "0 3 * * *"
   # This job will be run every day, and if workers are offline for several days, then the backlog
-  # will all be scheduled when they are restored, each with that events timestamp. 
+  # will all be scheduled when they are restored, each with that events timestamp as the first arg.
   unmissable: true
 ```
 
