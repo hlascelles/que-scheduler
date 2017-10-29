@@ -31,7 +31,7 @@ Que::Scheduler::SchedulerJob.enqueue
 
 You can configure some aspects of the gem with environment variables.
 
-* `QUE_SCHEDULER_CONFIG_LOCATION` - The location of the schedule configuration (default config/que_schedule.yml)
+* `QUE_SCHEDULER_CONFIG_LOCATION` - The location of the schedule configuration (default `config/que_schedule.yml`)
 
 #### Schedule configuration
 
@@ -55,7 +55,7 @@ queue_documents_for_indexing:
   # If you want to have a different job name and class name, provide the 'class' option
   class: "QueueDocuments"
   queue: high
-  args:
+  args: ['reports', 'expenses']
 
 clear_leaderboards_contributors:
   cron: "30 6 * * 1"
@@ -73,7 +73,10 @@ DailyBatchReport:
 ### Redundancy and Fail-Over
 
 Because of the way que-scheduler works, it requires no additional processes. It is, itself, a Que job.
-As long as there are Que workers functioning, then jobs will continue to be scheduled correctly. 
+As long as there are Que workers functioning, then jobs will continue to be scheduled correctly. There
+are no HA concerns to worry about and no namespace collisions between different databases. 
+
+Additionally, like Que, when your database is backed up, your scheduling state is stored too.
 
 ### How it works
 
