@@ -10,7 +10,7 @@ module Que
 
       def run(last_time = nil, known_jobs = [])
         ::ActiveRecord::Base.transaction do
-          last_time = last_time.nil? ? Time.now : Time.parse(last_time)
+          last_time = last_time.nil? ? Time.now : Time.zone.parse(last_time)
           as_time = Time.now
 
           result =

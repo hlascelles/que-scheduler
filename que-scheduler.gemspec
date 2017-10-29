@@ -29,4 +29,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'rspec', '~> 3.0'
   spec.add_development_dependency 'rubocop', '~> 0.51'
   spec.add_development_dependency 'timecop', '~> 0.7'
+  spec.add_development_dependency 'zonebie', '~> 0.6'
 end

@@ -18,7 +18,7 @@ RSpec.describe Que::Scheduler::SchedulerJob do
       Que.adapter.jobs.clear
     end
 
-    let(:run_time) { Time.parse('2017-11-08T13:50:32') }
+    let(:run_time) { Time.zone.parse('2017-11-08T13:50:32') }
 
     around(:each) do |example|
       Timecop.freeze(run_time) do
