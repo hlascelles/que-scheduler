@@ -13,3 +13,4 @@
 .idea/
 .byebug_history
 *.gem
+coverage

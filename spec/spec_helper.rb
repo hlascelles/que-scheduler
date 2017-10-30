@@ -1,5 +1,8 @@
 require 'bundler/setup'
 
+require 'coveralls'
+Coveralls.wear!
+
 ENV['QUE_SCHEDULER_CONFIG_LOCATION'] = "#{__dir__}/config/que_schedule.yml"
 
 # By default, que-scheduler specs run in different timezones with every execution, thanks to
