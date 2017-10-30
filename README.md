@@ -7,13 +7,13 @@ que-scheduler
 [![Coverage Status](https://coveralls.io/repos/github/hlascelles/que-scheduler/badge.svg?branch=master)](https://coveralls.io/github/hlascelles/que-scheduler?branch=master)
 [![Code Climate Maintainability](https://api.codeclimate.com/v1/badges/710d2fc5202f95d76e8a/maintainability)](https://codeclimate.com/github/hlascelles/que-scheduler/maintainability)
 
-### Description
+## Description
 
 que-scheduler is an extension to [Que](https://github.com/chanks/que) that adds support for scheduling 
 items using a cron style configuration file. It works by running as a que job itself, determining what 
 needs to be run, enqueueing those jobs, then enqueueing itself to check again later.
 
-### Installation
+## Installation
 
 1. To install, add the gem to your Gemfile:
     ```ruby
@@ -29,7 +29,7 @@ files, but with additional features.
     Que::Scheduler::SchedulerJob.enqueue
     ```
     
-### Schedule configuration
+## Schedule configuration
 
 The schedule file is a list of que job classes with arguments and a schedule frequency (in crontab 
 syntax). The format is a superset of the resque-scheduler config format, so it they can be used
@@ -66,13 +66,13 @@ DailyBatchReport:
   unmissable: true
 ```
 
-### Environment Variables
+## Environment Variables
 
 You can configure some aspects of the gem with environment variables.
 
 * `QUE_SCHEDULER_CONFIG_LOCATION` - The location of the schedule configuration (default `config/que_schedule.yml`)
 
-### Redundancy and Fail-Over
+## Redundancy and Fail-Over
 
 Because of the way que-scheduler works, it requires no additional processes. It is, itself, a Que job.
 As long as there are Que workers functioning, then jobs will continue to be scheduled correctly. There
@@ -80,7 +80,7 @@ are no HA concerns to worry about and no namespace collisions between different 
 
 Additionally, like Que, when your database is backed up, your scheduling state is stored too.
 
-### How it works
+## How it works
 
 que-scheduler is a job that reads a config file, enqueues any jobs it determines that need to be run,
 then reschedules itself. The flow is as follows:
@@ -90,6 +90,6 @@ then reschedules itself. The flow is as follows:
 1. Some time later it runs again. It knows what jobs it should be monitoring, and notices that some have are due. It enqueues those jobs and then itself. Repeat.
 1. After a deploy that changes the config, the job notices any new jobs to schedule, and knows which ones to forget. It does not need to be re-enqueued or restarted.
 
-### Thanks
+## Thanks
 
 This gem was inspired by the makers of the excellent [Que](https://github.com/chanks/que) job scheduler gem. 

@@ -7,8 +7,6 @@ engines:
       - ruby
   fixme:
     enabled: true
-  markdownlint:
-    enabled: true
   rubocop:
     enabled: true
 ratings:
