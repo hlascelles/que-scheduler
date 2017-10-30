@@ -107,7 +107,7 @@ RSpec.describe Que::Scheduler::SchedulerJob do
           expect(job_class_item.to_h[:queue]).to eq(nil)
           expect(job_class_item.to_h[:priority]).to eq(nil)
           expect(job_class_item.to_h[:run_at]).to eq(nil)
-          expect(job_class_item.to_h[:job_class]).to eq( job_class.to_s)
+          expect(job_class_item.to_h[:job_class]).to eq(job_class.to_s)
           job_class_item.to_h[:args]
         end
         [job_class, args]
