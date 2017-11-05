@@ -1,5 +1,10 @@
 ## Unreleased
 
+## 0.6.0 (2017-11-05)
+
+* Formalised all internal args as Hashies
+* Enforced correct yml values
+
 ## 0.5.0 (2017-11-05)
 
 * Refactored to take a hash as SchedulerJob args

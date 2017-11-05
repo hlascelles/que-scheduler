@@ -65,7 +65,7 @@ module Que
         # "unmissable" parameters.
         def jobs_list(schedule)
           schedule.map do |k, v|
-            Que::Scheduler::DefinedJob.new(
+            Que::Scheduler::DefinedJob.create(
               {
                 name: k,
                 job_class: Object.const_get(v['class'] || k),

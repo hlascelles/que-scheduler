@@ -1,27 +1,9 @@
 require 'spec_helper'
 
 RSpec.describe Que::Scheduler::DefinedJob do
-  it 'creates the right job defaults' do
-    job = described_class.new(
-      name: 'HalfHourlyTestJob',
-      job_class: HalfHourlyTestJob,
-      cron: '0,30 * * * *'
-    )
-    expected = {
-      name: 'HalfHourlyTestJob',
-      job_class: HalfHourlyTestJob,
-      cron: Fugit::Cron.new('0,30 * * * *'),
-      priority: nil,
-      args: nil,
-      queue: nil,
-      unmissable: false
-    }
-    expect(job.to_h).to eq(expected)
-  end
-
   describe '#next_run_time' do
     let(:job) {
-      described_class.new(
+      described_class.create(
         name: 'HalfHourlyTestJob',
         job_class: HalfHourlyTestJob,
         cron: '14 17 * * *'
@@ -46,6 +28,38 @@ RSpec.describe Que::Scheduler::DefinedJob do
 
     it "calculates the next run when it is after the closing time" do
       expect_time('2017-10-08T06:14:00', '2017-10-08T10:10:00', nil)
+    end
+  end
+
+  describe 'validations' do
+    it 'checks the cron is valid' do
+      expect {
+        described_class.create(
+          name: 'HalfHourlyTestJob',
+          job_class: HalfHourlyTestJob,
+          cron: 'foo 17 * * *',
+        )
+      }.to raise_error(/Invalid cron 'foo 17 \* \* \*' in que-scheduler config/)
+    end
+
+    it 'checks the queue is a string' do
+      expect {
+        described_class.create(
+          name: 'HalfHourlyTestJob',
+          job_class: HalfHourlyTestJob,
+          queue: 3214214
+        )
+      }.to raise_error(/Invalid queue '3214214' in que-scheduler config/)
+    end
+
+    it 'checks the priority is an integer' do
+      expect {
+        described_class.create(
+          name: 'HalfHourlyTestJob',
+          job_class: HalfHourlyTestJob,
+          priority: 'foo'
+        )
+      }.to raise_error(/Invalid priority 'foo' in que-scheduler config/)
     end
   end
 end

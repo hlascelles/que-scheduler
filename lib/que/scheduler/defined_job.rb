@@ -1,26 +1,29 @@
-require 'dry-struct'
+require 'hashie'
 require 'fugit'
 
 # This is the definition of one scheduled job in the yml file.
 module Que
   module Scheduler
-    class DefinedJob < Dry::Struct::Value
-      constructor_type :schema
+    class DefinedJob < Hashie::Dash
+      include Hashie::Extensions::Dash::PropertyTranslation
 
-      attribute :name, Dry::Types['strict.string']
-      attribute :job_class, Dry::Types['strict.class']
-      attribute :cron, Dry::Types::Constructor.new(Fugit::Cron) { |cron|
-        f = Fugit::Cron.new(cron)
-        if f.nil?
-          raise "que-scheduler config has invalid cron '#{cron}' in " \
-                "#{QUE_SCHEDULER_CONFIG_LOCATION}"
+      def self.err_field(f, v)
+        suffix = "in que-scheduler config #{QUE_SCHEDULER_CONFIG_LOCATION}"
+        raise "Invalid #{f} '#{v}' #{suffix}"
+      end
+
+      property :name, required: true
+      property :job_class, required: true
+      property :cron, transform_with: ->(v) { Fugit::Cron.new(v) || err_field(:cron, v) }
+      property :queue, transform_with: ->(v) { v.is_a?(String) ? v : err_field(:queue, v) }
+      property :priority, transform_with: ->(v) { v.is_a?(Integer) ? v : err_field(:priority, v) }
+      property :args
+      property :unmissable
+
+      def self.create(hash)
+        DefinedJob.new(hash).tap do |dj|
         end
-        f
-      }
-      attribute :queue, Dry::Types['strict.string'].optional
-      attribute :priority, Dry::Types['strict.int'].constrained(gteq: 0).optional
-      attribute :args, Dry::Types['strict.array'].optional
-      attribute :unmissable, Dry::Types['strict.bool'].default(false)
+      end
 
       # Given a "last time", return the next Time the event will occur, or nil if it
       # is after "to".
