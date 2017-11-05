@@ -17,8 +17,8 @@ Gem::Specification.new do |spec|
   spec.files = Dir['{lib}/**/*'] + ['README.md']
   spec.require_paths = ['lib']
 
-  spec.add_dependency 'activerecord', '>= 3.0'
-  spec.add_dependency 'fugit', '>= 1'
-  spec.add_dependency 'hashie', '>= 3'
-  spec.add_dependency 'que', '>= 0.10'
+  spec.add_dependency 'activerecord', '>= 4.0'
+  spec.add_dependency 'fugit', '~> 1'
+  spec.add_dependency 'hashie', '~> 3'
+  spec.add_dependency 'que', '~> 0.10'
 end
