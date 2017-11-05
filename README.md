@@ -50,17 +50,17 @@ queue_documents_for_indexing:
   cron: "0 0 * * *"
   class: QueueDocuments
   
-# Specify job queues
+# Specify the job queue
 ReportOrders:
   cron: "0 0 * * *"
   queue: reporting
 
-# Specify job priority using Que's number system
+# Specify the job priority using Que's number system
 BatchOrders:
   cron: "0 0 * * *"
   priority: 25
   
-# Specify job queues
+# Specify job arguments
 SendOrders:
   cron: "0 0 * * *"
   args: ['open']
