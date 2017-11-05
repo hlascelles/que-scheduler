@@ -21,22 +21,25 @@ module Que
 
         ::ActiveRecord::Base.transaction do
           scheduler_job_args = SchedulerJobArgs.prepare_scheduler_job_args(options)
-          Que.log(message: "que-scheduler last ran at #{scheduler_job_args.last_run_time}.")
-          result = enqueue_required_jobs(scheduler_job_args)
+          logs = ["que-scheduler last ran at #{scheduler_job_args.last_run_time}."]
+          result = enqueue_required_jobs(scheduler_job_args, logs)
           enqueue_self_again(scheduler_job_args, result.schedule_dictionary)
+
+          # Only now we're sure nothing errored, log the results
+          logs.each { |str| Que.log(message: str) }
           destroy
         end
       end
 
       private
 
-      def enqueue_required_jobs(scheduler_job_args)
+      def enqueue_required_jobs(scheduler_job_args, logs)
         # Obtain the hash of missed jobs. Keys are the job classes, and the values are arrays
         # each containing more arrays for the arguments of that instance.
         result = ScheduleParser.parse(SchedulerJob.scheduler_config, scheduler_job_args)
         result.missed_jobs.each do |job_class, args_arrays|
           args_arrays.each do |args|
-            Que.log(message: "que-scheduler enqueueing #{job_class} with args: #{args}")
+            logs << "que-scheduler enqueueing #{job_class} with options: #{args}"
             job_class.enqueue(*args)
           end
         end
