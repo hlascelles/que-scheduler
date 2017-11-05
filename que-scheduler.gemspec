@@ -21,4 +21,5 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'fugit', '~> 1'
   spec.add_dependency 'hashie', '~> 3'
   spec.add_dependency 'que', '~> 0.10'
+  spec.add_dependency 'backports', '~> 3.10'
 end

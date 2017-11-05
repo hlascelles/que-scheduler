@@ -1,5 +1,7 @@
 require 'que'
 require 'yaml'
+require 'backports/2.4.0/hash/compact'
+
 require_relative 'defined_job'
 require_relative 'schedule_parser'
 require_relative 'scheduler_job_args'
@@ -65,7 +67,7 @@ module Que
         # "unmissable" parameters.
         def jobs_list(schedule)
           schedule.map do |k, v|
-            Que::Scheduler::DefinedJob.create(
+            Que::Scheduler::DefinedJob.new(
               {
                 name: k,
                 job_class: Object.const_get(v['class'] || k),

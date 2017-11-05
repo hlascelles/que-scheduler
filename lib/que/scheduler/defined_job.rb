@@ -18,12 +18,7 @@ module Que
       property :queue, transform_with: ->(v) { v.is_a?(String) ? v : err_field(:queue, v) }
       property :priority, transform_with: ->(v) { v.is_a?(Integer) ? v : err_field(:priority, v) }
       property :args
-      property :unmissable
-
-      def self.create(hash)
-        DefinedJob.new(hash).tap do |dj|
-        end
-      end
+      property :unmissable, default: false
 
       # Given a "last time", return the next Time the event will occur, or nil if it
       # is after "to".

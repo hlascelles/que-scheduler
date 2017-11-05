@@ -1,4 +1,5 @@
 require 'fugit'
+require 'backports/2.4.0/hash/compact'
 
 module Que
   module Scheduler

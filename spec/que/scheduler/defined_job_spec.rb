@@ -3,7 +3,7 @@ require 'spec_helper'
 RSpec.describe Que::Scheduler::DefinedJob do
   describe '#next_run_time' do
     let(:job) do
-      described_class.create(
+      described_class.new(
         name: 'HalfHourlyTestJob',
         job_class: HalfHourlyTestJob,
         cron: '14 17 * * *'
@@ -34,7 +34,7 @@ RSpec.describe Que::Scheduler::DefinedJob do
   describe 'validations' do
     it 'checks the cron is valid' do
       expect do
-        described_class.create(
+        described_class.new(
           name: 'HalfHourlyTestJob',
           job_class: HalfHourlyTestJob,
           cron: 'foo 17 * * *'
@@ -44,7 +44,7 @@ RSpec.describe Que::Scheduler::DefinedJob do
 
     it 'checks the queue is a string' do
       expect do
-        described_class.create(
+        described_class.new(
           name: 'HalfHourlyTestJob',
           job_class: HalfHourlyTestJob,
           queue: 3_214_214
@@ -54,7 +54,7 @@ RSpec.describe Que::Scheduler::DefinedJob do
 
     it 'checks the priority is an integer' do
       expect do
-        described_class.create(
+        described_class.new(
           name: 'HalfHourlyTestJob',
           job_class: HalfHourlyTestJob,
           priority: 'foo'
