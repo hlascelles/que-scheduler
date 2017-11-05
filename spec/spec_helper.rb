@@ -8,10 +8,11 @@ ENV['QUE_SCHEDULER_CONFIG_LOCATION'] = "#{__dir__}/config/que_schedule.yml"
 # By default, que-scheduler specs run in different timezones with every execution, thanks to
 # zonebie. If you want to force one particular timezone, you can use the following:
 # ENV['ZONEBIE_TZ'] = 'International Date Line West'
-
+# Require zonebie before any other gem to ensure it sets the correct test timezone.
 require 'zonebie/rspec'
-require 'que/scheduler'
+
 require 'pry-byebug'
+require 'que/scheduler'
 
 Dir["#{__dir__}/../spec/support/**/*.rb"].each { |f| require f }
 

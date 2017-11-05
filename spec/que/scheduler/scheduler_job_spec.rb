@@ -7,8 +7,9 @@ require 'active_support/core_ext/numeric/time'
 
 RSpec.describe Que::Scheduler::SchedulerJob do
   QSSJ = described_class
-  PARSER = Que::Scheduler::ScheduleParser
-  RESULT = Que::Scheduler::ScheduleParserResult
+  QS = Que::Scheduler
+  PARSER = QS::ScheduleParser
+  RESULT = QS::ScheduleParserResult
 
   context 'scheduling' do
     before(:each) do
@@ -27,13 +28,15 @@ RSpec.describe Que::Scheduler::SchedulerJob do
     end
 
     it 'enqueues nothing having loaded the dictionary on the first run' do
-      run_test(nil, [], {}, [])
+      run_test(nil, {}, [])
     end
 
     it 'enqueues nothing if it knows about a job, but it is not overdue' do
       run_test(
-        run_time - 15.minutes,
-        %w[HalfHourlyTestJob],
+        {
+          last_run_time: (run_time - 15.minutes).iso8601,
+          job_dictionary: %w[HalfHourlyTestJob]
+        },
         {},
         %w[HalfHourlyTestJob]
       )
@@ -41,8 +44,10 @@ RSpec.describe Que::Scheduler::SchedulerJob do
 
     it 'enqueues nothing if it knows about one job, and a deploy has added a new one' do
       run_test(
-        run_time - 15.minutes,
-        %w[HalfHourlyTestJob],
+        {
+          last_run_time: (run_time - 15.minutes).iso8601,
+          job_dictionary: %w[HalfHourlyTestJob]
+        },
         {},
         %w[HalfHourlyTestJob SomeNewJob]
       )
@@ -50,8 +55,10 @@ RSpec.describe Que::Scheduler::SchedulerJob do
 
     it 'enqueues known jobs that are overdue' do
       run_test(
-        run_time - 45.minutes,
-        %w[HalfHourlyTestJob],
+        {
+          last_run_time: (run_time - 45.minutes).iso8601,
+          job_dictionary: %w[HalfHourlyTestJob]
+        },
         { HalfHourlyTestJob => [[]] },
         %w[HalfHourlyTestJob]
       )
@@ -59,8 +66,10 @@ RSpec.describe Que::Scheduler::SchedulerJob do
 
     it 'can enqueue the same job multiple times with different args' do
       run_test(
-        run_time - 45.minutes,
-        %w[HalfHourlyTestJob],
+        {
+          last_run_time: (run_time - 45.minutes).iso8601,
+          job_dictionary: %w[HalfHourlyTestJob]
+        },
         { HalfHourlyTestJob => [['foo'], ['bar']] },
         %w[HalfHourlyTestJob]
       )
@@ -68,20 +77,32 @@ RSpec.describe Que::Scheduler::SchedulerJob do
 
     it 'should remove jobs from the dictionary that are no longer in the schedule' do
       run_test(
-        run_time - 45.minutes,
-        %w[HalfHourlyTestJob OldRemovedJob],
+        {
+          last_run_time: (run_time - 45.minutes).iso8601,
+          job_dictionary: %w[HalfHourlyTestJob OldRemovedJob]
+        },
         { HalfHourlyTestJob => [[]] },
         %w[HalfHourlyTestJob]
       )
     end
 
-    def run_test(last_time, known_jobs, to_schedule, new_dictionary)
-      parser_args = [QSSJ.scheduler_config, run_time, last_time || run_time, known_jobs]
-      expect(PARSER).to receive(:parse).with(*parser_args).and_return(
+    it 'handles the old method of passing in two args' do
+      scheduler_job_args = QS::SchedulerJobArgs.prepare_scheduler_job_args(
+        last_run_time: Time.zone.now.iso8601, job_dictionary: %w[HalfHourlyTestJob]
+      )
+      expect(PARSER).to receive(:parse).with(QSSJ.scheduler_config, scheduler_job_args).and_return(
+        RESULT.new([], [])
+      )
+      QSSJ.run(Time.zone.now.iso8601, %w[HalfHourlyTestJob])
+    end
+
+    def run_test(initial_job_args, to_schedule, new_dictionary)
+      scheduler_job_args = QS::SchedulerJobArgs.prepare_scheduler_job_args(initial_job_args)
+      expect(PARSER).to receive(:parse).with(QSSJ.scheduler_config, scheduler_job_args).and_return(
         RESULT.new(to_schedule, new_dictionary)
       )
-      if last_time
-        QSSJ.run(last_time.to_s, known_jobs)
+      if initial_job_args
+        QSSJ.run(initial_job_args)
       else
         QSSJ.run
       end
@@ -91,14 +112,14 @@ RSpec.describe Que::Scheduler::SchedulerJob do
     # This method checks what jobs have been enqueued against a provided list. In addition, the
     # main scheduler job should have enqueued itself.
     def expect_scheduled(list, new_dictionary)
-      itself_jobs = Que.adapter.jobs.delete(Que::Scheduler::SchedulerJob)
+      itself_jobs = Que.adapter.jobs.delete(QS::SchedulerJob)
       expect(itself_jobs.count).to eq(1)
       expect(itself_jobs.first.to_h).to eq(
         queue: nil,
         priority: 0,
         run_at: run_time.beginning_of_minute + QSSJ::SCHEDULER_FREQUENCY,
         job_class: 'Que::Scheduler::SchedulerJob',
-        args: [run_time, new_dictionary]
+        args: [{ last_run_time: run_time.iso8601, job_dictionary: new_dictionary }]
       )
 
       all_enqueued = Que.adapter.jobs.each_key.map do |job_class|
