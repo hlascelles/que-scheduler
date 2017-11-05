@@ -24,8 +24,15 @@ module Que
         ::ActiveRecord::Base.transaction do
           scheduler_job_args = SchedulerJobArgs.prepare_scheduler_job_args(options)
           logs = ["que-scheduler last ran at #{scheduler_job_args.last_run_time}."]
-          result = enqueue_required_jobs(scheduler_job_args, logs)
-          enqueue_self_again(scheduler_job_args, result.schedule_dictionary)
+
+          # It's possible one worker node has severe clock skew, and reports a time earlier than
+          # the last run. If so, log, and rescheduled with the same last run at.
+          if scheduler_job_args.as_time < scheduler_job_args.last_run_time
+            SchedulerJob.handle_clock_skew(scheduler_job_args, logs)
+          else
+            # Otherwise, run as normal
+            SchedulerJob.handle_normal_call(scheduler_job_args, logs)
+          end
 
           # Only now we're sure nothing errored, log the results
           logs.each { |str| Que.log(message: str) }
@@ -34,27 +41,6 @@ module Que
       end
 
       private
-
-      def enqueue_required_jobs(scheduler_job_args, logs)
-        # Obtain the hash of missed jobs. Keys are the job classes, and the values are arrays
-        # each containing more arrays for the arguments of that instance.
-        result = ScheduleParser.parse(SchedulerJob.scheduler_config, scheduler_job_args)
-        result.missed_jobs.each do |job_class, args_arrays|
-          args_arrays.each do |args|
-            logs << "que-scheduler enqueueing #{job_class} with options: #{args}"
-            job_class.enqueue(*args)
-          end
-        end
-        result
-      end
-
-      def enqueue_self_again(scheduler_job_args, new_job_dictionary)
-        SchedulerJob.enqueue(
-          last_run_time: scheduler_job_args.as_time.iso8601,
-          job_dictionary: new_job_dictionary,
-          run_at: scheduler_job_args.as_time.beginning_of_minute + SCHEDULER_FREQUENCY
-        )
-      end
 
       class << self
         def scheduler_config
@@ -79,6 +65,46 @@ module Que
               }.compact
             )
           end
+        end
+
+        def handle_normal_call(scheduler_job_args, logs)
+          result = enqueue_required_jobs(scheduler_job_args, logs)
+          enqueue_self_again(
+            scheduler_job_args.as_time,
+            scheduler_job_args.as_time,
+            result.schedule_dictionary
+          )
+        end
+
+        def enqueue_required_jobs(scheduler_job_args, logs)
+          # Obtain the hash of missed jobs. Keys are the job classes, and the values are arrays
+          # each containing more arrays for the arguments of that instance.
+          result = ScheduleParser.parse(SchedulerJob.scheduler_config, scheduler_job_args)
+          result.missed_jobs.each do |job_class, args_arrays|
+            args_arrays.each do |args|
+              logs << "que-scheduler enqueueing #{job_class} with options: #{args}"
+              job_class.enqueue(*args)
+            end
+          end
+          result
+        end
+
+        def enqueue_self_again(last_full_execution, this_run_time, new_job_dictionary)
+          SchedulerJob.enqueue(
+            last_run_time: last_full_execution.iso8601,
+            job_dictionary: new_job_dictionary,
+            run_at: this_run_time.beginning_of_minute + SCHEDULER_FREQUENCY
+          )
+        end
+
+        def handle_clock_skew(scheduler_job_args, logs)
+          logs << 'que-scheduler detected worker with time older than last run. ' \
+                      'Rescheduling without enqueueing jobs.'
+          enqueue_self_again(
+            scheduler_job_args.last_run_time,
+            scheduler_job_args.as_time,
+            scheduler_job_args.job_dictionary
+          )
         end
       end
     end

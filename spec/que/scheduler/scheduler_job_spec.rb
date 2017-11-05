@@ -109,18 +109,22 @@ RSpec.describe Que::Scheduler::SchedulerJob do
       expect_scheduled(to_schedule, new_dictionary)
     end
 
-    # This method checks what jobs have been enqueued against a provided list. In addition, the
-    # main scheduler job should have enqueued itself.
-    def expect_scheduled(list, new_dictionary)
+    def expect_itself_enqueued(last_run_time, as_time, new_dictionary)
       itself_jobs = Que.adapter.jobs.delete(QS::SchedulerJob)
       expect(itself_jobs.count).to eq(1)
       expect(itself_jobs.first.to_h).to eq(
         queue: nil,
         priority: 0,
-        run_at: run_time.beginning_of_minute + QSSJ::SCHEDULER_FREQUENCY,
+        run_at: as_time.beginning_of_minute + QSSJ::SCHEDULER_FREQUENCY,
         job_class: 'Que::Scheduler::SchedulerJob',
-        args: [{ last_run_time: run_time.iso8601, job_dictionary: new_dictionary }]
+        args: [{ last_run_time: last_run_time.iso8601, job_dictionary: new_dictionary }]
       )
+    end
+
+    # This method checks what jobs have been enqueued against a provided list. In addition, the
+    # main scheduler job should have enqueued itself.
+    def expect_scheduled(list, new_dictionary)
+      expect_itself_enqueued(run_time, run_time, new_dictionary)
 
       all_enqueued = Que.adapter.jobs.each_key.map do |job_class|
         job_class_items = Que.adapter.jobs.delete(job_class)
@@ -134,6 +138,20 @@ RSpec.describe Que::Scheduler::SchedulerJob do
         [job_class, args]
       end.to_h
       expect(all_enqueued).to eq(list)
+    end
+
+    context 'clock skew' do
+      # The scheduler job must notice when it is being run on a box that is reporting a time earlier
+      # than the last time it ran. It should do nothing except reschedule itself.
+      it 'handles clock skew' do
+        last_run = Time.zone.parse('2017-11-08T13:50:32')
+
+        Timecop.freeze(last_run - 1.hour) do
+          expect(QSSJ).to receive(:handle_clock_skew).and_call_original
+          QSSJ.run(last_run_time: last_run.iso8601, job_dictionary: %w[SomeJob])
+          expect_itself_enqueued(last_run, Time.zone.now, %w[SomeJob])
+        end
+      end
     end
   end
 
