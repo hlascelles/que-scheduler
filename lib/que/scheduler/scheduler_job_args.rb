@@ -1,5 +1,6 @@
 require 'hashie'
 
+# These are the args that are used for this particular run of the scheduler.
 module Que
   module Scheduler
     class SchedulerJobArgs < Hashie::Dash

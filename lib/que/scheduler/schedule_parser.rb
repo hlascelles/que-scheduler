@@ -15,7 +15,7 @@ module Que
           # If it is "unmissable" then we schedule all of them, with the missed time as an arg,
           # otherwise just schedule it once.
           scheduler_config.each do |desc|
-            job_name = desc[:name]
+            job_name = desc.name
             schedule_dictionary << job_name
 
             # If we have never seen this job before, we don't want to scheduled any jobs for it.
@@ -26,7 +26,7 @@ module Que
             missed = calculate_missed_runs(
               desc, scheduler_job_args.last_run_time, scheduler_job_args.as_time
             )
-            missed_jobs[desc[:clazz]] = missed unless missed.empty?
+            missed_jobs[desc.job_class] = missed unless missed.empty?
           end
 
           ScheduleParserResult.new(missed_jobs, schedule_dictionary)
@@ -39,7 +39,7 @@ module Que
         def calculate_missed_runs(desc, last_run_time, as_time)
           missed_times = []
           last_time = last_run_time
-          while (next_run = next_run_time(desc[:cron], last_time, as_time))
+          while (next_run = desc.next_run_time(last_time, as_time))
             missed_times << next_run
             last_time = next_run
           end
@@ -47,28 +47,24 @@ module Que
           generate_required_jobs_list(desc, missed_times)
         end
 
-        # Given a cron, and a "last time", return the next Time the event will occur, or nil if it
-        # is after "to".
-        def next_run_time(cron, from, to)
-          fugit_cron = Fugit::Cron.parse(cron)
-          next_time = fugit_cron.next_time(from)
-          next_run = next_time.to_local_time.in_time_zone(next_time.zone)
-          next_run <= to ? next_run : nil
-        end
-
         # Given a job description, and the timestamps of the missed events, generate a list of jobs
         # that can be enqueued as an array of arrays of args.
         def generate_required_jobs_list(desc, missed_times)
           jobs_for_class = []
-          unless missed_times.empty?
-            job_args = desc[:args]
 
-            if desc[:unmissable]
+          unless missed_times.empty?
+            options = {
+              args: desc.args,
+              queue: desc.queue,
+              priority: desc.priority
+            }.compact
+
+            if desc.unmissable
               missed_times.each do |time_missed|
-                jobs_for_class << [time_missed] + job_args
+                jobs_for_class << options.merge(args: [time_missed] + (desc.args || []))
               end
             else
-              jobs_for_class << job_args
+              jobs_for_class << options
             end
           end
           jobs_for_class

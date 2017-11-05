@@ -45,20 +45,35 @@ For example:
 CancelAbandonedOrders:
   cron: "*/5 * * * *"
 
+# Specify the job_class, using any name for the key.
 queue_documents_for_indexing:
   cron: "0 0 * * *"
-  # By default the job name (hash key) will be taken as worker class name.
-  # If you want to have a different job name and class name, provide the 'class' option
-  class: "QueueDocuments"
-  queue: high
-  args: ['reports', 'expenses']
-
-clear_leaderboards_contributors:
-  cron: "30 6 * * 1"
-  class: "ClearLeaderboards"
-  queue: low
-  args: contributors
+  class: QueueDocuments
   
+# Specify job queues
+ReportOrders:
+  cron: "0 0 * * *"
+  queue: reporting
+
+# Specify job priority using Que's number system
+BatchOrders:
+  cron: "0 0 * * *"
+  priority: 25
+  
+# Specify job queues
+SendOrders:
+  cron: "0 0 * * *"
+  args: ['open']
+  
+# Altogether now
+all_args_job:
+  cron: "0 0 * * *"
+  class: QueueDocuments
+  queue: reporting
+  priority: 25
+  args: ['open']
+  
+# Ensure you never miss a job, even after downtime
 DailyBatchReport:
   cron: "0 3 * * *"
   # This job will be run every day, and if workers are offline for several days, then the backlog

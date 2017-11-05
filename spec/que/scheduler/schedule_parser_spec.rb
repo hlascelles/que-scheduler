@@ -19,16 +19,16 @@ RSpec.describe Que::Scheduler::ScheduleParser do
   end
 
   it 'should enqueue the HalfHourlyTestJob if half an hour has gone by' do
-    run_test('2017-10-08T16:40:32', 31.minutes, HalfHourlyTestJob => [[]])
+    run_test('2017-10-08T16:40:32', 31.minutes, HalfHourlyTestJob => [{}])
   end
 
   it 'should enqueue the HalfHourlyTestJob just once if more than an hour has gone by' do
     # Not "unmissable", so, we just schedule the latest
-    run_test('2017-10-08T16:40:32', 61.minutes, HalfHourlyTestJob => [[]])
+    run_test('2017-10-08T16:40:32', 61.minutes, HalfHourlyTestJob => [{}])
   end
 
   it 'should enqueue if the run time is exactly the cron time' do
-    run_test('2017-10-08T16:59:59', 1.seconds, HalfHourlyTestJob => [[]])
+    run_test('2017-10-08T16:59:59', 1.seconds, HalfHourlyTestJob => [{}])
   end
 
   # This is testing that the fugit cron "next_time" doesn't return the current time if it matches.
@@ -41,7 +41,7 @@ RSpec.describe Que::Scheduler::ScheduleParser do
     run_test(
       '2017-10-08T11:39:59',
       2.seconds,
-      WithArgsTestJob => [['My Args', 1234, { 'some_hash' => true }]]
+      WithArgsTestJob => [{ args: ['My Args', 1234, { 'some_hash' => true }] }]
     )
   end
 
@@ -49,7 +49,7 @@ RSpec.describe Que::Scheduler::ScheduleParser do
     run_test(
       '2017-10-08T03:09:59',
       2.seconds,
-      SpecifiedByClassTestJob => [[]]
+      SpecifiedByClassTestJob => [{}]
     )
   end
 
@@ -57,7 +57,7 @@ RSpec.describe Que::Scheduler::ScheduleParser do
     run_test(
       '2017-10-08T06:09:59',
       2.seconds,
-      DailyTestJob => [[Time.zone.parse('2017-10-08T06:10:00')]]
+      DailyTestJob => [{ args: [Time.zone.parse('2017-10-08T06:10:00')] }]
     )
   end
 
@@ -66,21 +66,21 @@ RSpec.describe Que::Scheduler::ScheduleParser do
       '2017-10-08T02:09:59',
       2.days,
       # These are "missable", so only come up once
-      HalfHourlyTestJob => [[]],
-      WithArgsTestJob => [['My Args', 1234, { 'some_hash' => true }]],
-      SpecifiedByClassTestJob => [[]],
+      HalfHourlyTestJob => [{}],
+      WithArgsTestJob => [{ args: ['My Args', 1234, { 'some_hash' => true }] }],
+      SpecifiedByClassTestJob => [{}],
 
       # These are "unmissable", so all their missed schedules are enqueued, with that
       # Time as an argument.
       DailyTestJob => [
-        [Time.zone.parse('2017-10-08T06:10:00')],
-        [Time.zone.parse('2017-10-09T06:10:00')]
+        { args: [Time.zone.parse('2017-10-08T06:10:00')] },
+        { args: [Time.zone.parse('2017-10-09T06:10:00')] }
       ],
       TwiceDailyTestJob => [
-        [Time.zone.parse('2017-10-08T11:10:00')],
-        [Time.zone.parse('2017-10-08T16:10:00')],
-        [Time.zone.parse('2017-10-09T11:10:00')],
-        [Time.zone.parse('2017-10-09T16:10:00')]
+        { args: [Time.zone.parse('2017-10-08T11:10:00')], queue: 'backlog', priority: 35 },
+        { args: [Time.zone.parse('2017-10-08T16:10:00')], queue: 'backlog', priority: 35 },
+        { args: [Time.zone.parse('2017-10-09T11:10:00')], queue: 'backlog', priority: 35 },
+        { args: [Time.zone.parse('2017-10-09T16:10:00')], queue: 'backlog', priority: 35 }
       ]
     )
   end

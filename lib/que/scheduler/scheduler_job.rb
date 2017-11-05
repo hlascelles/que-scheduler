@@ -1,10 +1,14 @@
 require 'que'
 require 'yaml'
+require_relative 'defined_job'
 require_relative 'schedule_parser'
 require_relative 'scheduler_job_args'
 
 module Que
   module Scheduler
+    QUE_SCHEDULER_CONFIG_LOCATION =
+      ENV.fetch('QUE_SCHEDULER_CONFIG_LOCATION', 'config/que_schedule.yml')
+
     class SchedulerJob < Que::Job
       SCHEDULER_FREQUENCY = 60
 
@@ -50,8 +54,7 @@ module Que
       class << self
         def scheduler_config
           @scheduler_config ||= begin
-            location = ENV.fetch('QUE_SCHEDULER_CONFIG_LOCATION', 'config/que_schedule.yml')
-            jobs_list(YAML.load_file(location))
+            jobs_list(YAML.load_file(QUE_SCHEDULER_CONFIG_LOCATION))
           end
         end
 
@@ -59,16 +62,17 @@ module Que
         # "unmissable" parameters.
         def jobs_list(schedule)
           schedule.map do |k, v|
-            clazz = Object.const_get(v['class'] || k)
-            args = v.key?('args') ? v.fetch('args') : []
-            unmissable = v['unmissable'] == true
-            {
-              name: k,
-              clazz: clazz,
-              args: args,
-              cron: v.fetch('cron'),
-              unmissable: unmissable
-            }
+            Que::Scheduler::DefinedJob.new(
+              {
+                name: k,
+                job_class: Object.const_get(v['class'] || k),
+                queue: v['queue'],
+                args: v['args'],
+                priority: v['priority'],
+                cron: v['cron'],
+                unmissable: v['unmissable']
+              }.compact
+            )
           end
         end
       end

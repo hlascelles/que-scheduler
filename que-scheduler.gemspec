@@ -18,6 +18,7 @@ Gem::Specification.new do |spec|
   spec.require_paths = ['lib']
 
   spec.add_dependency 'activerecord', '>= 4.0'
+  spec.add_dependency 'dry-struct', '~> 0.4.0'
   spec.add_dependency 'fugit', '~> 1'
   spec.add_dependency 'hashie', '~> 3'
   spec.add_dependency 'que', '~> 0.10'

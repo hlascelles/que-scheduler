@@ -23,4 +23,6 @@ DailyTestJob:
 
 TwiceDailyTestJob:
   cron: "10 11,16 * * *"
+  priority: 35
+  queue: backlog
   unmissable: true
