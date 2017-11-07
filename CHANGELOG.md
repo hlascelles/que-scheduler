@@ -2,7 +2,9 @@
 
 ## 0.7.0 (2017-11-05)
 
-* Handle worker clock skew
+* Update dependencies
+* Added more tests
+* Add additional checks for worker clock skew
 
 ## 0.6.0 (2017-11-05)
 
