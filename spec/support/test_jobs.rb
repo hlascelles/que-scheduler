@@ -17,3 +17,7 @@ end
 class TwiceDailyTestJob < ::Que::Job
   def run; end
 end
+
+class NotAQueJob
+  def run; end
+end

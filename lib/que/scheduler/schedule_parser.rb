@@ -23,7 +23,7 @@ module Que
             Que::Scheduler::DefinedJob.new(
               {
                 name: k,
-                job_class: Object.const_get(v['class'] || k),
+                job_class: v['class'] || k,
                 queue: v['queue'],
                 args: v['args'],
                 priority: v['priority'],

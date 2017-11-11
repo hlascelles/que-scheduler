@@ -1,3 +1,7 @@
+## Unreleased
+
+* Scheduler config check for valid Que::Job subclasses
+
 ## 0.8.0 (2017-11-11)
 
 * Added multiple scheduler job detection

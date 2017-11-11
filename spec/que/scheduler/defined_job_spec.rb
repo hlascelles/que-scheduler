@@ -4,8 +4,8 @@ RSpec.describe Que::Scheduler::DefinedJob do
   describe '#next_run_time' do
     let(:job) do
       described_class.new(
-        name: 'HalfHourlyTestJob',
-        job_class: HalfHourlyTestJob,
+        name: 'testing_job_definitions',
+        job_class: 'HalfHourlyTestJob',
         cron: '14 17 * * *'
       )
     end
@@ -36,8 +36,8 @@ RSpec.describe Que::Scheduler::DefinedJob do
     it 'checks the cron is valid' do
       expect do
         described_class.new(
-          name: 'HalfHourlyTestJob',
-          job_class: HalfHourlyTestJob,
+          name: 'testing_job_definitions',
+          job_class: 'HalfHourlyTestJob',
           cron: 'foo 17 * * *'
         )
       end.to raise_error(/Invalid cron 'foo 17 \* \* \*' in que-scheduler config/)
@@ -46,8 +46,8 @@ RSpec.describe Que::Scheduler::DefinedJob do
     it 'checks the queue is a string' do
       expect do
         described_class.new(
-          name: 'HalfHourlyTestJob',
-          job_class: HalfHourlyTestJob,
+          name: 'testing_job_definitions',
+          job_class: 'HalfHourlyTestJob',
           queue: 3_214_214
         )
       end.to raise_error(/Invalid queue '3214214' in que-scheduler config/)
@@ -56,11 +56,20 @@ RSpec.describe Que::Scheduler::DefinedJob do
     it 'checks the priority is an integer' do
       expect do
         described_class.new(
-          name: 'HalfHourlyTestJob',
-          job_class: HalfHourlyTestJob,
+          name: 'testing_job_definitions',
+          job_class: 'HalfHourlyTestJob',
           priority: 'foo'
         )
       end.to raise_error(/Invalid priority 'foo' in que-scheduler config/)
+    end
+
+    it 'checks the job_class is a Que::Job from job_class' do
+      expect do
+        described_class.new(
+          name: 'checking_job_types',
+          job_class: 'NotAQueJob'
+        )
+      end.to raise_error(/Invalid job_class 'NotAQueJob' in que-scheduler config/)
     end
   end
 end
