@@ -1,14 +1,15 @@
 require 'hashie'
 require 'fugit'
 
-# This is the definition of one scheduled job in the yml file.
+# This is the definition of one scheduleable job in the que-scheduler config yml file.
 module Que
   module Scheduler
     class DefinedJob < Hashie::Dash
       include Hashie::Extensions::Dash::PropertyTranslation
 
       def self.err_field(f, v)
-        suffix = "in que-scheduler config #{QUE_SCHEDULER_CONFIG_LOCATION}"
+        suffix = 'in que-scheduler config ' \
+                 "#{Que::Scheduler::ScheduleParser::QUE_SCHEDULER_CONFIG_LOCATION}"
         raise "Invalid #{f} '#{v}' #{suffix}"
       end
 

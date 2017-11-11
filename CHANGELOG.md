@@ -1,4 +1,7 @@
-## Unreleased
+## 0.8.0 (2017-11-11)
+
+* Added multiple scheduler job detection
+* Added more tests
 
 ## 0.7.0 (2017-11-05)
 

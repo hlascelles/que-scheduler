@@ -8,17 +8,24 @@ require 'active_support/core_ext/numeric/time'
 RSpec.describe Que::Scheduler::SchedulerJob do
   QSSJ = described_class
   QS = Que::Scheduler
-  PARSER = QS::ScheduleParser
-  RESULT = QS::ScheduleParserResult
+  PARSER = QS::EnqueueingCalculator
+  RESULT = QS::EnqueueingCalculatorResult
 
   context 'scheduling' do
     before(:each) do
       expect(::ActiveRecord::Base).to receive(:transaction) do |_, &block|
         block.call
       end
+      connection = double('connection')
+      allow(ActiveRecord::Base).to receive(:connection) { connection }
+      expect(connection).to receive(:execute).with(
+        QSSJ::SCHEDULER_COUNT_SQL
+      ).and_return([{ 'count' => scheduler_jobs }])
       Que.adapter.jobs.clear
     end
 
+    let(:job) { QSSJ.new({}) }
+    let(:scheduler_jobs) { 1 }
     let(:run_time) { Time.zone.parse('2017-11-08T13:50:32') }
 
     around(:each) do |example|
@@ -90,21 +97,25 @@ RSpec.describe Que::Scheduler::SchedulerJob do
       scheduler_job_args = QS::SchedulerJobArgs.prepare_scheduler_job_args(
         last_run_time: Time.zone.now.iso8601, job_dictionary: %w[HalfHourlyTestJob]
       )
-      expect(PARSER).to receive(:parse).with(QSSJ.scheduler_config, scheduler_job_args).and_return(
-        RESULT.new([], [])
+      expect_parse(scheduler_job_args, [], [])
+      job.run(Time.zone.now.iso8601, %w[HalfHourlyTestJob])
+    end
+
+    def expect_parse(scheduler_job_args, new_dictionary, to_schedule)
+      expect(PARSER).to receive(:parse).with(
+        QS::ScheduleParser.scheduler_config, scheduler_job_args
+      ).and_return(
+        RESULT.new(to_schedule, new_dictionary)
       )
-      QSSJ.run(Time.zone.now.iso8601, %w[HalfHourlyTestJob])
     end
 
     def run_test(initial_job_args, to_schedule, new_dictionary)
       scheduler_job_args = QS::SchedulerJobArgs.prepare_scheduler_job_args(initial_job_args)
-      expect(PARSER).to receive(:parse).with(QSSJ.scheduler_config, scheduler_job_args).and_return(
-        RESULT.new(to_schedule, new_dictionary)
-      )
+      expect_parse(scheduler_job_args, new_dictionary, to_schedule)
       if initial_job_args
-        QSSJ.run(initial_job_args)
+        job.run(initial_job_args)
       else
-        QSSJ.run
+        job.run
       end
       expect_scheduled(to_schedule, new_dictionary)
     end
@@ -147,10 +158,22 @@ RSpec.describe Que::Scheduler::SchedulerJob do
         last_run = Time.zone.parse('2017-11-08T13:50:32')
 
         Timecop.freeze(last_run - 1.hour) do
-          expect(QSSJ).to receive(:handle_clock_skew).and_call_original
-          QSSJ.run(last_run_time: last_run.iso8601, job_dictionary: %w[SomeJob])
+          expect(job).to receive(:handle_clock_skew).and_call_original
+          job.run(last_run_time: last_run.iso8601, job_dictionary: %w[SomeJob])
           expect_itself_enqueued(last_run, Time.zone.now, %w[SomeJob])
         end
+      end
+    end
+
+    describe 'multiple SchedulerJob detector' do
+      let(:scheduler_jobs) { 2 }
+
+      it 'detects if there is more than one SchedulerJob' do
+        expect do
+          QSSJ.run(Time.zone.now.iso8601, %w[HalfHourlyTestJob])
+        end.to raise_error(
+          'Only one Que::Scheduler::SchedulerJob should be enqueued. 2 were found.'
+        )
       end
     end
   end

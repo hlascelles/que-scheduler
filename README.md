@@ -95,6 +95,12 @@ are no HA concerns to worry about and no namespace collisions between different 
 
 Additionally, like Que, when your database is backed up, your scheduling state is stored too.
 
+## Multiple scheduler detection
+
+No matter how many tasks you have defined in your config, you will only ever need one que-scheduler
+job enqueued. que-scheduler knows this, and it will check before performing any operations that 
+there is only one of itself present.
+
 ## How it works
 
 que-scheduler is a job that reads a config file, enqueues any jobs it determines that need to be run,
