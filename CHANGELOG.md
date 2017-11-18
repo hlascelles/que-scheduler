@@ -1,4 +1,4 @@
-## Unreleased
+## 0.8.1 (2017-11-18)
 
 * Scheduler config check for valid Que::Job subclasses
 
