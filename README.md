@@ -90,7 +90,7 @@ A job can have a `schedule_type` assigned to it. Valid values are:
   how ordinary cron works.
 1. `every_event` - This job will always be scheduled with an ISO8601 time as the first argument. 
   If multiple cron times go by during an extended period of downtime, then a job will be scheduled 
-  for every one missed. This schedule_type should be used for daily batch jobs that need to know 
+  for every one missed. This `schedule_type` should be used for daily batch jobs that need to know 
   which day they are running a batch for.
 
 ## Environment Variables
