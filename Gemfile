@@ -3,11 +3,12 @@ source 'https://rubygems.org'
 gemspec
 
 group :test do
-  gem 'activesupport', '>= 4.0'
   gem 'bundler'
+  gem 'combustion'
   gem 'coveralls'
   gem 'pry-byebug'
   gem 'que-testing'
+  gem 'railties', '>= 4.0'
   gem 'rake'
   gem 'reek'
   gem 'rspec'

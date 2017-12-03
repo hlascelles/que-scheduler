@@ -1,6 +1,10 @@
+## 0.9.1 (2017-12-03)
+
+* Added a `::Rails::Engine` to ensure the schedule config is validated at worker start time
+
 ## 0.8.1 (2017-11-18)
 
-* Scheduler config check for valid Que::Job subclasses
+* Scheduler config check for valid `Que::Job` subclasses
 
 ## 0.8.0 (2017-11-11)
 
@@ -21,7 +25,7 @@
 ## 0.5.0 (2017-11-05)
 
 * Refactored to take a hash as SchedulerJob args
-* Formalised SchedulerJob args as a Hashie
+* Formalised `SchedulerJob` args as a `Hashie`
 * Formalised using ISO8601 everywhere
 
 ## 0.4.0 (2017-10-27)
@@ -34,7 +38,7 @@
 
 ## 0.2.0 (2017-10-27)
 
-* Added README
+* Added `README.md`
 
 ## 0.1.0 (2017-10-27)
 

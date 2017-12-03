@@ -14,3 +14,4 @@
 .byebug_history
 *.gem
 coverage
+spec/internal/log/*

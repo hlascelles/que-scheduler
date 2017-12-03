@@ -103,7 +103,7 @@ RSpec.describe Que::Scheduler::SchedulerJob do
 
     def expect_parse(scheduler_job_args, new_dictionary, to_schedule)
       expect(PARSER).to receive(:parse).with(
-        QS::ScheduleParser.scheduler_config, scheduler_job_args
+        QS::ScheduleParser.defined_jobs, scheduler_job_args
       ).and_return(
         RESULT.new(to_schedule, new_dictionary)
       )
