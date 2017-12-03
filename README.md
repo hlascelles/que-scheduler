@@ -87,13 +87,15 @@ You can configure some aspects of the gem with environment variables.
 
 * `QUE_SCHEDULER_CONFIG_LOCATION` - The location of the schedule configuration (default `config/que_schedule.yml`)
 
-## Redundancy and Fail-Over
+## HA Redundancy and DB restores
 
 Because of the way que-scheduler works, it requires no additional processes. It is, itself, a Que job.
 As long as there are Que workers functioning, then jobs will continue to be scheduled correctly. There
 are no HA concerns to worry about and no namespace collisions between different databases. 
 
-Additionally, like Que, when your database is backed up, your scheduling state is stored too.
+Additionally, like Que, when your database is backed up, your scheduling state is stored too. If your 
+workers are down for an extended period, or a DB restore is performed, the scheduler will always be 
+in a coherent state with the rest of your database.
 
 ## Multiple scheduler detection
 
