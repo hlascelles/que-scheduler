@@ -16,13 +16,14 @@ WithArgsTestJob:
 daily_test_job_specifying_class:
   class: SpecifiedByClassTestJob
   cron: "10 3 * * *"
+  schedule_type: default
 
 DailyTestJob:
   cron: "10 6 * * *"
-  unmissable: true
+  schedule_type: every_event
 
 TwiceDailyTestJob:
   cron: "10 11,16 * * *"
   priority: 35
   queue: backlog
-  unmissable: true
+  schedule_type: every_event

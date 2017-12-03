@@ -23,7 +23,7 @@ RSpec.describe Que::Scheduler::EnqueueingCalculator do
   end
 
   it 'should enqueue the HalfHourlyTestJob just once if more than an hour has gone by' do
-    # Not "unmissable", so, we just schedule the latest
+    # Not "every_event", so, we just schedule the latest
     run_test('2017-10-08T16:40:32', 61.minutes, HalfHourlyTestJob => [{}])
   end
 
@@ -53,7 +53,7 @@ RSpec.describe Que::Scheduler::EnqueueingCalculator do
     )
   end
 
-  it 'should enqueue an unmissable job once with date arg if seen to be missed once' do
+  it 'should enqueue an every_event job once with date arg if seen to be missed once' do
     run_test(
       '2017-10-08T06:09:59',
       2.seconds,
@@ -61,7 +61,7 @@ RSpec.describe Que::Scheduler::EnqueueingCalculator do
     )
   end
 
-  it 'should enqueue an unmissable job multiple times if missed repeatedly' do
+  it 'should enqueue an every_event job multiple times if missed repeatedly' do
     run_test(
       '2017-10-08T02:09:59',
       2.days,
@@ -70,7 +70,7 @@ RSpec.describe Que::Scheduler::EnqueueingCalculator do
       WithArgsTestJob => [{ args: ['My Args', 1234, { 'some_hash' => true }] }],
       SpecifiedByClassTestJob => [{}],
 
-      # These are "unmissable", so all their missed schedules are enqueued, with that
+      # These are "every_event", so all their missed schedules are enqueued, with that
       # Time as an argument.
       DailyTestJob => [
         { args: [Time.zone.parse('2017-10-08T06:10:00')] },

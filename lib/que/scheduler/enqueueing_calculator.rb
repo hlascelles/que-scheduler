@@ -13,7 +13,7 @@ module Que
 
           # For each scheduled item, we need not schedule a job it if it has no history, as it is
           # new. Otherwise, check how many times we have missed the job since the last run time.
-          # If it is "unmissable" then we schedule all of them, with the missed time as an arg,
+          # If it is "every_event" then we schedule all of them, with the missed time as an arg,
           # otherwise just schedule it once.
           scheduler_config.each do |desc|
             job_name = desc.name
@@ -60,7 +60,7 @@ module Que
               priority: desc.priority
             }.compact
 
-            if desc.unmissable
+            if desc.schedule_type == DefinedJob::SCHEDULE_TYPE_EVERY_EVENT
               missed_times.each do |time_missed|
                 jobs_for_class << options.merge(args: [time_missed] + (desc.args || []))
               end

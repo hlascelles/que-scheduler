@@ -7,6 +7,11 @@ module Que
     class DefinedJob < Hashie::Dash
       include Hashie::Extensions::Dash::PropertyTranslation
 
+      SCHEDULE_TYPES = [
+        SCHEDULE_TYPE_DEFAULT = :default,
+        SCHEDULE_TYPE_EVERY_EVENT = :every_event
+      ].freeze
+
       def self.err_field(f, v)
         suffix = 'in que-scheduler config ' \
                  "#{Que::Scheduler::ScheduleParser::QUE_SCHEDULER_CONFIG_LOCATION}"
@@ -22,7 +27,9 @@ module Que
       property :queue, transform_with: ->(v) { v.is_a?(String) ? v : err_field(:queue, v) }
       property :priority, transform_with: ->(v) { v.is_a?(Integer) ? v : err_field(:priority, v) }
       property :args
-      property :unmissable, default: false
+      property :schedule_type, default: SCHEDULE_TYPE_DEFAULT, transform_with: lambda { |v|
+        v.to_sym.tap { |vs| SCHEDULE_TYPES.include?(vs) || err_field(:schedule_type, v) }
+      }
 
       # Given a "last time", return the next Time the event will occur, or nil if it
       # is after "to".

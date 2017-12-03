@@ -1,3 +1,7 @@
+## 0.10.1 (2017-12-03)
+
+* Added `schedule_type` config key.
+
 ## 0.9.1 (2017-12-03)
 
 * Added a `::Rails::Engine` to ensure the schedule config is validated at worker start time

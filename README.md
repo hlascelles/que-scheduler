@@ -35,8 +35,8 @@ The schedule file is a list of que job classes with arguments and a schedule fre
 syntax). The format is a superset of the resque-scheduler config format, so it they can be used
 as-is with no modification, assuming the job classes are migrated from Resque to Que.
 
-It has one additional feature, `unmissable: true`. This is set on a job that must be run for every 
-single matching cron time that goes by, even if the system is offline over more than one match. To better process these unmissable jobs, they are always enqueued with the first 
+It has one additional feature, `schedule_type: every_event`. This is set on a job that must be run for every 
+single matching cron time that goes by, even if the system is offline over more than one match. To better process these `every_event` jobs, they are always enqueued with the first 
 argument being the time that they were supposed to be processed.  
  
 For example:
@@ -78,8 +78,20 @@ DailyBatchReport:
   cron: "0 3 * * *"
   # This job will be run every day, and if workers are offline for several days, then the backlog
   # will all be scheduled when they are restored, each with that events timestamp as the first arg.
-  unmissable: true
+  schedule_type: every_event
 ```
+
+## Schedule types
+
+A job can have a `schedule_type` assigned to it. Valid values are:
+
+1. `default` - This job will be scheduled when a worker becomes available. If multiple cron times 
+  go by during an extended period of downtime then only one job will be enqueued. This is closer to 
+  how ordinary cron works.
+1. `every_event` - This job will always be scheduled with an ISO8601 time as the first argument. 
+  If multiple cron times go by during an extended period of downtime, then a job will be scheduled 
+  for every one missed. This schedule_type should be used for daily batch jobs that need to know 
+  which day they are running a batch for.
 
 ## Environment Variables
 
