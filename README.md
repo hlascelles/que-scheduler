@@ -76,8 +76,8 @@ all_args_job:
 # Ensure you never miss a job, even after downtime
 DailyBatchReport:
   cron: "0 3 * * *"
-  # This job will be run every day, and if workers are offline for several days, then the backlog
-  # will all be scheduled when they are restored, each with that events timestamp as the first arg.
+  # This job will be run every day. If workers are offline for several days, then the backlog
+  # will all be scheduled when they are restored, each with that event's timestamp as the first arg.
   schedule_type: every_event
 ```
 
