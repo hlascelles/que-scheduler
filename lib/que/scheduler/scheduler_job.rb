@@ -13,10 +13,7 @@ module Que
       # Highest possible priority.
       @priority = 0
 
-      def run(options = nil, oldarg = nil)
-        # Early versions took separate args. We now just pass in a hash.
-        options = { last_run_time: options, job_dictionary: oldarg } if oldarg.present?
-
+      def run(options = nil)
         ::ActiveRecord::Base.transaction do
           assert_one_scheduler_job
           scheduler_job_args = SchedulerJobArgs.prepare_scheduler_job_args(options)

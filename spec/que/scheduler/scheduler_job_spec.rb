@@ -93,14 +93,6 @@ RSpec.describe Que::Scheduler::SchedulerJob do
       )
     end
 
-    it 'handles the old method of passing in two args' do
-      scheduler_job_args = QS::SchedulerJobArgs.prepare_scheduler_job_args(
-        last_run_time: Time.zone.now.iso8601, job_dictionary: %w[HalfHourlyTestJob]
-      )
-      expect_parse(scheduler_job_args, [], [])
-      job.run(Time.zone.now.iso8601, %w[HalfHourlyTestJob])
-    end
-
     def expect_parse(scheduler_job_args, new_dictionary, to_schedule)
       expect(PARSER).to receive(:parse).with(
         QS::ScheduleParser.defined_jobs, scheduler_job_args
@@ -170,7 +162,7 @@ RSpec.describe Que::Scheduler::SchedulerJob do
 
       it 'detects if there is more than one SchedulerJob' do
         expect do
-          QSSJ.run(Time.zone.now.iso8601, %w[HalfHourlyTestJob])
+          QSSJ.run
         end.to raise_error(
           'Only one Que::Scheduler::SchedulerJob should be enqueued. 2 were found.'
         )

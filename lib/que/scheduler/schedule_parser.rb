@@ -20,20 +20,9 @@ module Que
                 args: v['args'],
                 priority: v['priority'],
                 cron: v['cron'],
-                schedule_type: schedule_type(v)
+                schedule_type: v['schedule_type'] || DefinedJob::SCHEDULE_TYPE_DEFAULT
               }.compact
             )
-          end
-        end
-
-        private
-
-        # Migrate legacy config that used the `unmissable` config key.
-        def schedule_type(v)
-          if v['unmissable']
-            DefinedJob::SCHEDULE_TYPE_EVERY_EVENT
-          else
-            v['schedule_type'] || DefinedJob::SCHEDULE_TYPE_DEFAULT
           end
         end
       end

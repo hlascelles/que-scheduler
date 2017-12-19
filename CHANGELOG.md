@@ -1,3 +1,7 @@
+## 1.0.0 (2017-12-19)
+
+* Remove legacy config keys
+
 ## 0.10.1 (2017-12-03)
 
 * Added `schedule_type` config key.
