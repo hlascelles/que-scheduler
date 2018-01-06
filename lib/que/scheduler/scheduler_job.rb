@@ -1,6 +1,6 @@
 require 'que'
 
-require_relative 'schedule_parser'
+require_relative 'defined_job'
 require_relative 'enqueueing_calculator'
 require_relative 'scheduler_job_args'
 
@@ -54,7 +54,7 @@ module Que
       def enqueue_required_jobs(scheduler_job_args, logs)
         # Obtain the hash of missed jobs. Keys are the job classes, and the values are arrays
         # each containing more arrays for the arguments of that instance.
-        result = EnqueueingCalculator.parse(ScheduleParser.defined_jobs, scheduler_job_args)
+        result = EnqueueingCalculator.parse(DefinedJob.defined_jobs, scheduler_job_args)
         result.missed_jobs.each do |job_class, args_arrays|
           args_arrays.each do |args|
             logs << "que-scheduler enqueueing #{job_class} with args: #{args}"

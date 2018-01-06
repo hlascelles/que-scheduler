@@ -7,7 +7,7 @@ module Que
     class Engine < ::Rails::Engine
       config.after_initialize do
         # Trigger a load of the schedule to ensure fast fail if it is invalid.
-        ScheduleParser.defined_jobs
+        ::Que::Scheduler::DefinedJob.defined_jobs
       end
     end
   end

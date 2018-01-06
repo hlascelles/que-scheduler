@@ -6,6 +6,9 @@ require 'backports/2.4.0/hash/compact'
 module Que
   module Scheduler
     class DefinedJob < Hashie::Dash
+      QUE_SCHEDULER_CONFIG_LOCATION =
+        ENV.fetch('QUE_SCHEDULER_CONFIG_LOCATION', 'config/que_schedule.yml')
+
       include Hashie::Extensions::Dash::PropertyTranslation
 
       SCHEDULE_TYPES = [
@@ -14,8 +17,7 @@ module Que
       ].freeze
 
       def self.err_field(f, v)
-        suffix = 'in que-scheduler config ' \
-                 "#{Que::Scheduler::ScheduleParser::QUE_SCHEDULER_CONFIG_LOCATION}"
+        suffix = "in que-scheduler config #{QUE_SCHEDULER_CONFIG_LOCATION}"
         raise "Invalid #{f} '#{v}' #{suffix}"
       end
 
@@ -51,6 +53,24 @@ module Que
         end
 
         generate_required_jobs_list(missed_times)
+      end
+
+      class << self
+        def defined_jobs
+          @defined_jobs ||= YAML.load_file(QUE_SCHEDULER_CONFIG_LOCATION).map do |k, v|
+            Que::Scheduler::DefinedJob.new(
+              {
+                name: k,
+                job_class: v['class'] || k,
+                queue: v['queue'],
+                args: v['args'],
+                priority: v['priority'],
+                cron: v['cron'],
+                schedule_type: v['schedule_type'] || DefinedJob::SCHEDULE_TYPE_DEFAULT
+              }.compact
+            )
+          end
+        end
       end
 
       private
