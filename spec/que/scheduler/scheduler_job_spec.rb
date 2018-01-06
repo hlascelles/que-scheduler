@@ -9,7 +9,7 @@ RSpec.describe Que::Scheduler::SchedulerJob do
   QSSJ = described_class
   QS = Que::Scheduler
   PARSER = QS::EnqueueingCalculator
-  RESULT = QS::EnqueueingCalculatorResult
+  RESULT = QS::EnqueueingCalculator::Result
 
   context 'scheduling' do
     before(:each) do
@@ -102,7 +102,7 @@ RSpec.describe Que::Scheduler::SchedulerJob do
     end
 
     def run_test(initial_job_args, to_schedule, new_dictionary)
-      scheduler_job_args = QS::SchedulerJobArgs.prepare_scheduler_job_args(initial_job_args)
+      scheduler_job_args = QS::SchedulerJobArgs.build(initial_job_args)
       expect_parse(scheduler_job_args, new_dictionary, to_schedule)
       if initial_job_args
         job.run(initial_job_args)

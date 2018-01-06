@@ -4,7 +4,7 @@ require 'timecop'
 RSpec.describe Que::Scheduler::SchedulerJobArgs do
   it 'should prepare default args' do
     Timecop.freeze do
-      args = described_class.prepare_scheduler_job_args(nil)
+      args = described_class.build(nil)
       expect(args.last_run_time).to eq(Time.zone.now)
       expect(args.as_time).to eq(Time.zone.now)
       expect(args.job_dictionary).to eq([])
@@ -15,7 +15,7 @@ RSpec.describe Que::Scheduler::SchedulerJobArgs do
     Timecop.freeze do
       last_time = Time.zone.now - 45.minutes
       dictionary = %w[HalfHourlyTestJob OldRemovedJob]
-      args = described_class.prepare_scheduler_job_args(
+      args = described_class.build(
         last_run_time: last_time.iso8601,
         job_dictionary: dictionary
       )

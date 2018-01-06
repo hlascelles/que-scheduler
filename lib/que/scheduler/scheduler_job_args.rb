@@ -8,7 +8,7 @@ module Que
       property :job_dictionary, required: true
       property :as_time, required: true
 
-      def self.prepare_scheduler_job_args(options)
+      def self.build(options)
         parsed =
           if options.nil?
             # First ever run

@@ -10,13 +10,13 @@ module Que
       SCHEDULER_COUNT_SQL = "SELECT COUNT(*) FROM que_jobs WHERE job_class = '#{name}'".freeze
       SCHEDULER_FREQUENCY = 60
 
-      # Highest possible priority.
+      # Always highest possible priority.
       @priority = 0
 
       def run(options = nil)
         ::ActiveRecord::Base.transaction do
           assert_one_scheduler_job
-          scheduler_job_args = SchedulerJobArgs.prepare_scheduler_job_args(options)
+          scheduler_job_args = SchedulerJobArgs.build(options)
           logs = ["que-scheduler last ran at #{scheduler_job_args.last_run_time}."]
 
           # It's possible one worker node has severe clock skew, and reports a time earlier than
