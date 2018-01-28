@@ -9,6 +9,7 @@ Metrics/BlockLength:
   Exclude:
     - 'Rakefile'
     - '**/*.rake'
+    - '**/*.gemspec'
     - '**/spec/**/*.rb'
 Metrics/LineLength:
   Max: 100

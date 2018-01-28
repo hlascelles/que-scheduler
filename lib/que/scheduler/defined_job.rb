@@ -57,7 +57,7 @@ module Que
 
       class << self
         def defined_jobs
-          @defined_jobs ||= YAML.load_file(QUE_SCHEDULER_CONFIG_LOCATION).map do |k, v|
+          @defined_jobs ||= YAML.safe_load(IO.read(QUE_SCHEDULER_CONFIG_LOCATION)).map do |k, v|
             Que::Scheduler::DefinedJob.new(
               {
                 name: k,

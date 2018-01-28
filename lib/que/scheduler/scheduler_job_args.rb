@@ -1,4 +1,6 @@
 require 'hashie'
+require 'active_support'
+require 'active_support/time_with_zone'
 
 # These are the args that are used for this particular run of the scheduler.
 module Que
@@ -17,6 +19,7 @@ module Que
               job_dictionary: []
             }
           else
+            options = options.symbolize_keys
             {
               last_run_time: Time.zone.parse(options.fetch(:last_run_time)),
               job_dictionary: options.fetch(:job_dictionary)
