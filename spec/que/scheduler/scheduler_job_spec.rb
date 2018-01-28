@@ -2,7 +2,6 @@ require 'spec_helper'
 require 'que/testing'
 require 'timecop'
 require 'yaml'
-require 'active_record'
 require 'active_support/core_ext/numeric/time'
 
 RSpec.describe Que::Scheduler::SchedulerJob do
@@ -13,14 +12,10 @@ RSpec.describe Que::Scheduler::SchedulerJob do
 
   context 'scheduling' do
     before(:each) do
-      expect(::ActiveRecord::Base).to receive(:transaction) do |_, &block|
+      allow(QS::Adapters::Orm.instance).to receive(:count_schedulers).and_return(scheduler_jobs)
+      allow(QS::Adapters::Orm.instance).to receive(:transaction) do |_, &block|
         block.call
       end
-      connection = double('connection')
-      allow(ActiveRecord::Base).to receive(:connection) { connection }
-      expect(connection).to receive(:execute).with(
-        QSSJ::SCHEDULER_COUNT_SQL
-      ).and_return([{ 'count' => scheduler_jobs }])
       Que.adapter.jobs.clear
     end
 

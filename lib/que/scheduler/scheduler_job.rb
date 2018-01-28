@@ -7,14 +7,13 @@ require_relative 'scheduler_job_args'
 module Que
   module Scheduler
     class SchedulerJob < Que::Job
-      SCHEDULER_COUNT_SQL = "SELECT COUNT(*) FROM que_jobs WHERE job_class = '#{name}'".freeze
       SCHEDULER_FREQUENCY = 60
 
       # Always highest possible priority.
       @priority = 0
 
       def run(options = nil)
-        ::ActiveRecord::Base.transaction do
+        ::Que::Scheduler::Adapters::Orm.instance.transaction do
           assert_one_scheduler_job
           scheduler_job_args = SchedulerJobArgs.build(options)
           logs = ["que-scheduler last ran at #{scheduler_job_args.last_run_time}."]
@@ -37,7 +36,7 @@ module Que
       private
 
       def assert_one_scheduler_job
-        schedulers = ActiveRecord::Base.connection.execute(SCHEDULER_COUNT_SQL).first['count'].to_i
+        schedulers = ::Que::Scheduler::Adapters::Orm.instance.count_schedulers
         return if schedulers == 1
         raise "Only one #{self.class.name} should be enqueued. #{schedulers} were found."
       end

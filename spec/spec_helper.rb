@@ -11,7 +11,7 @@ ENV['QUE_SCHEDULER_CONFIG_LOCATION'] = "#{__dir__}/config/que_schedule.yml"
 # Require zonebie before any other gem to ensure it sets the correct test timezone.
 require 'zonebie/rspec'
 
-Bundler.require :default, :test
+Bundler.require :default, :development
 
 Dir["#{__dir__}/../spec/support/**/*.rb"].each { |f| require f }
 

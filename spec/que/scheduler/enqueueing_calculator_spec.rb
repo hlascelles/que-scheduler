@@ -69,7 +69,6 @@ RSpec.describe Que::Scheduler::EnqueueingCalculator do
       HalfHourlyTestJob => [{}],
       WithArgsTestJob => [{ args: ['My Args', 1234, { 'some_hash' => true }] }],
       SpecifiedByClassTestJob => [{}],
-
       # These are "every_event", so all their missed schedules are enqueued, with that
       # Time as an argument.
       DailyTestJob => [

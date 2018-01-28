@@ -1,3 +1,7 @@
+## 1.0.2 (2018-01-15)
+
+* Added ORM adapter layer to allow use of [Sequel](https://github.com/jeremyevans/sequel)
+
 ## 1.0.1 (2018-01-06)
 
 * Refactoring and code cleanup
