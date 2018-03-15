@@ -32,7 +32,7 @@ RSpec.describe Que::Scheduler::DefinedJob do
     end
   end
 
-  describe 'validations' do
+  describe 'field validations' do
     it 'checks the cron is valid' do
       expect do
         described_class.new(
@@ -41,6 +41,15 @@ RSpec.describe Que::Scheduler::DefinedJob do
           cron: 'foo 17 * * *'
         )
       end.to raise_error(/Invalid cron 'foo 17 \* \* \*' in que-scheduler config/)
+    end
+
+    it 'allows crons with fugit compatible english words' do
+      job = described_class.new(
+        name: 'testing_job_definitions',
+        job_class: 'HalfHourlyTestJob',
+        cron: '@weekly'
+      )
+      expect(job.cron.to_cron_s).to eq('0 0 * * 0')
     end
 
     it 'checks the queue is a string' do

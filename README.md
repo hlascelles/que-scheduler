@@ -32,8 +32,9 @@ files, but with additional features.
 ## Schedule configuration
 
 The schedule file is a list of que job classes with arguments and a schedule frequency (in crontab 
-syntax). The format is a superset of the resque-scheduler config format, so it they can be used
-as-is with no modification, assuming the job classes are migrated from Resque to Que.
+syntax). The format is similar to the resque-scheduler config format, though priorities must be supplied as
+integers, and job classes must be migrated from Resque to Que. Cron syntax can be anything
+understood by [fugit](https://github.com/floraison/fugit#fugitcron).
 
 It has one additional feature, `schedule_type: every_event`. This is set on a job that must be run for every 
 single matching cron time that goes by, even if the system is offline over more than one match. To better process these `every_event` jobs, they are always enqueued with the first 
@@ -65,6 +66,10 @@ SendOrders:
   cron: "0 0 * * *"
   args: ['open']
   
+# Use simpler cron syntax.
+SendBilling:
+  cron: "@daily"
+
 # Altogether now
 all_args_job:
   cron: "0 0 * * *"
@@ -125,6 +130,10 @@ then reschedules itself. The flow is as follows:
 1. Some time later it runs again. It knows what jobs it should be monitoring, and notices that some have are due. It enqueues those jobs and then itself. Repeat.
 1. After a deploy that changes the config, the job notices any new jobs to schedule, and knows which ones to forget. It does not need to be re-enqueued or restarted.
 
-## Thanks
+## Inspiration
 
 This gem was inspired by the makers of the excellent [Que](https://github.com/chanks/que) job scheduler gem. 
+
+## Contributors
+
+* @jish

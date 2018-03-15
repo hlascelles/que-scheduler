@@ -1,3 +1,8 @@
+## 1.0.3 (2018-03-15)
+
+* Enforced a minimum version of `et-orbi` to supply `#to_local_time` methods. Thanks to @jish.
+* Clarified config syntax
+
 ## 1.0.2 (2018-01-15)
 
 * Added ORM adapter layer to allow use of [Sequel](https://github.com/jeremyevans/sequel)
