@@ -16,7 +16,6 @@ RSpec.describe Que::Scheduler::SchedulerJob do
       allow(QS::Adapters::Orm.instance).to receive(:transaction) do |_, &block|
         block.call
       end
-      Que.adapter.jobs.clear
     end
 
     let(:job) { QSSJ.new({}) }
@@ -27,6 +26,10 @@ RSpec.describe Que::Scheduler::SchedulerJob do
       Timecop.freeze(run_time) do
         example.run
       end
+    end
+
+    before(:each) do
+      apply_db_time_now
     end
 
     it 'enqueues nothing having loaded the dictionary on the first run' do
@@ -138,14 +141,15 @@ RSpec.describe Que::Scheduler::SchedulerJob do
       expect(all_enqueued).to eq(list)
     end
 
-    context 'clock skew' do
-      # The scheduler job must notice when it is being run on a box that is reporting a time earlier
-      # than the last time it ran. It should do nothing except reschedule itself.
-      it 'handles clock skew' do
+    context 'clock change backwards' do
+      # The scheduler job must notice when the db is reporting a time further back
+      # than the last time it ran. The job should do nothing except reschedule itself.
+      it 'handled by rescheduling self' do
         last_run = Time.zone.parse('2017-11-08T13:50:32')
 
         Timecop.freeze(last_run - 1.hour) do
-          expect(job).to receive(:handle_clock_skew).and_call_original
+          apply_db_time_now
+          expect(job).to receive(:handle_db_clock_change_backwards).and_call_original
           job.run(last_run_time: last_run.iso8601, job_dictionary: %w[SomeJob])
           expect_itself_enqueued(last_run, Time.zone.now, %w[SomeJob])
         end

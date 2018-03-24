@@ -1,3 +1,7 @@
+## Unreleased
+
+* Switched to use DB time to find "now" so as to match que queries
+
 ## 1.0.3 (2018-03-15)
 
 * Enforced a minimum version of `et-orbi` to supply `#to_local_time` methods. Thanks to @jish.
