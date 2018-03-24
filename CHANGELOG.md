@@ -1,3 +1,9 @@
+## 1.1.0 (2018-03-16)
+
+* Upgraded cron parser to [rufus-scheduler](https://github.com/jmettraux/rufus-scheduler) to achieve 
+greater config file syntax parity with 
+[resque-scheduler](https://github.com/resque/resque-scheduler#scheduled-jobs-recurring-jobs).
+
 ## 1.0.3 (2018-03-15)
 
 * Enforced a minimum version of `et-orbi` to supply `#to_local_time` methods. Thanks to @jish.

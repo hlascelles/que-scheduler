@@ -1,5 +1,3 @@
-require 'fugit'
-
 module Que
   module Scheduler
     class EnqueueingCalculator

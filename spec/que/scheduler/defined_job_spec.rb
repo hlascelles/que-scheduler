@@ -43,13 +43,13 @@ RSpec.describe Que::Scheduler::DefinedJob do
       end.to raise_error(/Invalid cron 'foo 17 \* \* \*' in que-scheduler config/)
     end
 
-    it 'allows crons with fugit compatible english words' do
+    it 'allows crons that are rufus-scheduler compatible with timezones' do
       job = described_class.new(
         name: 'testing_job_definitions',
         job_class: 'HalfHourlyTestJob',
-        cron: '@weekly'
+        cron: '0 7 * * * America/Los_Angeles'
       )
-      expect(job.cron.to_cron_s).to eq('0 0 * * 0')
+      expect(job.cron.original_timezone).to eq('America/Los_Angeles')
     end
 
     it 'checks the queue is a string' do
