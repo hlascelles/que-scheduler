@@ -37,7 +37,8 @@ integers, and job classes must be migrated from Resque to Que. Cron syntax can b
 understood by [fugit](https://github.com/floraison/fugit#fugitcron).
 
 It has one additional feature, `schedule_type: every_event`. This is set on a job that must be run for every 
-single matching cron time that goes by, even if the system is offline over more than one match. To better process these `every_event` jobs, they are always enqueued with the first 
+single matching cron time that goes by, even if the system is offline over more than one match. 
+To better process these `every_event` jobs, they are always enqueued with the first 
 argument being the time that they were supposed to be processed.  
  
 For example:
@@ -137,3 +138,4 @@ This gem was inspired by the makers of the excellent [Que](https://github.com/ch
 ## Contributors
 
 * @jish
+* @joehorsnell
