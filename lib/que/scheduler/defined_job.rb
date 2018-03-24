@@ -68,7 +68,7 @@ module Que
                 cron: v['cron'],
                 schedule_type: v['schedule_type'] || DefinedJob::SCHEDULE_TYPE_DEFAULT
               }.compact
-            )
+            ).freeze
           end
         end
       end
@@ -94,6 +94,7 @@ module Que
           else
             jobs_for_class << options
           end
+          options.freeze
         end
         jobs_for_class
       end
