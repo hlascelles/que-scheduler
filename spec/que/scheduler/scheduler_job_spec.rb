@@ -64,18 +64,7 @@ RSpec.describe Que::Scheduler::SchedulerJob do
           last_run_time: (run_time - 45.minutes).iso8601,
           job_dictionary: %w[HalfHourlyTestJob]
         },
-        { HalfHourlyTestJob => [[]] },
-        %w[HalfHourlyTestJob]
-      )
-    end
-
-    it 'can enqueue the same job multiple times with different args' do
-      run_test(
-        {
-          last_run_time: (run_time - 45.minutes).iso8601,
-          job_dictionary: %w[HalfHourlyTestJob]
-        },
-        { HalfHourlyTestJob => [['foo'], ['bar']] },
+        { HalfHourlyTestJob => [{}] },
         %w[HalfHourlyTestJob]
       )
     end
@@ -86,7 +75,7 @@ RSpec.describe Que::Scheduler::SchedulerJob do
           last_run_time: (run_time - 45.minutes).iso8601,
           job_dictionary: %w[HalfHourlyTestJob OldRemovedJob]
         },
-        { HalfHourlyTestJob => [[]] },
+        { HalfHourlyTestJob => [{}] },
         %w[HalfHourlyTestJob]
       )
     end
@@ -134,14 +123,14 @@ RSpec.describe Que::Scheduler::SchedulerJob do
           expect(job_class_item.to_h[:priority]).to eq(nil)
           expect(job_class_item.to_h[:run_at]).to eq(nil)
           expect(job_class_item.to_h[:job_class]).to eq(job_class.to_s)
-          job_class_item.to_h[:args]
+          {}
         end
         [job_class, args]
       end.to_h
       expect(all_enqueued).to eq(list)
     end
 
-    context 'clock change backwards' do
+    describe '#handle_db_clock_change_backwards' do
       # The scheduler job must notice when the db is reporting a time further back
       # than the last time it ran. The job should do nothing except reschedule itself.
       it 'handled by rescheduling self' do
@@ -156,7 +145,7 @@ RSpec.describe Que::Scheduler::SchedulerJob do
       end
     end
 
-    describe 'multiple SchedulerJob detector' do
+    describe '#assert_one_scheduler_job' do
       let(:scheduler_jobs) { 2 }
 
       it 'detects if there is more than one SchedulerJob' do
@@ -165,6 +154,91 @@ RSpec.describe Que::Scheduler::SchedulerJob do
         end.to raise_error(
           'Only one Que::Scheduler::SchedulerJob should be enqueued. 2 were found.'
         )
+      end
+    end
+
+    describe '#enqueue_required_jobs' do
+      def test_enqueue_required_jobs(overdue_dictionary)
+        job.enqueue_required_jobs(RESULT.new(overdue_dictionary, []), [])
+      end
+
+      def expect_one_result(args, queue, priority)
+        expect(HalfHourlyTestJob.jobs.count).to eq(1)
+        one_result = HalfHourlyTestJob.jobs.first
+        expect(one_result.args).to eq(args)
+        expect(one_result.queue).to eq(queue)
+        expect(one_result.priority).to eq(priority)
+        expect(one_result.run_at).to be nil
+        expect(one_result.job_class).to eq('HalfHourlyTestJob')
+      end
+
+      it 'schedules nothing if nothing in the result' do
+        test_enqueue_required_jobs({})
+        expect(Que.adapter.jobs.map(&:args)).to eq([])
+      end
+
+      it 'schedules nothing if a job is known but is not overdue' do
+        test_enqueue_required_jobs(HalfHourlyTestJob => [])
+        expect(HalfHourlyTestJob.jobs.map(&:args)).to eq([])
+      end
+
+      it 'schedules one job with no args' do
+        test_enqueue_required_jobs(HalfHourlyTestJob => [{}])
+        expect_one_result([], nil, nil)
+      end
+
+      it 'schedules one job with one String arg' do
+        test_enqueue_required_jobs(HalfHourlyTestJob => [{ args: 'foo' }])
+        expect_one_result(['foo'], nil, nil)
+      end
+
+      it 'schedules one job with one Hash arg' do
+        test_enqueue_required_jobs(HalfHourlyTestJob => [{ args: { bar: 'foo' } }])
+        expect_one_result([{ bar: 'foo' }], nil, nil)
+      end
+
+      it 'schedules one job with one Array arg' do
+        test_enqueue_required_jobs(HalfHourlyTestJob => [{ args: %w[foo bar] }])
+        expect_one_result(%w[foo bar], nil, nil)
+      end
+
+      it 'schedules one job with one String arg and a queue' do
+        test_enqueue_required_jobs(HalfHourlyTestJob => [{ args: 'foo', queue: 'baz' }])
+        expect_one_result(['foo'], 'baz', nil)
+      end
+
+      it 'schedules one job with one String arg and a priority' do
+        test_enqueue_required_jobs(HalfHourlyTestJob => [{ args: 'foo', priority: 10 }])
+        expect_one_result(['foo'], nil, 10)
+      end
+
+      it 'schedules one job with one Hash arg and a queue' do
+        test_enqueue_required_jobs(HalfHourlyTestJob => [{ args: { bar: 'foo' }, queue: 'baz' }])
+        expect_one_result([{ bar: 'foo' }], 'baz', nil)
+      end
+
+      it 'schedules one job with one Hash arg and a priority' do
+        test_enqueue_required_jobs(HalfHourlyTestJob => [{ args: { bar: 'foo' }, priority: 10 }])
+        expect_one_result([{ bar: 'foo' }], nil, 10)
+      end
+
+      it 'schedules one job with one Array arg and a queue' do
+        test_enqueue_required_jobs(HalfHourlyTestJob => [{ args: %w[foo bar], queue: 'baz' }])
+        expect_one_result(%w[foo bar], 'baz', nil)
+      end
+
+      it 'schedules one job with one Array arg and a priority' do
+        test_enqueue_required_jobs(HalfHourlyTestJob => [{ args: %w[foo bar], priority: 10 }])
+        expect_one_result(%w[foo bar], nil, 10)
+      end
+
+      it 'schedules one job with a mixed arg, and a priority, and a queue' do
+        test_enqueue_required_jobs(
+          HalfHourlyTestJob => [
+            { args: { baz: 10, array_baz: ['foo'] }, queue: 'bar', priority: 10 }
+          ]
+        )
+        expect_one_result([{ baz: 10, array_baz: ['foo'] }], 'bar', 10)
       end
     end
   end

@@ -35,6 +35,15 @@ module Que
         end
       end
 
+      def enqueue_required_jobs(result, logs)
+        result.missed_jobs.each do |job_class, options_array|
+          options_array.each do |options|
+            enqueue_new_job(job_class, options.dup, logs)
+          end
+        end
+        result.schedule_dictionary
+      end
+
       private
 
       def assert_one_scheduler_job
@@ -44,25 +53,25 @@ module Que
       end
 
       def handle_normal_call(scheduler_job_args, logs)
-        result = enqueue_required_jobs(scheduler_job_args, logs)
+        # Obtain the hash of missed jobs. Keys are the job classes, and the values are arrays
+        # each containing params to enqueue.
+        result = EnqueueingCalculator.parse(DefinedJob.defined_jobs, scheduler_job_args)
+        new_job_dictionary = enqueue_required_jobs(result, logs)
         enqueue_self_again(
           scheduler_job_args.as_time,
           scheduler_job_args.as_time,
-          result.schedule_dictionary
+          new_job_dictionary
         )
       end
 
-      def enqueue_required_jobs(scheduler_job_args, logs)
-        # Obtain the hash of missed jobs. Keys are the job classes, and the values are arrays
-        # each containing more arrays for the arguments of that instance.
-        result = EnqueueingCalculator.parse(DefinedJob.defined_jobs, scheduler_job_args)
-        result.missed_jobs.each do |job_class, args_arrays|
-          args_arrays.each do |args|
-            logs << "que-scheduler enqueueing #{job_class} with args: #{args}"
-            job_class.enqueue(*args)
-          end
+      def enqueue_new_job(job_class, options, logs)
+        logs << "que-scheduler enqueueing #{job_class} with options: #{options}"
+        args = options.delete(:args)
+        if args.is_a?(Hash)
+          job_class.enqueue(args.merge(options))
+        else
+          job_class.enqueue(*args, options)
         end
-        result
       end
 
       def handle_db_clock_change_backwards(scheduler_job_args, logs)

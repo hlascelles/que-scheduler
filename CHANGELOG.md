@@ -1,6 +1,7 @@
 ## Unreleased
 
 * Switched to use DB time to find "now" so as to match que queries
+* Added more tests for various ways of supplying args
 
 ## 1.0.3 (2018-03-15)
 
