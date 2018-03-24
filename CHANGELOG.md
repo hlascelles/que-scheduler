@@ -1,4 +1,4 @@
-## 1.1.0 (2018-03-16)
+## Unreleased
 
 * Upgraded cron parser to [rufus-scheduler](https://github.com/jmettraux/rufus-scheduler) to achieve 
 greater config file syntax parity with 
