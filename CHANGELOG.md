@@ -1,9 +1,13 @@
 ## Unreleased
 
-* Switched to use DB time to find "now" so as to match que queries
 * Upgraded cron parser to [rufus-scheduler](https://github.com/jmettraux/rufus-scheduler) to achieve 
 greater config file syntax parity with 
 [resque-scheduler](https://github.com/resque/resque-scheduler#scheduled-jobs-recurring-jobs).
+
+## 1.1.0 (2018-03-24)
+
+* Switched to use DB time to find "now" so as to match que queries
+* Added more tests for various ways of supplying args
 
 ## 1.0.3 (2018-03-15)
 
