@@ -11,11 +11,12 @@ module Que
       property :as_time, required: true
 
       def self.build(options)
+        now = ::Que::Scheduler::Adapters::Orm.instance.now
         parsed =
           if options.nil?
-            # First ever run
+            # First ever run, there is nothing to do but reschedule self.
             {
-              last_run_time: Time.zone.now,
+              last_run_time: now,
               job_dictionary: []
             }
           else
@@ -25,7 +26,7 @@ module Que
               job_dictionary: options.fetch(:job_dictionary)
             }
           end
-        SchedulerJobArgs.new(parsed.merge(as_time: Time.zone.now))
+        SchedulerJobArgs.new(parsed.merge(as_time: now))
       end
     end
   end

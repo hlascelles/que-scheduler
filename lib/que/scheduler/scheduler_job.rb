@@ -18,10 +18,12 @@ module Que
           scheduler_job_args = SchedulerJobArgs.build(options)
           logs = ["que-scheduler last ran at #{scheduler_job_args.last_run_time}."]
 
-          # It's possible one worker node has severe clock skew, and reports a time earlier than
-          # the last run. If so, log, and rescheduled with the same last run at.
+          # It's possible the DB time has been changed manaully to an earlier time than it was
+          # before. Whether this was a small amount of time (eg clock drift correction), or a major
+          # change like timezone, the business schedule semantics of this are unknowable, so log and
+          # rescheduled with the same last run at.
           if scheduler_job_args.as_time < scheduler_job_args.last_run_time
-            handle_clock_skew(scheduler_job_args, logs)
+            handle_db_clock_change_backwards(scheduler_job_args, logs)
           else
             # Otherwise, run as normal
             handle_normal_call(scheduler_job_args, logs)
@@ -63,9 +65,9 @@ module Que
         result
       end
 
-      def handle_clock_skew(scheduler_job_args, logs)
-        logs << 'que-scheduler detected worker with time older than last run. ' \
-                    'Rescheduling without enqueueing jobs.'
+      def handle_db_clock_change_backwards(scheduler_job_args, logs)
+        logs << 'que-scheduler detected the DB time is further back than the last run. ' \
+                'Rescheduling self again without enqueueing jobs to wait for the clock to catch up.'
         enqueue_self_again(
           scheduler_job_args.last_run_time,
           scheduler_job_args.as_time,
