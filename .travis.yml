@@ -1,12 +1,14 @@
 sudo: false
 language: ruby
 rvm:
-  - 2.1
-  - 2.2
-  - 2.3
-  - 2.4
+- 2.1
+- 2.2
+- 2.3
+- 2.4
 env:
   global:
-    - TZ=Europe/London
+  - TZ=Europe/London
+before_install:
+- export TZ=Europe/London
 script:
-  - bundle exec rspec -fd -b -P ./spec/**/*_spec.rb
+- bundle exec rspec -fd -b -P ./spec/**/*_spec.rb

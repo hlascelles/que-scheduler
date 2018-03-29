@@ -52,6 +52,15 @@ RSpec.describe Que::Scheduler::DefinedJob do
       expect(job.cron.to_cron_s).to eq('0 0 * * 0')
     end
 
+    it 'allows crons with fugit compatible timezones' do
+      job = described_class.new(
+        name: 'testing_job_definitions',
+        job_class: 'HalfHourlyTestJob',
+        cron: '0 7 * * * America/Los_Angeles'
+      )
+      expect(job.cron.zone).to eq('America/Los_Angeles')
+    end
+
     it 'checks the queue is a string' do
       expect do
         described_class.new(

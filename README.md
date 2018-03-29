@@ -47,7 +47,7 @@ For example:
 CancelAbandonedOrders:
   cron: "*/5 * * * *"
 
-# Specify the job_class, using any name for the key.
+# Specify the job_class, using any name for the key
 queue_documents_for_indexing:
   cron: "0 0 * * *"
   class: QueueDocuments
@@ -67,12 +67,16 @@ SendOrders:
   cron: "0 0 * * *"
   args: ['open']
   
-# Use simpler cron syntax.
+# Use simpler cron syntax
 SendBilling:
   cron: "@daily"
+  
+# Use timezone cron syntax
+SendCoupons:
+  cron: "0 7 * * * America/Los_Angeles"
 
 # Altogether now
-all_args_job:
+all_options_job:
   cron: "0 0 * * *"
   class: QueueDocuments
   queue: reporting

@@ -1,3 +1,7 @@
+## 1.2.0 (2018-03-29)
+
+* Upgraded [fugit](https://github.com/floraison/fugit/issues/2) to allow timezones in cron lines 
+
 ## 1.1.0 (2018-03-24)
 
 * Switched to use DB time to find "now" so as to match que queries
@@ -22,7 +26,7 @@
 
 ## 0.10.1 (2017-12-03)
 
-* Added `schedule_type` config key.
+* Added `schedule_type` config key
 
 ## 0.9.1 (2017-12-03)
 

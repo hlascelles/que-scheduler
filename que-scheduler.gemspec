@@ -1,5 +1,5 @@
 
-lib = File.expand_path('../lib', __FILE__)
+lib = File.expand_path('lib', __dir__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'que/scheduler/version'
 
@@ -19,8 +19,7 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency 'activesupport', '>= 3.0'
   spec.add_dependency 'backports', '~> 3.10'
-  spec.add_dependency 'et-orbi', '> 1.0.5' # need the `#to_local_time` method
-  spec.add_dependency 'fugit', '~> 1'
+  spec.add_dependency 'fugit', '~> 1.1'
   spec.add_dependency 'hashie', '~> 3'
   spec.add_dependency 'que', '~> 0.10'
 
