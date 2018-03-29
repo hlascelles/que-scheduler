@@ -119,11 +119,15 @@ Additionally, like Que, when your database is backed up, your scheduling state i
 workers are down for an extended period, or a DB restore is performed, the scheduler will always be 
 in a coherent state with the rest of your database.
 
-## Multiple scheduler detection
+## Concurrent scheduler detection
 
 No matter how many tasks you have defined in your config, you will only ever need one que-scheduler
 job enqueued. que-scheduler knows this, and it will check before performing any operations that 
 there is only one of itself present.
+
+It also follows que job design [best practices](https://github.com/chanks/que/blob/master/docs/writing_reliable_jobs.md),
+using ACID guarantees, to ensure that it will never run multiple times. If the scheduler crashes for any reason,
+it will rollback correctly and try again. It won't schedule jobs twice for a cron match.
 
 ## How it works
 
