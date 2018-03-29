@@ -9,6 +9,8 @@ ENV['QUE_SCHEDULER_CONFIG_LOCATION'] = "#{__dir__}/config/que_schedule.yml"
 # zonebie. If you want to force one particular timezone, you can use the following:
 # ENV['ZONEBIE_TZ'] = 'International Date Line West'
 # Require zonebie before any other gem to ensure it sets the correct test timezone.
+# Setting zonebie to London for travis tests so it matches the .travis.yml ENV.
+ENV['ZONEBIE_TZ'] = 'Europe/London' if ENV['TRAVIS'] == 'true'
 require 'zonebie/rspec'
 
 Bundler.require :default, :development

@@ -27,3 +27,7 @@ TwiceDailyTestJob:
   priority: 35
   queue: backlog
   schedule_type: every_event
+
+TimezoneTestJob:
+  cron: "5 7 1 * * America/Los_Angeles"
+  schedule_type: every_event

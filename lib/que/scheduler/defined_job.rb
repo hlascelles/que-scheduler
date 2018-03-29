@@ -26,7 +26,7 @@ module Que
         job_class = Object.const_get(v)
         job_class < Que::Job ? job_class : err_field(:job_class, v)
       }
-      property :cron, transform_with: ->(v) { Fugit::Cron.new(v) || err_field(:cron, v) }
+      property :cron, transform_with: ->(v) { Fugit::Cron.parse(v) || err_field(:cron, v) }
       property :queue, transform_with: ->(v) { v.is_a?(String) ? v : err_field(:queue, v) }
       property :priority, transform_with: ->(v) { v.is_a?(Integer) ? v : err_field(:priority, v) }
       property :args

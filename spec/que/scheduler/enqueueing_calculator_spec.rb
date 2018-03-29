@@ -11,6 +11,7 @@ RSpec.describe Que::Scheduler::EnqueueingCalculator do
       daily_test_job_specifying_class
       DailyTestJob
       TwiceDailyTestJob
+      TimezoneTestJob
     ]
   end
 
@@ -29,6 +30,25 @@ RSpec.describe Que::Scheduler::EnqueueingCalculator do
 
   it 'should enqueue if the run time is exactly the cron time' do
     run_test('2017-10-08T16:59:59', 1.seconds, HalfHourlyTestJob => [{}])
+  end
+
+  it 'should enqueue if a job has been defined in a different timezone' do
+    # Last scheduler run time is 18:04:58 in Finland (+3).
+    # This run time is 10:04:59 in New York (-5)
+    last_run = Time.zone.parse('2017-12-01T18:04:58+03')
+    this_run = Time.zone.parse('2017-12-01T10:04:59-05')
+    # Prove this is just one second different
+    expect(this_run - last_run).to eq(1.second)
+
+    # The cron was defined for 7:05 in Los Angeles (-8) so should not yet run (1 sec too early).
+    run_test_with_times(last_run, this_run, {})
+
+    # Now tip it over the required time by a 1 second so it should run.
+    # Since it is an `every_event` job it should receive the schedule time as an arg.
+    expected_arg_time = Time.zone.parse('2017-12-01T07:05:00-08')
+    run_test_with_times(
+      last_run, this_run + 1.second, TimezoneTestJob => [{ args: [expected_arg_time] }]
+    )
   end
 
   # This is testing that the fugit cron "next_time" doesn't return the current time if it matches.
@@ -87,6 +107,10 @@ RSpec.describe Que::Scheduler::EnqueueingCalculator do
   def run_test(last_run_time, delay_since_last_scheduler, expect_scheduled)
     last_time = Time.zone.parse(last_run_time)
     as_time = last_time + delay_since_last_scheduler
+    run_test_with_times(last_time, as_time, expect_scheduled)
+  end
+
+  def run_test_with_times(last_time, as_time, expect_scheduled)
     scheduler_job_args = Que::Scheduler::SchedulerJobArgs.new(
       last_run_time: last_time,
       job_dictionary: all_keys,
