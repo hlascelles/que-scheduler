@@ -40,7 +40,7 @@ RSpec.describe Que::Scheduler::SchedulerJob do
       run_test(
         {
           last_run_time: (run_time - 15.minutes).iso8601,
-          job_dictionary: %w[HalfHourlyTestJob]
+          job_dictionary: %w[HalfHourlyTestJob],
         },
         {},
         %w[HalfHourlyTestJob]
@@ -51,7 +51,7 @@ RSpec.describe Que::Scheduler::SchedulerJob do
       run_test(
         {
           last_run_time: (run_time - 15.minutes).iso8601,
-          job_dictionary: %w[HalfHourlyTestJob]
+          job_dictionary: %w[HalfHourlyTestJob],
         },
         {},
         %w[HalfHourlyTestJob SomeNewJob]
@@ -62,7 +62,7 @@ RSpec.describe Que::Scheduler::SchedulerJob do
       run_test(
         {
           last_run_time: (run_time - 45.minutes).iso8601,
-          job_dictionary: %w[HalfHourlyTestJob]
+          job_dictionary: %w[HalfHourlyTestJob],
         },
         { HalfHourlyTestJob => [{}] },
         %w[HalfHourlyTestJob]
@@ -73,7 +73,7 @@ RSpec.describe Que::Scheduler::SchedulerJob do
       run_test(
         {
           last_run_time: (run_time - 45.minutes).iso8601,
-          job_dictionary: %w[HalfHourlyTestJob OldRemovedJob]
+          job_dictionary: %w[HalfHourlyTestJob OldRemovedJob],
         },
         { HalfHourlyTestJob => [{}] },
         %w[HalfHourlyTestJob]

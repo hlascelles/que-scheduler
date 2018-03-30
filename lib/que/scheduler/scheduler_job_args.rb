@@ -17,13 +17,13 @@ module Que
             # First ever run, there is nothing to do but reschedule self.
             {
               last_run_time: now,
-              job_dictionary: []
+              job_dictionary: [],
             }
           else
             options = options.symbolize_keys
             {
               last_run_time: Time.zone.parse(options.fetch(:last_run_time)),
-              job_dictionary: options.fetch(:job_dictionary)
+              job_dictionary: options.fetch(:job_dictionary),
             }
           end
         SchedulerJobArgs.new(parsed.merge(as_time: now))

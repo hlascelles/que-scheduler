@@ -7,14 +7,16 @@ Lint/BlockAlignment:
   EnforcedStyleAlignWith: start_of_block
 Metrics/BlockLength:
   Exclude:
-    - 'Rakefile'
-    - '**/*.rake'
-    - '**/*.gemspec'
-    - '**/spec/**/*.rb'
+  - 'Rakefile'
+  - '**/*.rake'
+  - '**/*.gemspec'
+  - '**/spec/**/*.rb'
 Metrics/LineLength:
   Max: 100
 Metrics/MethodLength:
   Max: 30
+Style/TrailingCommaInHashLiteral:
+  EnforcedStyleForMultiline: comma
 Style/Documentation:
   Enabled: false
 Style/FrozenStringLiteralComment:

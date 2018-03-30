@@ -66,7 +66,7 @@ module Que
                 args: v['args'],
                 priority: v['priority'],
                 cron: v['cron'],
-                schedule_type: v['schedule_type'] || DefinedJob::SCHEDULE_TYPE_DEFAULT
+                schedule_type: v['schedule_type'] || DefinedJob::SCHEDULE_TYPE_DEFAULT,
               }.compact
             ).freeze
           end
@@ -84,7 +84,7 @@ module Que
           options = {
             args: args,
             queue: queue,
-            priority: priority
+            priority: priority,
           }.compact
 
           if schedule_type == DefinedJob::SCHEDULE_TYPE_EVERY_EVENT

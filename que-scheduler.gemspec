@@ -13,6 +13,13 @@ Gem::Specification.new do |spec|
   spec.description   = 'A lightweight cron scheduler for the Que async job worker'
   spec.homepage      = 'https://github.com/hlascelles/que-scheduler'
   spec.license       = 'MIT'
+  spec.metadata      = {
+    'homepage_uri'      => 'https://github.com/hlascelles/que-scheduler',
+    'documentation_uri' => 'https://github.com/hlascelles/que-scheduler',
+    'changelog_uri'     => 'https://github.com/hlascelles/que-scheduler/blob/master/CHANGELOG.md',
+    'source_code_uri'   => 'https://github.com/hlascelles/que-scheduler/',
+    'bug_tracker_uri'   => 'https://github.com/hlascelles/que-scheduler/issues',
+  }
 
   spec.files = Dir['{lib}/**/*'] + ['README.md']
   spec.require_paths = ['lib']
