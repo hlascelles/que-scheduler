@@ -1,3 +1,7 @@
+## Unreleased
+
+* Add gemspec metadata
+
 ## 1.2.0 (2018-03-29)
 
 * Upgraded [fugit](https://github.com/floraison/fugit/issues/2) to allow timezones in cron lines 

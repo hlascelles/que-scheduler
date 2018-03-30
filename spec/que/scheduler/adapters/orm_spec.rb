@@ -9,7 +9,7 @@ QSAO = ::Que::Scheduler::Adapters::Orm
 RSpec.describe QSAO do
   {
     QSAO::ActiveRecordAdapter => ::ActiveRecord::Base,
-    QSAO::SequelAdapter => ::DB
+    QSAO::SequelAdapter => ::DB,
   }.each do |adapters, connection|
     describe adapters do
       let(:adapter) { described_class.new }
