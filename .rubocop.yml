@@ -1,11 +1,12 @@
 AllCops:
   TargetRubyVersion: 2.4
   DisplayCopNames: true
+Layout/BlockAlignment:
+  EnforcedStyleAlignWith: start_of_block
 Layout/DotPosition:
   EnforcedStyle: leading
-Lint/BlockAlignment:
-  EnforcedStyleAlignWith: start_of_block
 Metrics/AbcSize:
+  Max: 20
   Exclude:
   - '**/spec/**/*.rb'
 Metrics/BlockLength:

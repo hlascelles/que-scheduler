@@ -48,7 +48,7 @@ module Que
           last_time = next_run
         end
 
-        generate_required_jobs_list(missed_times)
+        generate_to_enqueue_list(missed_times)
       end
 
       class << self
@@ -77,9 +77,15 @@ module Que
 
       private
 
+      class ToEnqueue < Hashie::Dash
+        property :args, required: true, default: []
+        property :queue
+        property :priority
+      end
+
       # Given the timestamps of the missed events, generate a list of jobs
       # that can be enqueued as an array of settings containing args, job queue and priority
-      def generate_required_jobs_list(missed_times)
+      def generate_to_enqueue_list(missed_times)
         [].tap do |jobs_for_class|
           unless missed_times.empty?
             options = { args: args, queue: queue, priority: priority }.compact
@@ -91,7 +97,7 @@ module Que
             else
               jobs_for_class << options
             end
-            options.freeze
+            ToEnqueue.new(options).freeze
           end
         end
       end

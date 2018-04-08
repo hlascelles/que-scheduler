@@ -4,6 +4,8 @@ require_relative 'defined_job'
 require_relative 'enqueueing_calculator'
 require_relative 'scheduler_job_args'
 
+# The main job that runs every minute, determining what needs to be enqueued, enqueues the required
+# jobs, then re-enqueues itself.
 module Que
   module Scheduler
     class SchedulerJob < Que::Job
@@ -36,9 +38,9 @@ module Que
       end
 
       def enqueue_required_jobs(result, logs)
-        result.missed_jobs.each do |job_class, options_array|
-          options_array.each do |options|
-            enqueue_new_job(job_class, options.dup, logs)
+        result.missed_jobs.each do |job_class, to_enqueue_list|
+          to_enqueue_list.each do |to_enqueue|
+            enqueue_new_job(job_class, to_enqueue.to_h, logs)
           end
         end
         result.schedule_dictionary
@@ -64,13 +66,13 @@ module Que
         )
       end
 
-      def enqueue_new_job(job_class, options, logs)
-        logs << "que-scheduler enqueueing #{job_class} with options: #{options}"
-        args = options.delete(:args)
+      def enqueue_new_job(job_class, to_enqueue, logs)
+        logs << "que-scheduler enqueueing #{job_class} with: #{to_enqueue}"
+        args = to_enqueue.delete(:args)
         if args.is_a?(Hash)
-          job_class.enqueue(args.merge(options))
+          job_class.enqueue(args.merge(to_enqueue))
         else
-          job_class.enqueue(*args, options)
+          job_class.enqueue(*args, to_enqueue)
         end
       end
 

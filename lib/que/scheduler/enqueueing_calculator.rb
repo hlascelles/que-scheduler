@@ -4,8 +4,8 @@ module Que
   module Scheduler
     module EnqueueingCalculator
       class Result < Hashie::Dash
-        property :missed_jobs
-        property :schedule_dictionary
+        property :missed_jobs, required: true
+        property :schedule_dictionary, required: true
       end
 
       class << self
