@@ -135,9 +135,12 @@ que-scheduler is a job that reads a config file, enqueues any jobs it determines
 then reschedules itself. The flow is as follows:
 
 1. The que-scheduler job runs for the very first time.
-1. que-scheduler loads the schedule config file. It will not schedule any other jobs, except itself, as it has never run before.
-1. Some time later it runs again. It knows what jobs it should be monitoring, and notices that some have are due. It enqueues those jobs and then itself. Repeat.
-1. After a deploy that changes the config, the job notices any new jobs to schedule, and knows which ones to forget. It does not need to be re-enqueued or restarted.
+1. que-scheduler loads the schedule config file. It will not schedule any other jobs, except itself, 
+   as it has never run before.
+1. Some time later it runs again. It knows what jobs it should be monitoring, and notices that some 
+   have are due. It enqueues those jobs and then itself. Repeat.
+1. After a deploy that changes the config, the job notices any new jobs to schedule, and knows which
+   ones to forget. It does not need to be re-enqueued or restarted.
 
 ## Inspiration
 
