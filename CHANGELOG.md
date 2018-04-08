@@ -1,6 +1,7 @@
 ## Unreleased
 
 * Add gemspec metadata
+* Code cleanup
 
 ## 1.2.0 (2018-03-29)
 
