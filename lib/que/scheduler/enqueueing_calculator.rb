@@ -2,18 +2,20 @@ require 'fugit'
 
 module Que
   module Scheduler
-    class EnqueueingCalculator
-      Result = Struct.new(:missed_jobs, :schedule_dictionary)
+    module EnqueueingCalculator
+      class Result < Hashie::Dash
+        property :missed_jobs
+        property :schedule_dictionary
+      end
 
       class << self
         def parse(scheduler_config, scheduler_job_args)
           missed_jobs = {}
           schedule_dictionary = []
 
-          # For each scheduled item, we need not schedule a job it if it has no history, as it is
-          # new. Otherwise, check how many times we have missed the job since the last run time.
-          # If it is "every_event" then we schedule all of them, with the missed time as an arg,
-          # otherwise just schedule it once.
+          # For each scheduled item:
+          # 1) If never seen before, schedule nothing, but add to known list
+          # 2) If seen before, calculate what (if anything) needs to be enqueued.
           scheduler_config.each do |desc|
             job_name = desc.name
             schedule_dictionary << job_name
@@ -29,7 +31,7 @@ module Que
             missed_jobs[desc.job_class] = missed unless missed.empty?
           end
 
-          Result.new(missed_jobs, schedule_dictionary)
+          Result.new(missed_jobs: missed_jobs, schedule_dictionary: schedule_dictionary)
         end
       end
     end

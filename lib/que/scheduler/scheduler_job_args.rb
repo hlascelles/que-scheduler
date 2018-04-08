@@ -14,7 +14,7 @@ module Que
         now = ::Que::Scheduler::Adapters::Orm.instance.now
         parsed =
           if options.nil?
-            # First ever run, there is nothing to do but reschedule self.
+            # First ever run, there is nothing to do but reschedule self to run on the next minute.
             {
               last_run_time: now,
               job_dictionary: [],

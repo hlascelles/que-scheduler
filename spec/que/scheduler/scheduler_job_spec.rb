@@ -84,7 +84,7 @@ RSpec.describe Que::Scheduler::SchedulerJob do
       expect(PARSER).to receive(:parse).with(
         ::Que::Scheduler::DefinedJob.defined_jobs, scheduler_job_args
       ).and_return(
-        RESULT.new(to_schedule, new_dictionary)
+        RESULT.new(missed_jobs: to_schedule, schedule_dictionary: new_dictionary)
       )
     end
 
@@ -159,7 +159,8 @@ RSpec.describe Que::Scheduler::SchedulerJob do
 
     describe '#enqueue_required_jobs' do
       def test_enqueue_required_jobs(overdue_dictionary)
-        job.enqueue_required_jobs(RESULT.new(overdue_dictionary, []), [])
+        result = RESULT.new(missed_jobs: overdue_dictionary, schedule_dictionary: [])
+        job.enqueue_required_jobs(result, [])
       end
 
       def expect_one_result(args, queue, priority)

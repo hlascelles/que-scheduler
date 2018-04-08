@@ -5,6 +5,9 @@ Layout/DotPosition:
   EnforcedStyle: leading
 Lint/BlockAlignment:
   EnforcedStyleAlignWith: start_of_block
+Metrics/AbcSize:
+  Exclude:
+  - '**/spec/**/*.rb'
 Metrics/BlockLength:
   Exclude:
   - 'Rakefile'

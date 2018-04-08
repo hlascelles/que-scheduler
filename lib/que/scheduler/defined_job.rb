@@ -8,6 +8,7 @@ module Que
     class DefinedJob < Hashie::Dash
       QUE_SCHEDULER_CONFIG_LOCATION =
         ENV.fetch('QUE_SCHEDULER_CONFIG_LOCATION', 'config/que_schedule.yml')
+      ERROR_MESSAGE_SUFFIX = "in que-scheduler config #{QUE_SCHEDULER_CONFIG_LOCATION}".freeze
 
       include Hashie::Extensions::Dash::PropertyTranslation
 
@@ -15,11 +16,6 @@ module Que
         SCHEDULE_TYPE_DEFAULT = :default,
         SCHEDULE_TYPE_EVERY_EVENT = :every_event
       ].freeze
-
-      def self.err_field(f, v)
-        suffix = "in que-scheduler config #{QUE_SCHEDULER_CONFIG_LOCATION}"
-        raise "Invalid #{f} '#{v}' #{suffix}"
-      end
 
       property :name, required: true
       property :job_class, required: true, transform_with: lambda { |v|
@@ -66,37 +62,38 @@ module Que
                 args: v['args'],
                 priority: v['priority'],
                 cron: v['cron'],
-                schedule_type: v['schedule_type'] || DefinedJob::SCHEDULE_TYPE_DEFAULT,
+                schedule_type: v['schedule_type'],
               }.compact
             ).freeze
           end
+        end
+
+        private
+
+        def err_field(field, value)
+          raise "Invalid #{field} '#{value}' #{ERROR_MESSAGE_SUFFIX}"
         end
       end
 
       private
 
       # Given the timestamps of the missed events, generate a list of jobs
-      # that can be enqueued as an array of arrays of args.
+      # that can be enqueued as an array of settings containing args, job queue and priority
       def generate_required_jobs_list(missed_times)
-        jobs_for_class = []
+        [].tap do |jobs_for_class|
+          unless missed_times.empty?
+            options = { args: args, queue: queue, priority: priority }.compact
 
-        unless missed_times.empty?
-          options = {
-            args: args,
-            queue: queue,
-            priority: priority,
-          }.compact
-
-          if schedule_type == DefinedJob::SCHEDULE_TYPE_EVERY_EVENT
-            missed_times.each do |time_missed|
-              jobs_for_class << options.merge(args: [time_missed] + (args || []))
+            if schedule_type == DefinedJob::SCHEDULE_TYPE_EVERY_EVENT
+              missed_times.each do |time_missed|
+                jobs_for_class << options.merge(args: [time_missed] + (args || []))
+              end
+            else
+              jobs_for_class << options
             end
-          else
-            jobs_for_class << options
+            options.freeze
           end
-          options.freeze
         end
-        jobs_for_class
       end
     end
   end
