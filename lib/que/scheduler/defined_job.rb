@@ -22,7 +22,9 @@ module Que
         job_class = Object.const_get(v)
         job_class < Que::Job ? job_class : err_field(:job_class, v)
       }
-      property :cron, transform_with: ->(v) { Fugit::Cron.parse(v) || err_field(:cron, v) }
+      property :cron, required: true, transform_with: lambda { |v|
+        Fugit::Cron.parse(v) || err_field(:cron, v)
+      }
       property :queue, transform_with: ->(v) { v.is_a?(String) ? v : err_field(:queue, v) }
       property :priority, transform_with: ->(v) { v.is_a?(Integer) ? v : err_field(:priority, v) }
       property :args
@@ -81,23 +83,21 @@ module Que
         property :args, required: true, default: []
         property :queue
         property :priority
+        property :job_class, required: true
       end
 
-      # Given the timestamps of the missed events, generate a list of jobs
-      # that can be enqueued as an array of settings containing args, job queue and priority
       def generate_to_enqueue_list(missed_times)
         [].tap do |jobs_for_class|
           unless missed_times.empty?
-            options = { args: args, queue: queue, priority: priority }.compact
+            options = to_h.slice(:args, :queue, :priority, :job_class).compact
 
             if schedule_type == DefinedJob::SCHEDULE_TYPE_EVERY_EVENT
               missed_times.each do |time_missed|
-                jobs_for_class << options.merge(args: [time_missed] + (args || []))
+                jobs_for_class << ToEnqueue.new(options.merge(args: [time_missed] + (args || [])))
               end
             else
-              jobs_for_class << options
+              jobs_for_class << ToEnqueue.new(options)
             end
-            ToEnqueue.new(options).freeze
           end
         end
       end
