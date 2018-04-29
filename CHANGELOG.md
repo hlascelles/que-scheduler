@@ -1,3 +1,7 @@
+## 2.0.1 (2018-04-29)
+
+* Upgrade pg gem
+
 ## 2.0.0 (2018-04-29)
 
 * Added que_scheduler_audit table
