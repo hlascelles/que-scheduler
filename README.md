@@ -26,7 +26,11 @@ files, but with additional features.
 1. Add a migration to start the job scheduler.
 
     ```ruby
-    Que::Scheduler::SchedulerJob.enqueue
+    class CreateQueSchedulerSchema < ActiveRecord::Migration
+      def change
+        Que::Scheduler::Migrations.migrate!(version: 2)
+      end
+    end
     ```
     
 ## Schedule configuration
@@ -95,19 +99,29 @@ DailyBatchReport:
 
 A job can have a `schedule_type` assigned to it. Valid values are:
 
-1. `default` - This job will be scheduled when a worker becomes available. If multiple cron times 
-  go by during an extended period of downtime then only one job will be enqueued. This is closer to 
-  how ordinary cron works.
-1. `every_event` - This job will always be scheduled with an ISO8601 time as the first argument. 
-  If multiple cron times go by during an extended period of downtime, then a job will be scheduled 
-  for every one missed. This `schedule_type` should be used for daily batch jobs that need to know 
-  which day they are running a batch for.
+1. `default` - This job will be scheduled in a manner closer to resque-scheduler. If multiple cron
+  times go by during an extended period of downtime (eg a long maintenance window) then only one job
+  will be enqueued when the system starts back up. Multiple missed events are coalesced. This mimics
+  the way resque-scheduler would perform if it were taken down for some time.
+1. `every_event` - Every cron match will result in a job being scheduled. If multiple cron times go 
+  by during an extended period of downtime, then a job will be scheduled for every one missed on 
+  startup. This `schedule_type` should be used for daily batch jobs that need to know which day 
+  they are running a batch for. The job will always be scheduled with an ISO8601 string of the cron 
+  that matched as the first argument. 
+   
+   This feature ensures that jobs which *must run* for a certain cron match will always eventually 
+  execute, even after a total system crash, or even a DB backup restore.
 
 ## Environment Variables
 
 You can configure some aspects of the gem with environment variables.
 
 * `QUE_SCHEDULER_CONFIG_LOCATION` - The location of the schedule configuration (default `config/que_schedule.yml`)
+
+## Scheduler Audit
+
+An audit table _que_scheduler_audit_ is written to by the scheduler to keep a history of what jobs 
+were enqueued when. It is created by the included migration tasks.
 
 ## HA Redundancy and DB restores
 

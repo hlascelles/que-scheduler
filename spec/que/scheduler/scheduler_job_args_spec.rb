@@ -4,7 +4,7 @@ require 'timecop'
 RSpec.describe Que::Scheduler::SchedulerJobArgs do
   it 'should prepare default args' do
     Timecop.freeze do
-      apply_db_time_now
+      mock_db_time_now
       args = described_class.build(nil)
       expect(args.last_run_time).to eq(Time.zone.now)
       expect(args.as_time).to eq(Time.zone.now)
@@ -18,7 +18,7 @@ RSpec.describe Que::Scheduler::SchedulerJobArgs do
 
     def attempt_parse(options)
       Timecop.freeze do
-        apply_db_time_now
+        mock_db_time_now
         args = described_class.build(options)
         expect(args.last_run_time.iso8601).to eq(last_time.iso8601)
         expect(args.as_time).to eq(Time.zone.now)

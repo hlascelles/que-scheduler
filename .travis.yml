@@ -8,7 +8,13 @@ rvm:
 env:
   global:
   - TZ=Europe/London
+  - DB_PASSWORD=""
 before_install:
 - export TZ=Europe/London
 script:
 - bundle exec rspec -fd -b -P ./spec/**/*_spec.rb
+services:
+- postgresql
+addons:
+  postgresql: "9.6"
+cache: bundler

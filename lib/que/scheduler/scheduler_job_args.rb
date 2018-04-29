@@ -11,7 +11,7 @@ module Que
       property :as_time, required: true
 
       def self.build(options)
-        now = ::Que::Scheduler::Adapters::Orm.instance.now
+        now = Que::Scheduler::Db.now
         parsed =
           if options.nil?
             # First ever run, there is nothing to do but reschedule self to run on the next minute.

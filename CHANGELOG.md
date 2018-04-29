@@ -1,7 +1,11 @@
-## Unreleased
+## 2.0.0 (2018-04-29)
 
+* Added que_scheduler_audit table
+* Added managed migrations
 * Add gemspec metadata
 * Code cleanup
+* Major version change
+* Use a real postgres DB in specs
 
 ## 1.2.0 (2018-03-29)
 

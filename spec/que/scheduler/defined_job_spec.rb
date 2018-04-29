@@ -52,6 +52,15 @@ RSpec.describe Que::Scheduler::DefinedJob do
       expect(job.cron.to_cron_s).to eq('0 0 * * 0')
     end
 
+    it 'checks a cron is present' do
+      expect do
+        described_class.new(
+          name: 'testing_job_definitions',
+          job_class: 'HalfHourlyTestJob'
+        )
+      end.to raise_error(/The property 'cron' is required/)
+    end
+
     it 'allows crons with fugit compatible timezones' do
       job = described_class.new(
         name: 'testing_job_definitions',
