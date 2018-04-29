@@ -1,6 +1,6 @@
-## 2.0.1 (2018-04-29)
+## 2.0.2 (2018-04-29)
 
-* Upgrade pg gem
+* Moved pg gem to development dependencies
 
 ## 2.0.0 (2018-04-29)
 
