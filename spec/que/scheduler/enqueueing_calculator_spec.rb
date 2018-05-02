@@ -69,7 +69,7 @@ RSpec.describe Que::Scheduler::EnqueueingCalculator do
     run_test(
       '2017-10-08T03:09:59',
       2.seconds,
-      [{ job_class: SpecifiedByClassTestJob }]
+      [{ job_class: SpecifiedByClassTestJob, args: ['One arg'] }]
     )
   end
 
@@ -77,7 +77,7 @@ RSpec.describe Que::Scheduler::EnqueueingCalculator do
     run_test(
       '2017-10-08T06:09:59',
       2.seconds,
-      [{ job_class: DailyTestJob, args: [Time.zone.parse('2017-10-08T06:10:00')] }]
+      [{ job_class: DailyTestJob, args: [Time.zone.parse('2017-10-08T06:10:00'), 'Single arg'] }]
     )
   end
 
@@ -89,11 +89,11 @@ RSpec.describe Que::Scheduler::EnqueueingCalculator do
         # These are "missable", so only come up once
         { job_class: HalfHourlyTestJob },
         { job_class: WithArgsTestJob, args: ['My Args', 1234, { 'some_hash' => true }] },
-        { job_class: SpecifiedByClassTestJob },
+        { job_class: SpecifiedByClassTestJob, args: ['One arg'] },
         # These are "every_event", so all their missed schedules are enqueued, with that
         # Time as an argument.
-        { job_class: DailyTestJob, args: [Time.zone.parse('2017-10-08T06:10:00')] },
-        { job_class: DailyTestJob, args: [Time.zone.parse('2017-10-09T06:10:00')] },
+        { job_class: DailyTestJob, args: [Time.zone.parse('2017-10-08T06:10:00'), 'Single arg'] },
+        { job_class: DailyTestJob, args: [Time.zone.parse('2017-10-09T06:10:00'), 'Single arg'] },
         {
           job_class: TwiceDailyTestJob,
           args: [Time.zone.parse('2017-10-08T11:10:00')],

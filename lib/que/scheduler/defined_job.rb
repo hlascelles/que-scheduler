@@ -87,18 +87,17 @@ module Que
       end
 
       def generate_to_enqueue_list(missed_times)
-        [].tap do |jobs_for_class|
-          unless missed_times.empty?
-            options = to_h.slice(:args, :queue, :priority, :job_class).compact
+        return [] if missed_times.empty?
 
-            if schedule_type == DefinedJob::SCHEDULE_TYPE_EVERY_EVENT
-              missed_times.each do |time_missed|
-                jobs_for_class << ToEnqueue.new(options.merge(args: [time_missed] + (args || [])))
-              end
-            else
-              jobs_for_class << ToEnqueue.new(options)
-            end
+        options = to_h.slice(:args, :queue, :priority, :job_class).compact
+        args_array = args.is_a?(Array) ? args : Array(args)
+
+        if schedule_type == DefinedJob::SCHEDULE_TYPE_EVERY_EVENT
+          missed_times.map do |time_missed|
+            ToEnqueue.new(options.merge(args: [time_missed] + args_array))
           end
+        else
+          [ToEnqueue.new(options.merge(args: args_array))]
         end
       end
     end

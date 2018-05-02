@@ -59,7 +59,7 @@ module Que
           job_dictionary: result.job_dictionary,
           run_at: next_run_at
         )
-        Audit.append(attrs[:job_id], scheduler_job_args.as_time, result, next_run_at)
+        Audit.append(attrs[:job_id], scheduler_job_args.as_time, result)
       end
     end
   end

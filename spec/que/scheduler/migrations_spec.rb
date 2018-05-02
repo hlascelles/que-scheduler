@@ -5,8 +5,11 @@ RSpec.describe Que::Scheduler::Migrations do
     it 'migrates up and down versions' do
       # Readd the job that was removed by the rspec before all
       ::Que::Scheduler::SchedulerJob.enqueue
-      described_class.db_version
+      expect(described_class.db_version).to eq(3)
+      expect(enqueued_rows_exists?).to be true
+      described_class.migrate!(version: 2)
       expect(described_class.db_version).to eq(2)
+      expect(enqueued_rows_exists?).to be false
       expect(audit_table_exists?).to be true
       described_class.migrate!(version: 1)
       expect(described_class.db_version).to eq(1)
@@ -22,10 +25,17 @@ RSpec.describe Que::Scheduler::Migrations do
       described_class.migrate!(version: 2)
       expect(described_class.db_version).to eq(2)
       expect(audit_table_exists?).to be true
+      described_class.migrate!(version: 3)
+      expect(described_class.db_version).to eq(3)
+      expect(enqueued_rows_exists?).to be true
     end
 
     def audit_table_exists?
       ActiveRecord::Base.connection.table_exists?(Que::Scheduler::Audit::TABLE_NAME)
+    end
+
+    def enqueued_rows_exists?
+      ActiveRecord::Base.connection.table_exists?(Que::Scheduler::Audit::ENQUEUED_TABLE_NAME)
     end
   end
 end

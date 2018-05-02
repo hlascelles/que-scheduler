@@ -1,3 +1,7 @@
+## 2.1.0 (2018-05-02)
+
+* Split the audit table into job execution event and multiple enqueued job rows
+
 ## 2.0.2 (2018-04-29)
 
 * Moved pg gem to development dependencies
