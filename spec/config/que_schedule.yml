@@ -11,10 +11,12 @@ WithArgsTestJob:
 daily_test_job_specifying_class:
   class: SpecifiedByClassTestJob
   cron: "10 3 * * *"
+  args: One arg
   schedule_type: default
 
 DailyTestJob:
   cron: "10 6 * * *"
+  args: Single arg
   schedule_type: every_event
 
 TwiceDailyTestJob:
