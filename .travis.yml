@@ -16,5 +16,6 @@ script:
 services:
 - postgresql
 addons:
-  postgresql: "9.6"
+  # We have seen some json errors on some DBs, so choose the oldest with jsonb.
+  postgresql: "9.4"
 cache: bundler
