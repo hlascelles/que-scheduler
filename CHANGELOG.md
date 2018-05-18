@@ -1,6 +1,7 @@
 ## Unreleased
 
 * Use more exact json cast when migrating
+* Adding more code quality tools
 
 ## 2.1.0 (2018-05-02)
 
