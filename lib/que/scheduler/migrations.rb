@@ -50,7 +50,10 @@ module Que
         end
 
         def audit_table_exists?
-          ActiveRecord::Base.connection.table_exists?(AUDIT_TABLE_NAME)
+          result = Que.execute(<<-SQL)
+            SELECT * FROM information_schema.tables WHERE table_name = '#{AUDIT_TABLE_NAME}';
+          SQL
+          result.any?
         end
       end
     end
