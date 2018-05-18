@@ -154,6 +154,10 @@ then reschedules itself. The flow is as follows:
    have are due. It enqueues those jobs and then itself. Repeat.
 1. After a deploy that changes the config, the job notices any new jobs to schedule, and knows which
    ones to forget. It does not need to be re-enqueued or restarted.
+   
+## System requirements
+
+Your [postgres](https://www.postgresql.org/) database must be at least version 9.4.0.
 
 ## Inspiration
 
