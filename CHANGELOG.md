@@ -1,3 +1,7 @@
+## 2.1.2 (2018-05-18)
+
+* Remove use of ActiveRecord
+
 ## 2.1.1 (2018-05-18)
 
 * Use more exact json cast when migrating
