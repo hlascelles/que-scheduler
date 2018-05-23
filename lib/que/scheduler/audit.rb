@@ -7,30 +7,30 @@ module Que
       ENQUEUED_TABLE_NAME = 'que_scheduler_audit_enqueued'
       INSERT_AUDIT = %{
         INSERT INTO #{TABLE_NAME} (scheduler_job_id, executed_at)
-        VALUES ($1::integer, $2::timestamptz)
+        VALUES ($1::bigint, $2::timestamptz)
         RETURNING *
       }
       INSERT_AUDIT_ENQUEUED = %{
-        INSERT INTO #{ENQUEUED_TABLE_NAME} (scheduler_job_id, job_class, queue, priority, args)
-        VALUES ($1::integer, $2::varchar, $3::varchar, $4::integer, $5::jsonb)
+        INSERT INTO #{ENQUEUED_TABLE_NAME}
+        (scheduler_job_id, job_class, queue, priority, args, job_id, run_at)
+        VALUES (
+          $1::bigint, $2::varchar, $3::varchar,
+          $4::integer, $5::jsonb, $6::bigint, $7::timestamptz
+        )
         RETURNING *
       }
 
       class << self
-        def append(job_id, executed_at, result)
-          ::Que.execute(INSERT_AUDIT, [job_id, executed_at])
-          result.missed_jobs.each do |j|
+        def append(scheduler_job_id, executed_at, enqueued_jobs)
+          ::Que.execute(INSERT_AUDIT, [scheduler_job_id, executed_at])
+          enqueued_jobs.each do |j|
+            attrs = j.attrs
             inserted = ::Que.execute(
               INSERT_AUDIT_ENQUEUED,
-              [
-                job_id,
-                j.job_class,
-                j.queue,
-                j.priority,
-                j.args
-              ]
+              [scheduler_job_id] +
+                attrs.values_at('job_class', 'queue', 'priority', 'args', 'job_id', 'run_at')
             )
-            raise "Cannot save audit row #{job_id} #{executed_at} #{j}" if inserted.empty?
+            raise "Cannot save audit row #{scheduler_job_id} #{executed_at} #{j}" if inserted.empty?
           end
         end
       end

@@ -3,49 +3,54 @@ require 'spec_helper'
 RSpec.describe Que::Scheduler::Audit do
   describe '.append' do
     it 'appends an audit line' do
-      job_id = 1234
-      executed_at = Time.zone.now.change(usec: 0)
-      missed_jobs = [
-        { job_class: HalfHourlyTestJob, queue: 'some_queue', args: [5] },
-        { job_class: HalfHourlyTestJob, priority: 80 },
-        { job_class: DailyTestJob, queue: 'some_queue', args: [3] }
-      ]
-      result = Que::Scheduler::EnqueueingCalculator::Result.new(
-        missed_jobs: hash_to_enqueues(missed_jobs), job_dictionary: []
-      )
-      described_class.append(job_id, executed_at, result)
-
-      audit = Que.execute('select * from que_scheduler_audit')
-      expect(audit.count).to eq(1)
-      expect(audit.first['scheduler_job_id']).to eq(job_id)
-      expect(audit.first['executed_at']).to eq(executed_at)
-      db_jobs = Que.execute('select * from que_scheduler_audit_enqueued')
-      expect(db_jobs.count).to eq(3)
-      expect(db_jobs).to eq(
-        [
-          {
-            'scheduler_job_id' => 1234,
-            'job_class' => 'HalfHourlyTestJob',
-            'queue' => 'some_queue',
-            'priority' => nil,
-            'args' => '[5]',
-          },
-          {
-            'scheduler_job_id' => 1234,
-            'job_class' => 'HalfHourlyTestJob',
-            'queue' => nil,
-            'priority' => 80,
-            'args' => '[]',
-          },
-          {
-            'scheduler_job_id' => 1234,
-            'job_class' => 'DailyTestJob',
-            'queue' => 'some_queue',
-            'priority' => nil,
-            'args' => '[3]',
-          }
+      Timecop.freeze do
+        job_id = 1234
+        executed_at = Time.zone.now.change(usec: 0)
+        enqueued_jobs = [
+          HalfHourlyTestJob.enqueue(5, queue: 'something', run_at: executed_at - 1.hour),
+          HalfHourlyTestJob.enqueue(priority: 80, run_at: executed_at - 2.hours),
+          DailyTestJob.enqueue(3, queue: 'some_queue', run_at: executed_at - 3.hours)
         ]
-      )
+        described_class.append(job_id, executed_at, enqueued_jobs)
+
+        audit = Que.execute('select * from que_scheduler_audit')
+        expect(audit.count).to eq(1)
+        expect(audit.first['scheduler_job_id']).to eq(job_id)
+        expect(audit.first['executed_at']).to eq(executed_at)
+        db_jobs = Que.execute('select * from que_scheduler_audit_enqueued')
+        expect(db_jobs.count).to eq(3)
+        expect(db_jobs).to eq(
+          [
+            {
+              'scheduler_job_id' => 1234,
+              'job_class' => 'HalfHourlyTestJob',
+              'queue' => 'something',
+              'priority' => 100,
+              'args' => '[5]',
+              'job_id' => enqueued_jobs[0].attrs.fetch('job_id'),
+              'run_at' => executed_at - 1.hour,
+            },
+            {
+              'scheduler_job_id' => 1234,
+              'job_class' => 'HalfHourlyTestJob',
+              'queue' => '',
+              'priority' => 80,
+              'args' => '[]',
+              'job_id' => enqueued_jobs[1].attrs.fetch('job_id'),
+              'run_at' => executed_at - 2.hours,
+            },
+            {
+              'scheduler_job_id' => 1234,
+              'job_class' => 'DailyTestJob',
+              'queue' => 'some_queue',
+              'priority' => 100,
+              'args' => '[3]',
+              'job_id' => enqueued_jobs[2].attrs.fetch('job_id'),
+              'run_at' => executed_at - 3.hours,
+            }
+          ]
+        )
+      end
     end
   end
 end
