@@ -1,4 +1,4 @@
-## Unreleased
+## 3.0.0 (2018-05-23)
 
 * Use bigint for audit logs [#22](https://github.com/hlascelles/que-scheduler/pull/22)
 * Store enqueued job_id in the audit table [#23](https://github.com/hlascelles/que-scheduler/pull/23)
