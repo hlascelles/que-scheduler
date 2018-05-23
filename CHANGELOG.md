@@ -1,6 +1,10 @@
 ## Unreleased
 
-* Use bigint for audit logs
+* Use bigint for audit logs [#22](https://github.com/hlascelles/que-scheduler/pull/22)
+* Store enqueued job_id in the audit table [#23](https://github.com/hlascelles/que-scheduler/pull/23)
+* Store enqueued job run_at time in audit table
+* Store actual DB priority value of enqueued job (ie, default priority value instead of NULL if none provided)
+* Store actual DB queue value of enqueued job (ie, '' instead of NULL if none provided)
 
 ## 2.1.2 (2018-05-18)
 
