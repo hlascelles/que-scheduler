@@ -27,7 +27,7 @@ files, but with additional features.
     ```ruby
     class CreateQueSchedulerSchema < ActiveRecord::Migration
       def change
-        Que::Scheduler::Migrations.migrate!(version: 3)
+        Que::Scheduler::Migrations.migrate!(version: 4)
       end
     end
     ```

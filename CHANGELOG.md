@@ -1,3 +1,7 @@
+## Unreleased
+
+* Use bigint for audit logs
+
 ## 2.1.2 (2018-05-18)
 
 * Remove use of ActiveRecord
