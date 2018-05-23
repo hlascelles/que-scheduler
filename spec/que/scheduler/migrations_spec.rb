@@ -5,6 +5,11 @@ RSpec.describe Que::Scheduler::Migrations do
     it 'migrates up and down versions' do
       # Readd the job that was removed by the rspec before all
       ::Que::Scheduler::SchedulerJob.enqueue
+
+      expect(described_class.db_version).to eq(4)
+      expect(scheduler_job_id_type).to eq('bigint')
+      described_class.migrate!(version: 3)
+      expect(scheduler_job_id_type).to eq('integer')
       expect(described_class.db_version).to eq(3)
       expect(enqueued_rows_exists?).to be true
       described_class.migrate!(version: 2)
@@ -35,6 +40,7 @@ RSpec.describe Que::Scheduler::Migrations do
       described_class.migrate!(version: 3)
       expect(described_class.db_version).to eq(3)
       expect(enqueued_rows_exists?).to be true
+      expect(scheduler_job_id_type).to eq('integer')
 
       # Check the row came through correctly
       audit = Que.execute('SELECT * FROM que_scheduler_audit')
@@ -46,6 +52,20 @@ RSpec.describe Que::Scheduler::Migrations do
       expect(audit.first[:scheduler_job_id]).to eq(17)
       expect(audit.first[:job_class]).to eq('DailyTestJob')
       expect(audit.first[:args].to_s).to eq('[1, 2]')
+
+      described_class.migrate!(version: 4)
+      expect(scheduler_job_id_type).to eq('bigint')
+      audit = Que.execute('SELECT * FROM que_scheduler_audit')
+      expect(audit.first[:scheduler_job_id]).to eq(17)
+      audit = Que.execute('SELECT * FROM que_scheduler_audit_enqueued')
+      expect(audit.first[:scheduler_job_id]).to eq(17)
+    end
+
+    def scheduler_job_id_type
+      Que.execute(
+        'select column_name, data_type from information_schema.columns ' \
+        "where table_name = 'que_scheduler_audit';"
+      ).find { |row| row.fetch('column_name') == 'scheduler_job_id' }.fetch('data_type')
     end
 
     def audit_table_exists?
