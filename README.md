@@ -22,7 +22,7 @@ needs to be run, enqueueing those jobs, then enqueueing itself to check again la
 look for it is `config/que_schedule.yml`. They are essentially the same as resque-scheduler config
 files, but with additional features.
 
-1. Add a migration to start the job scheduler.
+1. Add a migration to start the job scheduler and prepare the audit table.
 
     ```ruby
     class CreateQueSchedulerSchema < ActiveRecord::Migration
@@ -154,6 +154,47 @@ then reschedules itself. The flow is as follows:
    have are due. It enqueues those jobs and then itself. Repeat.
 1. After a deploy that changes the config, the job notices any new jobs to schedule, and knows which
    ones to forget. It does not need to be re-enqueued or restarted.
+   
+## DB Migrations
+
+When there is a major version (breaking) change, a migration should be run in. The version of the 
+migration proceeds at a faster rate than the version of the gem. To run in all the migrations required
+up to a number, just migrate to that number with one line, and it will perform all the intermediary steps. 
+
+ie, `Que::Scheduler::Migrations.migrate!(version: 4)` will perform all migrations necessary to 
+reach migration version `4`.
+
+As of migration `4`, two elements are added to the DB for que-scheduler to run. 
+
+1. The first is the scheduler job itself, which runs forever, re-enqueuing itself to performs its 
+   duties.
+1. The second part comprises the audit table `que_scheduler_audit` and the "enqueued" table 
+  `que_scheduler_audit`. The first tracks when the scheduler calculated what was necessary to run 
+  (if anything). The second then logs every job that the scheduler enqueues. 
+
+## Upgrading
+
+que-scheduler uses [semantic versioning](https://semver.org/), so major version changes will usually 
+require additional actions to be taken upgrading from one major version to another. 
+
+Major feature changes are listed below. The full 
+[CHANGELOG](https://github.com/hlascelles/que-scheduler/blob/master/CHANGELOG.md) can be found in 
+the root of the project. 
+
+#### Versions 3.x 
+  - Addition of numerous extra columns to the audit table.
+  - Requires migration: `Que::Scheduler::Migrations.migrate!(version: 4)`
+#### Versions 2.x 
+  - Introduction of the audit table.
+  - Support for older versions of postgres
+  - Requires migration: `Que::Scheduler::Migrations.migrate!(version: 3)`
+#### Versions 1.x
+  - Sequel support
+  - Config specified Timezone support
+  - Requires migration: `Que::Scheduler::Migrations.migrate!(version: 1)`
+#### Versions 0.x
+  - The first public release. 
+  - Requires migration: `Que::Scheduler::Migrations.migrate!(version: 1)`
    
 ## System requirements
 
