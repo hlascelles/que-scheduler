@@ -183,18 +183,18 @@ the root of the project.
 
 #### Versions 3.x 
   - Addition of numerous extra columns to the audit table.
-  - Requires migration: `Que::Scheduler::Migrations.migrate!(version: 4)`
+  - Required cumulative migration: `Que::Scheduler::Migrations.migrate!(version: 4)`
 #### Versions 2.x 
   - Introduction of the audit table.
   - Support for older versions of postgres
-  - Requires migration: `Que::Scheduler::Migrations.migrate!(version: 3)`
+  - Required cumulative migration: `Que::Scheduler::Migrations.migrate!(version: 3)`
 #### Versions 1.x
   - Sequel support
   - Config specified Timezone support
-  - Requires migration: `Que::Scheduler::Migrations.migrate!(version: 1)`
+  - Required migration adding the initial job: `Que::Scheduler::SchedulerJob.enqueue`
 #### Versions 0.x
   - The first public release. 
-  - Requires migration: `Que::Scheduler::Migrations.migrate!(version: 1)`
+  - Required migration adding the initial job: `Que::Scheduler::SchedulerJob.enqueue`
    
 ## System requirements
 
