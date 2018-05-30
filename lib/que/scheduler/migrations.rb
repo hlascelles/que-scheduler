@@ -13,7 +13,7 @@ module Que
 
       class << self
         def migrate!(version:)
-          ::Que.transaction do
+          ::Que::Scheduler::Db.transaction do
             current = db_version
             if current < version
               migrate_up(current, version)

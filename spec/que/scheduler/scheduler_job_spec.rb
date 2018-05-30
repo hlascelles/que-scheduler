@@ -9,19 +9,9 @@ RSpec.describe Que::Scheduler::SchedulerJob do
   RESULT = QS::EnqueueingCalculator::Result
   let(:default_queue) { column_default('que_jobs', 'queue').split(':').first[1..-2] }
   let(:default_priority) { column_default('que_jobs', 'priority').to_i }
-  let(:run_time) { Time.zone.parse('2017-11-08T13:50:32') }
-  let(:full_dictionary) { ::Que::Scheduler::DefinedJob.defined_jobs.map(&:name) }
 
   context 'scheduling' do
-    around(:each) do |example|
-      Timecop.freeze(run_time) do
-        example.run
-      end
-    end
-
-    before(:each) do
-      mock_db_time_now
-    end
+    include_context('roundtrip tester')
 
     describe '#assert_one_scheduler_job' do
       it 'detects if there is more than one SchedulerJob' do
@@ -58,17 +48,6 @@ RSpec.describe Que::Scheduler::SchedulerJob do
           },
           [{ job_class: 'HalfHourlyTestJob' }]
         )
-      end
-
-      def run_test(initial_job_args, to_be_scheduled)
-        described_class.enqueue(initial_job_args)
-        ::Que::Job.work
-        expect_itself_enqueued
-        all_enqueued = Que.job_stats.map do |job|
-          job.symbolize_keys.slice(:job_class)
-        end
-        all_enqueued.reject! { |row| row[:job_class] == 'Que::Scheduler::SchedulerJob' }
-        expect(all_enqueued).to eq(to_be_scheduled)
       end
     end
 
@@ -165,20 +144,5 @@ RSpec.describe Que::Scheduler::SchedulerJob do
     it 'should run the scheduler at highest priority' do
       expect(described_class.instance_variable_get('@priority')).to eq(0)
     end
-  end
-
-  def expect_itself_enqueued
-    itself_jobs = jobs_by_class(QS::SchedulerJob)
-    expect(itself_jobs.count).to eq(1)
-    hash = itself_jobs.first.to_h
-    expect(hash['queue']).to eq('')
-    expect(hash['priority']).to eq(0)
-    expect(hash['job_class']).to eq('Que::Scheduler::SchedulerJob')
-    expect(hash['run_at']).to eq(
-      run_time.beginning_of_minute + described_class::SCHEDULER_FREQUENCY
-    )
-    expect(hash['args']).to eq(
-      [{ 'last_run_time' => run_time.iso8601, 'job_dictionary' => full_dictionary }]
-    )
   end
 end

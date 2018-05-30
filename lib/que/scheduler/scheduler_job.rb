@@ -15,7 +15,7 @@ module Que
       @priority = 0
 
       def run(options = nil)
-        ::Que.transaction do
+        ::Que::Scheduler::Db.transaction do
           assert_one_scheduler_job
           scheduler_job_args = SchedulerJobArgs.build(options)
           logs = ["que-scheduler last ran at #{scheduler_job_args.last_run_time}."]

@@ -1,3 +1,7 @@
+## Unreleased
+
+* Use specific DB transaction adapter if possible
+
 ## 3.0.0 (2018-05-23)
 
 * Use bigint for audit logs [#22](https://github.com/hlascelles/que-scheduler/pull/22)
