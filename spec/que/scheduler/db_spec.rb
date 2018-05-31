@@ -37,30 +37,28 @@ RSpec.describe Que::Scheduler::Db do
       check('Sequel')
     end
 
-    # describe '.transaction' do
-    #   it 'returns the time' do
-    #     expect(Que).to receive(:execute).with(described_class::NOW_SQL).and_return([{ foo: :bar }])
-    #     expect(described_class.now).to eq(:bar)
-    #   end
-    # end
+    describe '.transaction' do
+      after(:all) do
+        # The DB needs setting up again after raw Que as the main tests run under ActiveRecord
+        setup_db
+      end
 
-    [::ActiveRecord::Base, ::Que].each do |orm|
-      context "using orm #{orm}" do
-        include_context('roundtrip tester')
+      [::ActiveRecord::Base, ::Que].each do |orm|
+        it "using the #{orm} adapter" do
+          expect(described_class)
+            .to receive(:use_active_record_transaction_adapter).and_return(orm != ::Que)
+          expect(orm).to receive(:transaction).once.and_call_original
 
-        it 'enqueues known jobs successfully' do
-          ::Que::Scheduler::Db.transaction_adapter = orm
-          expect(orm).to receive(:transaction).twice.and_call_original
-          run_test(
-            {
-              last_run_time: (run_time - 45.minutes).iso8601,
-              job_dictionary: %w[HalfHourlyTestJob],
-            },
-            [{ job_class: 'HalfHourlyTestJob' }]
-          )
-          # Reset the DB after the Que adapter as it causes conflicts with rspec's transactions
-          setup_db if orm == ::Que
-          ::Que::Scheduler::Db.transaction_adapter = nil
+          begin
+            ::Que::Scheduler::Db.transaction do
+              ::Que::Scheduler::SchedulerJob.enqueue
+              expect(jobs_by_class(Que::Scheduler::SchedulerJob).count).to eq(1)
+              raise 'Some exception in a transaction'
+            end
+          rescue RuntimeError
+            # Check that a rollback has occurred
+            expect(jobs_by_class(Que::Scheduler::SchedulerJob).count).to eq(0)
+          end
         end
       end
     end

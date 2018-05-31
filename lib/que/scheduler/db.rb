@@ -8,8 +8,6 @@ module Que
       NOW_SQL = 'SELECT now()'
 
       class << self
-        attr_accessor :transaction_adapter
-
         def count_schedulers
           Que.execute(SCHEDULER_COUNT_SQL).first.values.first.to_i
         end
@@ -19,23 +17,20 @@ module Que
         end
 
         def transaction
-          find_transaction_adapter unless transaction_adapter.present?
-          transaction_adapter.transaction do
-            yield
+          Que.adapter.checkout do
+            use = use_active_record_transaction_adapter ? ::ActiveRecord::Base : ::Que
+            use.transaction do
+              yield
+            end
           end
         end
 
         private
 
-        def find_transaction_adapter
+        def use_active_record_transaction_adapter
           # Favour the real ::ActiveRecord::Base transaction handler if available.
-          self.transaction_adapter =
-            if defined?(Que::Adapters::ActiveRecord) &&
-               Que.adapter.class == Que::Adapters::ActiveRecord
-              ::ActiveRecord::Base
-            else
-              ::Que
-            end
+          defined?(Que::Adapters::ActiveRecord) &&
+             Que.adapter.class == Que::Adapters::ActiveRecord
         end
       end
     end
