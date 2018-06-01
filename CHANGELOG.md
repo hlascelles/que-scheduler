@@ -1,5 +1,7 @@
-## Unreleased
+## 3.1.0 (2018-06-01)
 
+* Addition of a gem config initializer [#29](https://github.com/hlascelles/que-scheduler/pull/29)
+* Allow configuration of the transaction block adapter [#29](https://github.com/hlascelles/que-scheduler/pull/29)
 * Handling middle overriding enqueue that prevents a job from being enqueued [#28](https://github.com/hlascelles/que-scheduler/pull/28)
 
 ## 3.0.0 (2018-05-23)

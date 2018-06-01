@@ -15,6 +15,10 @@ module Que
         def now
           Que.execute(NOW_SQL).first.values.first
         end
+
+        def transaction
+          Que::Scheduler.configuration.transaction_adapter.call { yield }
+        end
       end
     end
   end
