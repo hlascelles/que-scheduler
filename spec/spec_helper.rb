@@ -29,8 +29,15 @@ RSpec.configure do |config|
   end
   config.before(:each) do
     ::Que.clear!
+    expect(Que.execute('select * from que_scheduler_audit').count).to eq(0)
+    expect(Que.execute('select * from que_scheduler_audit_enqueued').count).to eq(0)
   end
   config.before(:suite) do
     setup_db
+  end
+  config.around(:each) do |example|
+    DatabaseCleaner.cleaning do
+      example.run
+    end
   end
 end

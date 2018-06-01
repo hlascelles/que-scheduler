@@ -43,13 +43,23 @@ module Que
             else
               job_class.enqueue(*args, remaining_hash)
             end
-          job_id = enqueued_job.attrs.fetch('job_id')
-          logs << "que-scheduler enqueueing #{job_class} #{job_id} with: #{to_enqueue}"
-          enqueued_job
-        end
+          check_enqueued_job(enqueued_job, job_class, args, logs)
+        end.compact
       end
 
       private
+
+      def check_enqueued_job(enqueued_job, job_class, args, logs)
+        if enqueued_job.is_a?(Que::Job)
+          job_id = enqueued_job.attrs.fetch('job_id')
+          logs << "que-scheduler enqueueing #{job_class} #{job_id} with args: #{args}"
+          enqueued_job
+        else
+          # This can happen if a middleware nixes the enqueue call
+          logs << "que-scheduler called enqueue on #{job_class} but did not receive a #{Que::Job}"
+          nil
+        end
+      end
 
       def assert_one_scheduler_job
         schedulers = Que::Scheduler::Db.count_schedulers

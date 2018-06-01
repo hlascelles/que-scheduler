@@ -34,6 +34,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'bundler'
   spec.add_development_dependency 'combustion'
   spec.add_development_dependency 'coveralls'
+  spec.add_development_dependency 'database_cleaner'
   spec.add_development_dependency 'fasterer'
   spec.add_development_dependency 'pg', '~> 0.21'
   spec.add_development_dependency 'pry-byebug'

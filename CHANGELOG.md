@@ -1,3 +1,7 @@
+## Unreleased
+
+* Handling middle overriding enqueue that prevents a job from being enqueued [#28](https://github.com/hlascelles/que-scheduler/pull/28)
+
 ## 3.0.0 (2018-05-23)
 
 * Use bigint for audit logs [#22](https://github.com/hlascelles/que-scheduler/pull/22)
