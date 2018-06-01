@@ -156,6 +156,16 @@ RSpec.describe Que::Scheduler::SchedulerJob do
         )
         expect_one_result([{ baz: 10, array_baz: ['foo'] }], 'bar', 10)
       end
+
+      # Some middlewares can cause an enqueue not to enqueue a job. For example, an equivalent
+      # of resque-solo could decide that the enqueue is not necessary and just short circuit. When
+      # this happens we don't want to error, but just log the fact.
+      it 'handles when the enqueue call does not enqueue a job' do
+        expect(HalfHourlyTestJob).to receive(:enqueue).and_return(false)
+        test_enqueued([{ job_class: HalfHourlyTestJob }])
+        expect(Que.job_stats).to eq([])
+        expect(Que.execute('select * from que_scheduler_audit_enqueued').count).to eq(0)
+      end
     end
   end
 
