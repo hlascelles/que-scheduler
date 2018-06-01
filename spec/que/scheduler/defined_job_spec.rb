@@ -40,7 +40,7 @@ RSpec.describe Que::Scheduler::DefinedJob do
           job_class: 'HalfHourlyTestJob',
           cron: 'foo 17 * * *'
         )
-      end.to raise_error(/Invalid cron 'foo 17 \* \* \*' in que-scheduler config/)
+      end.to raise_error(/Invalid cron 'foo 17 \* \* \*' in que-scheduler schedule/)
     end
 
     it 'allows crons with fugit compatible english words' do
@@ -77,7 +77,7 @@ RSpec.describe Que::Scheduler::DefinedJob do
           job_class: 'HalfHourlyTestJob',
           queue: 3_214_214
         )
-      end.to raise_error(/Invalid queue '3214214' in que-scheduler config/)
+      end.to raise_error(/Invalid queue '3214214' in que-scheduler schedule/)
     end
 
     it 'checks the priority is an integer' do
@@ -87,7 +87,7 @@ RSpec.describe Que::Scheduler::DefinedJob do
           job_class: 'HalfHourlyTestJob',
           priority: 'foo'
         )
-      end.to raise_error(/Invalid priority 'foo' in que-scheduler config/)
+      end.to raise_error(/Invalid priority 'foo' in que-scheduler schedule/)
     end
 
     it 'checks the job_class is a Que::Job from job_class' do
@@ -96,7 +96,7 @@ RSpec.describe Que::Scheduler::DefinedJob do
           name: 'checking_job_types',
           job_class: 'NotAQueJob'
         )
-      end.to raise_error(/Invalid job_class 'NotAQueJob' in que-scheduler config/)
+      end.to raise_error(/Invalid job_class 'NotAQueJob' in que-scheduler schedule/)
     end
   end
 end

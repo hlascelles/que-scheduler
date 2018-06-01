@@ -1,7 +1,8 @@
 ---
 Attribute:
   enabled: true
-  exclude: []
+  exclude:
+  - Que::Scheduler
 BooleanParameter:
   enabled: false
   exclude: []

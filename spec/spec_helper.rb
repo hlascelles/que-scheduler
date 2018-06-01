@@ -3,8 +3,6 @@ require 'bundler/setup'
 require 'coveralls'
 Coveralls.wear!
 
-ENV['QUE_SCHEDULER_CONFIG_LOCATION'] = "#{__dir__}/config/que_schedule.yml"
-
 # By default, que-scheduler specs run in different timezones with every execution, thanks to
 # zonebie. If you want to force one particular timezone, you can use the following:
 # ENV['ZONEBIE_TZ'] = 'International Date Line West'
@@ -16,6 +14,10 @@ require 'zonebie/rspec'
 Bundler.require :default, :development
 
 Dir["#{__dir__}/../spec/support/**/*.rb"].each { |f| require f }
+
+Que::Scheduler.configure do |config|
+  config.schedule_location = "#{__dir__}/config/que_schedule.yml"
+end
 
 RSpec.configure do |config|
   config.example_status_persistence_file_path = '.rspec_status'

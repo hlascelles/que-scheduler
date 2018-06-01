@@ -6,10 +6,6 @@ require 'backports/2.4.0/hash/compact'
 module Que
   module Scheduler
     class DefinedJob < Hashie::Dash
-      QUE_SCHEDULER_CONFIG_LOCATION =
-        ENV.fetch('QUE_SCHEDULER_CONFIG_LOCATION', 'config/que_schedule.yml')
-      ERROR_MESSAGE_SUFFIX = "in que-scheduler config #{QUE_SCHEDULER_CONFIG_LOCATION}".freeze
-
       include Hashie::Extensions::Dash::PropertyTranslation
 
       SCHEDULE_TYPES = [
@@ -55,7 +51,8 @@ module Que
 
       class << self
         def defined_jobs
-          @defined_jobs ||= YAML.safe_load(IO.read(QUE_SCHEDULER_CONFIG_LOCATION)).map do |k, v|
+          schedule_string = IO.read(Que::Scheduler.configuration.schedule_location)
+          @defined_jobs ||= YAML.safe_load(schedule_string).map do |k, v|
             Que::Scheduler::DefinedJob.new(
               {
                 name: k,
@@ -73,7 +70,8 @@ module Que
         private
 
         def err_field(field, value)
-          raise "Invalid #{field} '#{value}' #{ERROR_MESSAGE_SUFFIX}"
+          schedule = Que::Scheduler.configuration.schedule_location
+          raise "Invalid #{field} '#{value}' in que-scheduler schedule #{schedule}"
         end
       end
 

@@ -34,5 +34,10 @@ RSpec.describe Que::Scheduler::Db do
     it 'Sequel is not used explicitly' do
       check('Sequel')
     end
+
+    # Check Que.transaction is not used, as the config transaction proc should be used instead
+    it 'Que.transaction is not used explicitly' do
+      check('Que.transaction')
+    end
   end
 end
