@@ -11,21 +11,21 @@ RSpec.describe Que::Scheduler::Migrations do
       described_class.migrate!(version: 3)
       expect(scheduler_job_id_type).to eq('integer')
       expect(described_class.db_version).to eq(3)
-      expect(enqueued_rows_exists?).to be true
+      expect(enqueued_table_exists?).to be true
       described_class.migrate!(version: 2)
       expect(described_class.db_version).to eq(2)
-      expect(enqueued_rows_exists?).to be false
+      expect(enqueued_table_exists?).to be false
       expect(audit_table_exists?).to be true
       described_class.migrate!(version: 1)
       expect(described_class.db_version).to eq(1)
-      expect(jobs_by_class(Que::Scheduler::SchedulerJob).count).to eq(1)
+      expect(Que::Scheduler::Db.count_schedulers).to eq(1)
       expect(audit_table_exists?).to be false
       described_class.migrate!(version: 0)
       expect(described_class.db_version).to eq(0)
-      expect(jobs_by_class(Que::Scheduler::SchedulerJob).count).to eq(0)
+      expect(Que::Scheduler::Db.count_schedulers).to eq(0)
       described_class.migrate!(version: 1)
       expect(described_class.db_version).to eq(1)
-      expect(jobs_by_class(Que::Scheduler::SchedulerJob).count).to eq(1)
+      expect(Que::Scheduler::Db.count_schedulers).to eq(1)
       expect(audit_table_exists?).to be false
       described_class.migrate!(version: 2)
       expect(described_class.db_version).to eq(2)
@@ -39,7 +39,7 @@ RSpec.describe Que::Scheduler::Migrations do
 
       described_class.migrate!(version: 3)
       expect(described_class.db_version).to eq(3)
-      expect(enqueued_rows_exists?).to be true
+      expect(enqueued_table_exists?).to be true
       expect(scheduler_job_id_type).to eq('integer')
 
       # Check the row came through correctly
@@ -61,6 +61,13 @@ RSpec.describe Que::Scheduler::Migrations do
       expect(audit.first[:scheduler_job_id]).to eq(17)
     end
 
+    it 'returns the right migration number if the job has been deliberately deleted' do
+      Que.execute('DELETE FROM que_jobs')
+      expect(Que::Scheduler::Db.count_schedulers).to eq(0)
+      expect(audit_table_exists?).to be true
+      expect(described_class.db_version).to eq(Que::Scheduler::Migrations::MAX_VERSION)
+    end
+
     def scheduler_job_id_type
       Que.execute(
         'select column_name, data_type from information_schema.columns ' \
@@ -72,7 +79,7 @@ RSpec.describe Que::Scheduler::Migrations do
       ActiveRecord::Base.connection.table_exists?(Que::Scheduler::Audit::TABLE_NAME)
     end
 
-    def enqueued_rows_exists?
+    def enqueued_table_exists?
       ActiveRecord::Base.connection.table_exists?(Que::Scheduler::Audit::ENQUEUED_TABLE_NAME)
     end
   end

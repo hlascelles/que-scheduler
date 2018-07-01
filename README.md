@@ -180,7 +180,7 @@ As of migration `4`, two elements are added to the DB for que-scheduler to run.
 1. The first is the scheduler job itself, which runs forever, re-enqueuing itself to performs its 
    duties.
 1. The second part comprises the audit table `que_scheduler_audit` and the "enqueued" table 
-  `que_scheduler_audit`. The first tracks when the scheduler calculated what was necessary to run 
+  `que_scheduler_audit_enqueued`. The first tracks when the scheduler calculated what was necessary to run 
   (if anything). The second then logs every job that the scheduler enqueues. 
 
 ## Upgrading
@@ -193,6 +193,7 @@ Major feature changes are listed below. The full
 the root of the project. 
 
 #### Versions 3.x 
+  - Drop support for ruby 2.1
   - Addition of a config initializer.
   - Addition of numerous extra columns to the audit table.
   - Drop support for ruby 2.1 and rails 3.x

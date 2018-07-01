@@ -43,3 +43,5 @@ RSpec.configure do |config|
     end
   end
 end
+
+RSpec::Support::ObjectFormatter.default_instance.max_formatted_output_length = 1000
