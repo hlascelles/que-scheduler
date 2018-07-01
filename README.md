@@ -193,7 +193,6 @@ Major feature changes are listed below. The full
 the root of the project. 
 
 #### Versions 3.x 
-  - Drop support for ruby 2.1
   - Addition of a config initializer.
   - Addition of numerous extra columns to the audit table.
   - Drop support for ruby 2.1 and rails 3.x
