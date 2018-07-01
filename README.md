@@ -195,6 +195,7 @@ the root of the project.
 #### Versions 3.x 
   - Addition of a config initializer.
   - Addition of numerous extra columns to the audit table.
+  - Drop support for ruby 2.1 and rails 3.x
   - Required cumulative migration: `Que::Scheduler::Migrations.migrate!(version: 4)`
 #### Versions 2.x 
   - Introduction of the audit table.
