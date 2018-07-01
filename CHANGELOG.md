@@ -1,3 +1,7 @@
+## Unreleased
+
+- Drop support for ruby 2.1 and rails 3.x
+
 ## 3.1.1 (2018-06-05)
 
 * Remove railtie [#30](https://github.com/hlascelles/que-scheduler/pull/30)
