@@ -1,6 +1,14 @@
 require 'spec_helper'
 
 RSpec.describe Que::Scheduler::Db do
+  context 'constants' do
+    it 'has the right scheduler count query string' do
+      expect(described_class::SCHEDULER_COUNT_SQL).to eq(
+        "SELECT COUNT(*) FROM que_jobs WHERE job_class = '#{Que::Scheduler::SchedulerJob.name}'"
+      )
+    end
+  end
+
   describe '.count_schedulers' do
     it 'returns the right result' do
       expect(described_class.count_schedulers).to eq(0)
@@ -22,8 +30,8 @@ RSpec.describe Que::Scheduler::Db do
   # runtime code.
   describe 'ORM usage' do
     def check(str)
-      Dir.glob('lib/**/*').each do |file|
-        expect(File.open(file).grep(/#{str}/)).to be_empty if File.file?(file)
+      Dir.glob('lib/**/*').select { |file| File.file?(file) }.each do |file|
+        expect(File.open(file).grep(/#{str}/)).to be_empty unless file.end_with?('state_checks.rb')
       end
     end
 

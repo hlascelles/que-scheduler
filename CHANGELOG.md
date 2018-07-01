@@ -1,6 +1,7 @@
 ## Unreleased
 
 - Drop support for ruby 2.1 and rails 3.x
+- Improve DB migration state detection and error reporting
 
 ## 3.1.1 (2018-06-05)
 

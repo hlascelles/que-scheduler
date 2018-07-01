@@ -23,19 +23,12 @@ RSpec.describe Que::Scheduler::SchedulerJob do
       mock_db_time_now
     end
 
-    describe '#assert_one_scheduler_job' do
-      it 'detects if there is more than one SchedulerJob' do
-        expect do
-          described_class.enqueue
-          described_class.enqueue
-          described_class.run
-        end.to raise_error(
-          'Only one Que::Scheduler::SchedulerJob should be enqueued. 2 were found.'
-        )
-      end
-    end
-
     describe '#run' do
+      it 'runs the state checks' do
+        expect(Que::Scheduler::StateChecks).to receive(:check).once
+        run_test(nil, [])
+      end
+
       it 'enqueues nothing having loaded the dictionary on the first run' do
         run_test(nil, [])
       end

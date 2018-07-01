@@ -24,9 +24,8 @@ module Que
         end
 
         def db_version
-          return 0 if Que::Scheduler::Db.count_schedulers.zero?
-          return 1 unless audit_table_exists?
-          Que.execute(TABLE_COMMENT).first[:description].to_i
+          return Que.execute(TABLE_COMMENT).first[:description].to_i if audit_table_exists?
+          Que::Scheduler::Db.count_schedulers.zero? ? 0 : 1
         end
 
         private

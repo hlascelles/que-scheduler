@@ -13,13 +13,9 @@ def setup_db
   }
   ActiveRecord::Base.establish_connection(db_config.merge(database: 'postgres'))
   conn = ActiveRecord::Base.connection
-  # rubocop:disable Lint/HandleExceptions
-  begin
+  if conn.execute("SELECT 1 from pg_database WHERE datname='#{testing_db}';").count > 0
     conn.execute("DROP DATABASE #{testing_db}")
-  rescue ActiveRecord::NoDatabaseError, ActiveRecord::StatementInvalid
-    # Nothing to drop
   end
-  # rubocop:enable Lint/HandleExceptions
   conn.execute("CREATE DATABASE #{testing_db}")
 
   ActiveRecord::Base.establish_connection(db_config)

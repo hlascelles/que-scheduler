@@ -111,3 +111,4 @@ UtilityFunction:
 
 exclude_paths:
 - vendor
+- gemfiles

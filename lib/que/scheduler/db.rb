@@ -1,10 +1,12 @@
 # frozen_string_literal: true
 
+require_relative 'config'
+
 module Que
   module Scheduler
     module Db
       SCHEDULER_COUNT_SQL =
-        "SELECT COUNT(*) FROM que_jobs WHERE job_class = '#{Que::Scheduler::SchedulerJob.name}'"
+        "SELECT COUNT(*) FROM que_jobs WHERE job_class = 'Que::Scheduler::SchedulerJob'"
       NOW_SQL = 'SELECT now()'
 
       class << self

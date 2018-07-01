@@ -3,6 +3,7 @@ require 'que'
 require_relative 'defined_job'
 require_relative 'enqueueing_calculator'
 require_relative 'scheduler_job_args'
+require_relative 'state_checks'
 
 # The main job that runs every minute, determining what needs to be enqueued, enqueues the required
 # jobs, then re-enqueues itself.
@@ -16,7 +17,8 @@ module Que
 
       def run(options = nil)
         Que::Scheduler::Db.transaction do
-          assert_one_scheduler_job
+          Que::Scheduler::StateChecks.check
+
           scheduler_job_args = SchedulerJobArgs.build(options)
           logs = ["que-scheduler last ran at #{scheduler_job_args.last_run_time}."]
 
@@ -59,12 +61,6 @@ module Que
           logs << "que-scheduler called enqueue on #{job_class} but did not receive a #{Que::Job}"
           nil
         end
-      end
-
-      def assert_one_scheduler_job
-        schedulers = Que::Scheduler::Db.count_schedulers
-        return if schedulers == 1
-        raise "Only one #{self.class.name} should be enqueued. #{schedulers} were found."
       end
 
       def enqueue_self_again(scheduler_job_args, last_full_execution, job_dictionary, enqueued_jobs)
