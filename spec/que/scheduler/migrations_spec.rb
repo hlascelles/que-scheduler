@@ -82,5 +82,16 @@ RSpec.describe Que::Scheduler::Migrations do
     def enqueued_table_exists?
       ActiveRecord::Base.connection.table_exists?(Que::Scheduler::Audit::ENQUEUED_TABLE_NAME)
     end
+
+    # When que-testing is present, calls to Que.execute do nothing and return an empty array.
+    # Thus, trying to migrate a test database will always fail. It is safer to do nothing and not
+    # create the que-scheduler tables. This follows the logic of que, which does not create its
+    # tables either.
+    it "does nothing, and doesn't error, when using que-testing" do
+      described_class.migrate!(version: 0)
+      stub_const('Que::Testing', true)
+      described_class.migrate!(version: 4)
+      expect(audit_table_exists?).to be false
+    end
   end
 end

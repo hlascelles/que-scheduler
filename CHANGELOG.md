@@ -1,3 +1,7 @@
+## Unreleased
+
+- Do nothing if `migrate!` is called on a test database. [#39](https://github.com/hlascelles/que-scheduler/pull/39)
+
 ## 3.2.1 (2018-07-01)
 
 - Add support for ruby 2.5
