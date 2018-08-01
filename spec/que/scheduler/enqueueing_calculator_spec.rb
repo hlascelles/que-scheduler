@@ -134,7 +134,7 @@ RSpec.describe Que::Scheduler::EnqueueingCalculator do
       job_dictionary: all_keys,
       as_time: as_time
     )
-    out = QSSP.parse(::Que::Scheduler::DefinedJob.defined_jobs, scheduler_job_args)
+    out = QSSP.parse(::Que::Scheduler.schedule.values, scheduler_job_args)
     exp = Que::Scheduler::EnqueueingCalculator::Result.new(
       missed_jobs: hash_to_enqueues(expect_scheduled), job_dictionary: all_keys
     )

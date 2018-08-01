@@ -10,7 +10,7 @@ RSpec.describe Que::Scheduler::SchedulerJob do
   let(:default_queue) { column_default('que_jobs', 'queue').split(':').first[1..-2] }
   let(:default_priority) { column_default('que_jobs', 'priority').to_i }
   let(:run_time) { Time.zone.parse('2017-11-08T13:50:32') }
-  let(:full_dictionary) { ::Que::Scheduler::DefinedJob.defined_jobs.map(&:name) }
+  let(:full_dictionary) { ::Que::Scheduler.schedule.keys }
 
   context 'scheduling' do
     around(:each) do |example|

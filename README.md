@@ -183,6 +183,34 @@ As of migration `4`, two elements are added to the DB for que-scheduler to run.
   `que_scheduler_audit_enqueued`. The first tracks when the scheduler calculated what was necessary to run 
   (if anything). The second then logs every job that the scheduler enqueues. 
 
+## Testing Configuration
+
+You can add tests to validate your configuration during the spec phase. This will perform a variety 
+of sanity checks and ensure that:
+
+1. The yml is present and valid
+1. The job classes exist and are descendants of Que::Job
+1. The cron fields are present and valid
+1. The queues (if present) are strings
+1. The priorities (if present) are integers
+1. The schedule_types are known
+
+```ruby
+
+  describe 'check que_schedule.yml' do
+    it 'loads the schedule from the default location' do
+      # Will raise an error if any config is invalid
+      expect(Que::Scheduler.schedule).not_to be nil
+    end
+  end
+```
+
+## Error Notification
+
+If there is an error during scheduling, que-scheduler will report it using the [standard que error
+notifier](https://github.com/chanks/que/blob/master/docs/error_handling.md#error-notifications).
+The scheduler will then continue to retry indefinitely.
+
 ## Upgrading
 
 que-scheduler uses [semantic versioning](https://semver.org/), so major version changes will usually 

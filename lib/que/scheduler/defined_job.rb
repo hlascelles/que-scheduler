@@ -8,9 +8,9 @@ module Que
     class DefinedJob < Hashie::Dash
       include Hashie::Extensions::Dash::PropertyTranslation
 
-      SCHEDULE_TYPES = [
-        SCHEDULE_TYPE_DEFAULT = :default,
-        SCHEDULE_TYPE_EVERY_EVENT = :every_event
+      DEFINED_JOB_TYPES = [
+        DEFINED_JOB_TYPE_DEFAULT = :default,
+        DEFINED_JOB_TYPE_EVERY_EVENT = :every_event
       ].freeze
 
       property :name, required: true
@@ -24,8 +24,8 @@ module Que
       property :queue, transform_with: ->(v) { v.is_a?(String) ? v : err_field(:queue, v) }
       property :priority, transform_with: ->(v) { v.is_a?(Integer) ? v : err_field(:priority, v) }
       property :args
-      property :schedule_type, default: SCHEDULE_TYPE_DEFAULT, transform_with: lambda { |v|
-        v.to_sym.tap { |vs| SCHEDULE_TYPES.include?(vs) || err_field(:schedule_type, v) }
+      property :schedule_type, default: DEFINED_JOB_TYPE_DEFAULT, transform_with: lambda { |v|
+        v.to_sym.tap { |vs| DEFINED_JOB_TYPES.include?(vs) || err_field(:schedule_type, v) }
       }
 
       # Given a "last time", return the next Time the event will occur, or nil if it
@@ -50,23 +50,6 @@ module Que
       end
 
       class << self
-        def defined_jobs
-          schedule_string = IO.read(Que::Scheduler.configuration.schedule_location)
-          @defined_jobs ||= YAML.safe_load(schedule_string).map do |k, v|
-            Que::Scheduler::DefinedJob.new(
-              {
-                name: k,
-                job_class: v['class'] || k,
-                queue: v['queue'],
-                args: v['args'],
-                priority: v['priority'],
-                cron: v['cron'],
-                schedule_type: v['schedule_type'],
-              }.compact
-            ).freeze
-          end
-        end
-
         private
 
         def err_field(field, value)
@@ -90,7 +73,7 @@ module Que
         options = to_h.slice(:args, :queue, :priority, :job_class).compact
         args_array = args.is_a?(Array) ? args : Array(args)
 
-        if schedule_type == DefinedJob::SCHEDULE_TYPE_EVERY_EVENT
+        if schedule_type == DefinedJob::DEFINED_JOB_TYPE_EVERY_EVENT
           missed_times.map do |time_missed|
             ToEnqueue.new(options.merge(args: [time_missed] + args_array))
           end
