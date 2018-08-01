@@ -1,6 +1,6 @@
 require 'que'
 
-require_relative 'defined_job'
+require_relative 'schedule'
 require_relative 'enqueueing_calculator'
 require_relative 'scheduler_job_args'
 require_relative 'state_checks'
@@ -22,7 +22,7 @@ module Que
           scheduler_job_args = SchedulerJobArgs.build(options)
           logs = ["que-scheduler last ran at #{scheduler_job_args.last_run_time}."]
 
-          result = EnqueueingCalculator.parse(DefinedJob.defined_jobs, scheduler_job_args)
+          result = EnqueueingCalculator.parse(Scheduler.schedule.values, scheduler_job_args)
           enqueued_jobs = enqueue_required_jobs(result, logs)
           enqueue_self_again(
             scheduler_job_args, scheduler_job_args.as_time, result.job_dictionary, enqueued_jobs
