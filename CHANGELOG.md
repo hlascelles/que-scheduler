@@ -1,5 +1,6 @@
-## Unreleased
+## 3.2.2 (2018-08-01)
 
+- Add direct access to the schedule for spec tests. [#40](https://github.com/hlascelles/que-scheduler/pull/40)
 - Do nothing if `migrate!` is called on a test database. [#39](https://github.com/hlascelles/que-scheduler/pull/39)
 
 ## 3.2.1 (2018-07-01)
