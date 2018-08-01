@@ -13,6 +13,9 @@ module Que
 
       class << self
         def migrate!(version:)
+          # Like que, Do not migrate test DBs.
+          return if defined?(Que::Testing)
+
           Que::Scheduler::Db.transaction do
             current = db_version
             if current < version
