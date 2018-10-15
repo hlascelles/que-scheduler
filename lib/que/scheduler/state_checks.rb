@@ -16,6 +16,7 @@ module Que
         def assert_db_migrated
           db_version = Que::Scheduler::Migrations.db_version
           return if db_version == Que::Scheduler::Migrations::MAX_VERSION
+
           raise(<<-ERR)
             The que-scheduler db migration state was found to be #{db_version}. It should be #{Que::Scheduler::Migrations::MAX_VERSION}.
 
@@ -47,6 +48,7 @@ module Que
         def assert_one_scheduler_job
           schedulers = Que::Scheduler::Db.count_schedulers
           return if schedulers == 1
+
           raise(<<-ERR)
             Only one #{Que::Scheduler::SchedulerJob.name} should be enqueued. #{schedulers} were found.
 

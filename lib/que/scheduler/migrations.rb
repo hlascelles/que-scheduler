@@ -28,6 +28,7 @@ module Que
 
         def db_version
           return Que.execute(TABLE_COMMENT).first[:description].to_i if audit_table_exists?
+
           Que::Scheduler::Db.count_schedulers.zero? ? 0 : 1
         end
 
@@ -46,6 +47,7 @@ module Que
         def execute_step(number, direction)
           Que.execute(IO.read("#{__dir__}/migrations/#{number}/#{direction}.sql"))
           return unless audit_table_exists?
+
           Que.execute(
             "COMMENT ON TABLE que_scheduler_audit IS '#{direction == :up ? number : number - 1}'"
           )
