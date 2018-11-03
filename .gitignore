@@ -5,7 +5,7 @@
 /spec/reports/
 /tmp/
 gemfiles/.bundle/*
-
+/target/
 # rspec failure tracking
 .rspec_status
 .idea/

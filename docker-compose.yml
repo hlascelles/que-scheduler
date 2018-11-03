@@ -1,0 +1,14 @@
+version: '2'
+services:
+  postgres:
+    image: postgres:9.5.0
+  gem:
+    build: .
+    volumes:
+    - /target/gems:/gems
+    depends_on:
+    - postgres
+    command: ./appraisal.sh
+    environment:
+      DB_HOST: postgres
+      BUNDLE_PATH: /gems

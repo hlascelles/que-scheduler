@@ -1,0 +1,10 @@
+steps:
+- label: ':que-scheduler: Quality'
+  command: './quality.sh'
+
+- wait
+
+- label: ':que-scheduler: Appraisal'
+  plugins:
+    docker-compose#v2.5.1:
+      run: gem
