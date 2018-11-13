@@ -108,7 +108,7 @@ GEM
       pry (~> 0.10)
     que (0.14.3)
     raabro (1.1.6)
-    rack (2.0.5)
+    rack (2.0.6)
     rack-test (1.1.0)
       rack (>= 1.0, < 3)
     rails-dom-testing (2.0.3)
