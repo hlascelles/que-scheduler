@@ -1,9 +1,13 @@
 ## 3.2.2 (2018-08-01)
 
+[Commits](https://github.com/hlascelles/que-scheduler/compare/v3.2.1...v3.2.2)
+
 - Add direct access to the schedule for spec tests. [#40](https://github.com/hlascelles/que-scheduler/pull/40)
 - Do nothing if `migrate!` is called on a test database. [#39](https://github.com/hlascelles/que-scheduler/pull/39)
 
 ## 3.2.1 (2018-07-01)
+
+[Commits](https://github.com/hlascelles/que-scheduler/compare/v3.1.1...v3.2.1)
 
 - Add support for ruby 2.5
 - Drop support for ruby 2.1 and rails 3.x
@@ -11,15 +15,21 @@
 
 ## 3.1.1 (2018-06-05)
 
+[Commits](https://github.com/hlascelles/que-scheduler/compare/v3.1.0...v3.1.1)
+
 * Remove railtie [#30](https://github.com/hlascelles/que-scheduler/pull/30)
 
 ## 3.1.0 (2018-06-01)
+
+[Commits](https://github.com/hlascelles/que-scheduler/compare/v3.0.0...v3.1.0)
 
 * Addition of a gem config initializer [#29](https://github.com/hlascelles/que-scheduler/pull/29)
 * Allow configuration of the transaction block adapter [#29](https://github.com/hlascelles/que-scheduler/pull/29)
 * Handling middle overriding enqueue that prevents a job from being enqueued [#28](https://github.com/hlascelles/que-scheduler/pull/28)
 
 ## 3.0.0 (2018-05-23)
+
+[Commits](https://github.com/hlascelles/que-scheduler/compare/v2.1.2...v3.0.0)
 
 * Use bigint for audit logs [#22](https://github.com/hlascelles/que-scheduler/pull/22)
 * Store enqueued job_id in the audit table [#23](https://github.com/hlascelles/que-scheduler/pull/23)
