@@ -1,3 +1,7 @@
+## Unreleased
+
+- Namespace support modules [#54](https://github.com/hlascelles/que-scheduler/pull/54)
+
 ## 3.2.2 (2018-08-01)
 
 [Commits](https://github.com/hlascelles/que-scheduler/compare/v3.2.1...v3.2.2)
