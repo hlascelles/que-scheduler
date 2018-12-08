@@ -7,8 +7,8 @@ RSpec.describe Que::Scheduler::SchedulerJob do
   QS = Que::Scheduler
   PARSER = QS::EnqueueingCalculator
   RESULT = QS::EnqueueingCalculator::Result
-  let(:default_queue) { column_default('que_jobs', 'queue').split(':').first[1..-2] }
-  let(:default_priority) { column_default('que_jobs', 'priority').to_i }
+  let(:default_queue) { DbSupport.column_default('que_jobs', 'queue').split(':').first[1..-2] }
+  let(:default_priority) { DbSupport.column_default('que_jobs', 'priority').to_i }
   let(:run_time) { Time.zone.parse('2017-11-08T13:50:32') }
   let(:full_dictionary) { ::Que::Scheduler.schedule.keys }
 
@@ -20,7 +20,7 @@ RSpec.describe Que::Scheduler::SchedulerJob do
     end
 
     before(:each) do
-      mock_db_time_now
+      DbSupport.mock_db_time_now
     end
 
     describe '#run' do
@@ -67,12 +67,14 @@ RSpec.describe Que::Scheduler::SchedulerJob do
 
     describe '#enqueue_required_jobs' do
       def test_enqueued(overdue_dictionary)
-        result = RESULT.new(missed_jobs: hash_to_enqueues(overdue_dictionary), job_dictionary: [])
+        result = RESULT.new(
+          missed_jobs: HashSupport.hash_to_enqueues(overdue_dictionary), job_dictionary: []
+        )
         described_class.new({}).enqueue_required_jobs(result, [])
       end
 
       def expect_one_result(args, queue, priority)
-        jobs = jobs_by_class(HalfHourlyTestJob)
+        jobs = DbSupport.jobs_by_class(HalfHourlyTestJob)
         expect(jobs.count).to eq(1)
         one_result = jobs.first
         expect(one_result['args'] || []).to eq(JSON.parse(args.to_json))
@@ -171,7 +173,7 @@ RSpec.describe Que::Scheduler::SchedulerJob do
   end
 
   def expect_itself_enqueued
-    itself_jobs = jobs_by_class(QS::SchedulerJob)
+    itself_jobs = DbSupport.jobs_by_class(QS::SchedulerJob)
     expect(itself_jobs.count).to eq(1)
     hash = itself_jobs.first.to_h
     expect(hash['queue']).to eq('')
