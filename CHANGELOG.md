@@ -1,6 +1,8 @@
 ## Unreleased
 
 - Namespace support modules [#54](https://github.com/hlascelles/que-scheduler/pull/54)
+- Add Ruby 2.6 tests [#58](https://github.com/hlascelles/que-scheduler/pull/58)
+- Remove Ruby 2.2 tests [#58](https://github.com/hlascelles/que-scheduler/pull/58)
 
 ## 3.2.2 (2018-08-01)
 

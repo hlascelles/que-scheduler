@@ -2,8 +2,7 @@ fail_on_violations: true
 ruby:
   config_file: .rubocop.yml
 reek:
-  # Have to disable reek as Hound requires a higher version than we can provide, as it would mean
-  # losing support for older versions of ruby.
-  enabled: false
+  enabled: true
+  config_file: .reek.yml
 shellcheck:
   enabled: true
