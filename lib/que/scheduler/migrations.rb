@@ -32,6 +32,13 @@ module Que
           Que::Scheduler::Db.count_schedulers.zero? ? 0 : 1
         end
 
+        def audit_table_exists?
+          result = Que.execute(<<-SQL)
+            SELECT * FROM information_schema.tables WHERE table_name = '#{AUDIT_TABLE_NAME}';
+          SQL
+          result.any?
+        end
+
         private
 
         def migrate_up(current, version)
@@ -51,13 +58,6 @@ module Que
           Que.execute(
             "COMMENT ON TABLE que_scheduler_audit IS '#{direction == :up ? number : number - 1}'"
           )
-        end
-
-        def audit_table_exists?
-          result = Que.execute(<<-SQL)
-            SELECT * FROM information_schema.tables WHERE table_name = '#{AUDIT_TABLE_NAME}';
-          SQL
-          result.any?
         end
       end
     end

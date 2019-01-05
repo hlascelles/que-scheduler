@@ -40,9 +40,9 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'pg', '~> 0.21'
   spec.add_development_dependency 'pry-byebug'
   spec.add_development_dependency 'rake'
-  spec.add_development_dependency 'reek', '~> 4.8' # 5.0 requires ruby 2.3+
+  spec.add_development_dependency 'reek'
   spec.add_development_dependency 'rspec'
-  spec.add_development_dependency 'rubocop', '~> 0.61.0'
+  spec.add_development_dependency 'rubocop', '~> 0.61'
   spec.add_development_dependency 'sqlite3', '>= 1.3'
   spec.add_development_dependency 'timecop'
   spec.add_development_dependency 'zonebie'
