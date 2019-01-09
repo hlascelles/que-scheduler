@@ -82,7 +82,7 @@ GEM
       et-orbi (~> 1.1, >= 1.1.6)
       raabro (~> 1.1)
     hashie (3.6.0)
-    i18n (1.4.0)
+    i18n (1.5.1)
       concurrent-ruby (~> 1.0)
     ice_nine (0.11.2)
     jaro_winkler (1.5.2)
@@ -186,7 +186,6 @@ DEPENDENCIES
   activerecord (>= 4.0)
   activesupport (~> 5.0)
   appraisal
-  bundler
   combustion
   coveralls
   database_cleaner
