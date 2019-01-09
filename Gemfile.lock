@@ -185,7 +185,6 @@ PLATFORMS
 DEPENDENCIES
   activerecord (>= 4.0)
   appraisal
-  bundler
   combustion
   coveralls
   database_cleaner

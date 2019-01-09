@@ -86,11 +86,13 @@ all_options_job:
   priority: 25
   args: ['open']
   
-# Ensure you never miss a job, even after downtime
+# Ensure you never miss a job, even after downtime, by using "schedule_type: every_event"
 DailyBatchReport:
   cron: "0 3 * * *"
-  # This job will be run every day. If workers are offline for several days, then the backlog
-  # will all be scheduled when they are restored, each with that event's timestamp as the first arg.
+  # This job will be run every day at 03:00 as normal.
+  # However, the "schedule_type: every_event" setting below will ensure that if workers are offline
+  # for any amount of time then the bcaklog will always be enqueued on recovery.
+  # See "Schedule types" below for more information.
   schedule_type: every_event
 ```
 
@@ -104,11 +106,15 @@ A job can have a `schedule_type` assigned to it. Valid values are:
   the way resque-scheduler would perform if it were taken down for some time.
 1. `every_event` - Every cron match will result in a job being scheduled. If multiple cron times go 
   by during an extended period of downtime, then a job will be scheduled for every one missed on 
-  startup. This `schedule_type` should be used for daily batch jobs that need to know which day 
+  startup. This `schedule_type` should be used for regular batch jobs that need to know which time
   they are running a batch for. The job will always be scheduled with an ISO8601 string of the cron 
   that matched as the first argument. 
-   
-   This feature ensures that jobs which *must run* for a certain cron match will always eventually 
+  
+  An example would be an eventing DailyReportJob which summarises a day's sales. If no jobs run for
+  a few days due to a technical failure, then on recovery a report would still be needed for each 
+  individual day. "schedule_type: every_event" would ensure this happens.
+  
+  This feature ensures that jobs which *must run* for a certain cron match will always eventually 
   execute, even after a total system crash, or even a DB backup restore.
 
 ## Gem configuration
