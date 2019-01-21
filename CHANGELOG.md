@@ -4,6 +4,7 @@
 - Add Ruby 2.6 tests [#58](https://github.com/hlascelles/que-scheduler/pull/58)
 - Remove Ruby 2.2 tests [#58](https://github.com/hlascelles/que-scheduler/pull/58)
 - Bump rubocop from 0.62.0 to 0.63.0 [#63](https://github.com/hlascelles/que-scheduler/pull/63)
+- Update Fugit to 1.1.8 [#62](https://github.com/hlascelles/que-scheduler/pull/62)
 - Switch from Travis to Gitlab [#64](https://github.com/hlascelles/que-scheduler/pull/64)
 
 ## 3.2.2 (2018-08-01)
