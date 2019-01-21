@@ -1,0 +1,147 @@
+# To run this locally:
+# - Download the runner: https://docs.gitlab.com/runner/install/bleeding-edge.html#download-the-standalone-binaries
+# - gitlab-runner-linux-amd64 exec docker "ruby_2_6_postgre_9_4"
+
+variables:
+  BUNDLE_PATH: vendor/bundle
+  GET_SOURCES_ATTEMPTS: "5"
+  DB_HOST: postgres
+  DB_PASSWORD: postgres
+  # Gitlab setup
+  POSTGRES_DB: postgres
+  POSTGRES_USER: postgres
+  POSTGRES_PASSWORD: postgres
+
+.cache_paths: &cache_paths
+  paths:
+  - vendor/bundle # Must match $BUNDLE_PATH
+  - gemfiles/vendor/bundle # For Appraisal. Must match gemfiles/$BUNDLE_PATH
+
+before_script:
+- set -euo pipefail
+- bundle check || bundle install
+- bundle exec appraisal install
+
+stages:
+- install
+- quality
+- test_postgres_9_4
+- test_postgres_9_5
+
+.retries: &retries
+  retry:
+    max: 2
+    when:
+    - runner_system_failure
+    - stuck_or_timeout_failure
+    - unknown_failure
+    - api_failure
+
+.ruby_2_3: &ruby_2_3
+  <<: *retries
+  image: ruby:2.3
+  cache:
+    key: ruby_2_3
+    <<: *cache_paths
+
+.ruby_2_4: &ruby_2_4
+  <<: *retries
+  image: ruby:2.4
+  cache:
+    key: ruby_2_4
+    <<: *cache_paths
+
+.ruby_2_5: &ruby_2_5
+  <<: *retries
+  image: ruby:2.5
+  cache:
+    key: ruby_2_5
+    <<: *cache_paths
+
+.ruby_2_6: &ruby_2_6
+  <<: *retries
+  image: ruby:2.6
+  cache:
+    key: ruby_2_6
+    <<: *cache_paths
+
+.postgres_9_4: &postgres_9_4
+  stage: test_postgres_9_4
+  services:
+  - postgres:9.4.0
+
+.postgres_9_5: &postgres_9_5
+  stage: test_postgres_9_5
+  services:
+  - postgres:9.5.0
+
+.test: &test
+  script:
+  - "bundle exec appraisal rake spec"
+
+.install: &install
+  stage: install
+  script:
+  - echo "Gems installed..."
+
+install_ruby_2_3:
+  <<: *install
+  <<: *ruby_2_3
+
+install_ruby_2_4:
+  <<: *install
+  <<: *ruby_2_4
+
+install_ruby_2_5:
+  <<: *install
+  <<: *ruby_2_5
+
+install_ruby_2_6:
+  <<: *install
+  <<: *ruby_2_6
+
+quality:
+  <<: *ruby_2_5
+  stage: quality
+  script:
+  - "./quality.sh"
+
+ruby_2_3_postgre_9_4:
+  <<: *test
+  <<: *ruby_2_3
+  <<: *postgres_9_4
+
+ruby_2_4_postgre_9_4:
+  <<: *test
+  <<: *ruby_2_4
+  <<: *postgres_9_4
+
+ruby_2_5_postgre_9_4:
+  <<: *test
+  <<: *ruby_2_5
+  <<: *postgres_9_4
+
+ruby_2_6_postgre_9_4:
+  <<: *test
+  <<: *ruby_2_6
+  <<: *postgres_9_4
+
+ruby_2_3_postgre_9_5:
+  <<: *test
+  <<: *ruby_2_3
+  <<: *postgres_9_5
+
+ruby_2_4_postgre_9_5:
+  <<: *test
+  <<: *ruby_2_4
+  <<: *postgres_9_5
+
+ruby_2_5_postgre_9_5:
+  <<: *test
+  <<: *ruby_2_5
+  <<: *postgres_9_5
+
+ruby_2_6_postgre_9_5:
+  <<: *test
+  <<: *ruby_2_6
+  <<: *postgres_9_5
