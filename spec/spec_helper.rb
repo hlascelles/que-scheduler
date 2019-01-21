@@ -6,9 +6,14 @@ Coveralls.wear!
 # By default, que-scheduler specs run in different timezones with every execution, thanks to
 # zonebie. If you want to force one particular timezone, you can use the following:
 # ENV['ZONEBIE_TZ'] = 'International Date Line West'
-# Require zonebie before any other gem to ensure it sets the correct test timezone.
-# Setting zonebie to London for travis tests so it matches the .travis.yml ENV.
-ENV['ZONEBIE_TZ'] = 'Europe/London' if ENV['TRAVIS'] == 'true'
+# Require zonebie before most other gems to ensure it sets the correct test timezone.
+if ENV['CI'].present?
+  # Changing the TZ in CI builds has proved to be hard, if not impossible. So, on CI only, shift
+  # zonebie to using what is already present. For local builds, let zonebie randomise it.
+  tz_identifier = `cat /etc/timezone`.strip
+  puts "TZ appears to be #{tz_identifier}"
+  ENV['ZONEBIE_TZ'] = tz_identifier
+end
 require 'zonebie/rspec'
 
 Bundler.require :default, :development
