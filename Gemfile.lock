@@ -107,7 +107,7 @@ GEM
     pry-byebug (3.7.0)
       byebug (~> 11.0)
       pry (~> 0.10)
-    psych (3.0.3)
+    psych (3.1.0)
     que (0.14.3)
     raabro (1.1.6)
     rack (2.0.6)
@@ -190,7 +190,7 @@ DEPENDENCIES
   fasterer
   pg (~> 0.21)
   pry-byebug
-  psych (~> 3.0.0)
+  psych (~> 3.1.0)
   que-scheduler!
   rake
   reek
