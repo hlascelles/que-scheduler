@@ -53,6 +53,20 @@ RSpec.describe Que::Scheduler::SchedulerJob do
         )
       end
 
+      # Some middlewares can cause an enqueue not to enqueue a job.
+      # When the main job fails to self enqueue, we must error.
+      it "errors when the enqueue call does not enqueue the #{described_class} job" do
+        described_class.enqueue
+        expect(described_class).to receive(:enqueue).and_return(false)
+        expect_any_instance_of(::Que::Job).to receive(:handle_error).once.and_call_original
+        ::Que::Job.work
+
+        # The job will have been re-enqueued, not by itself during normal operation, but by the
+        # standard que job error retry semantics.
+        hash = expect_one_itself_job
+        expect(hash['error_count']).to eq(1)
+      end
+
       def run_test(initial_job_args, to_be_scheduled)
         described_class.enqueue(initial_job_args)
         ::Que::Job.work
@@ -172,12 +186,17 @@ RSpec.describe Que::Scheduler::SchedulerJob do
     end
   end
 
-  def expect_itself_enqueued
+  def expect_one_itself_job
     itself_jobs = DbSupport.jobs_by_class(QS::SchedulerJob)
     expect(itself_jobs.count).to eq(1)
-    hash = itself_jobs.first.to_h
+    itself_jobs.first.to_h
+  end
+
+  def expect_itself_enqueued
+    hash = expect_one_itself_job
     expect(hash['queue']).to eq('')
     expect(hash['priority']).to eq(0)
+    expect(hash['error_count']).to eq(0)
     expect(hash['job_class']).to eq('Que::Scheduler::SchedulerJob')
     expect(hash['run_at']).to eq(
       run_time.beginning_of_minute + described_class::SCHEDULER_FREQUENCY

@@ -1,3 +1,7 @@
+## Unreleased
+
+- Add re-enqueue checks [#76](https://github.com/hlascelles/que-scheduler/pull/76)
+
 ## 3.2.3 (2019-03-06)
 
 - Namespace support modules [#54](https://github.com/hlascelles/que-scheduler/pull/54)

@@ -65,11 +65,15 @@ module Que
 
       def enqueue_self_again(scheduler_job_args, last_full_execution, job_dictionary, enqueued_jobs)
         next_run_at = scheduler_job_args.as_time.beginning_of_minute + SCHEDULER_FREQUENCY
-        SchedulerJob.enqueue(
+        enqueued_job = SchedulerJob.enqueue(
           last_run_time: last_full_execution.iso8601,
           job_dictionary: job_dictionary,
           run_at: next_run_at
         )
+        unless check_enqueued_job(enqueued_job, SchedulerJob, {}, [])
+          raise 'SchedulerJob could not self-schedule. Has `.enqueue` been monkey patched?'
+        end
+
         Audit.append(attrs[:job_id], scheduler_job_args.as_time, enqueued_jobs)
       end
     end
