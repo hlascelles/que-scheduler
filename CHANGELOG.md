@@ -1,6 +1,7 @@
 ## Unreleased
 
 - Add re-enqueue checks [#76](https://github.com/hlascelles/que-scheduler/pull/76)
+- Introduction of initial que 1.0 handling code [#95](https://github.com/hlascelles/que-scheduler/pull/95)
 
 ## 3.2.3 (2019-03-06)
 

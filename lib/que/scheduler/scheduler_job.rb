@@ -4,6 +4,7 @@ require_relative 'schedule'
 require_relative 'enqueueing_calculator'
 require_relative 'scheduler_job_args'
 require_relative 'state_checks'
+require_relative 'version_support'
 
 # The main job that runs every minute, determining what needs to be enqueued, enqueues the required
 # jobs, then re-enqueues itself.
@@ -13,7 +14,7 @@ module Que
       SCHEDULER_FREQUENCY = 60
 
       # Always highest possible priority.
-      @priority = 0
+      Que::Scheduler::VersionSupport.set_priority(self, 0)
 
       def run(options = nil)
         Que::Scheduler::Db.transaction do
@@ -53,7 +54,7 @@ module Que
 
       def check_enqueued_job(enqueued_job, job_class, args, logs)
         if enqueued_job.is_a?(Que::Job)
-          job_id = enqueued_job.attrs.fetch('job_id')
+          job_id = Que::Scheduler::VersionSupport.job_attributes(enqueued_job).fetch(:job_id)
           logs << "que-scheduler enqueueing #{job_class} #{job_id} with args: #{args}"
           enqueued_job
         else
@@ -64,17 +65,23 @@ module Que
       end
 
       def enqueue_self_again(scheduler_job_args, last_full_execution, job_dictionary, enqueued_jobs)
+        # Log last run...
+        job_id = Que::Scheduler::VersionSupport.job_attributes(self).fetch(:job_id)
+        Audit.append(job_id, scheduler_job_args.as_time, enqueued_jobs)
+
+        # And rerun...
         next_run_at = scheduler_job_args.as_time.beginning_of_minute + SCHEDULER_FREQUENCY
         enqueued_job = SchedulerJob.enqueue(
           last_run_time: last_full_execution.iso8601,
           job_dictionary: job_dictionary,
           run_at: next_run_at
         )
+
+        # rubocop:disable Style/GuardClause This reads better as a conditional
         unless check_enqueued_job(enqueued_job, SchedulerJob, {}, [])
           raise 'SchedulerJob could not self-schedule. Has `.enqueue` been monkey patched?'
         end
-
-        Audit.append(attrs[:job_id], scheduler_job_args.as_time, enqueued_jobs)
+        # rubocop:enable Style/GuardClause
       end
     end
   end
