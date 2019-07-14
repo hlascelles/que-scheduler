@@ -1,7 +1,7 @@
 PATH
   remote: ..
   specs:
-    que-scheduler (3.2.3)
+    que-scheduler (3.2.4)
       activesupport (>= 4.0)
       backports (~> 3.10)
       fugit (~> 1.1, >= 1.1.8)
