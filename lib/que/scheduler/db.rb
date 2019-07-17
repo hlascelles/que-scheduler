@@ -11,11 +11,11 @@ module Que
 
       class << self
         def count_schedulers
-          Que.execute(SCHEDULER_COUNT_SQL).first.values.first.to_i
+          Que::Scheduler::VersionSupport.execute(SCHEDULER_COUNT_SQL).first.values.first.to_i
         end
 
         def now
-          Que.execute(NOW_SQL).first.values.first
+          Que::Scheduler::VersionSupport.execute(NOW_SQL).first.values.first
         end
 
         def transaction

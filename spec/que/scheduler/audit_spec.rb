@@ -13,40 +13,41 @@ RSpec.describe Que::Scheduler::Audit do
         ]
         described_class.append(job_id, executed_at, enqueued_jobs)
 
-        audit = Que.execute('select * from que_scheduler_audit')
+        audit = Que::Scheduler::VersionSupport.execute('select * from que_scheduler_audit')
         expect(audit.count).to eq(1)
-        expect(audit.first['scheduler_job_id']).to eq(job_id)
-        expect(audit.first['executed_at']).to eq(executed_at)
-        db_jobs = Que.execute('select * from que_scheduler_audit_enqueued')
+        expect(audit.first[:scheduler_job_id]).to eq(job_id)
+        expect(audit.first[:executed_at]).to eq(executed_at)
+        db_jobs =
+          Que::Scheduler::VersionSupport.execute('select * from que_scheduler_audit_enqueued')
         expect(db_jobs.count).to eq(3)
         expect(db_jobs).to eq(
           [
             {
-              'scheduler_job_id' => 1234,
-              'job_class' => 'HalfHourlyTestJob',
-              'queue' => 'something',
-              'priority' => 100,
-              'args' => '[5]',
-              'job_id' => enqueued_jobs[0].attrs.fetch('job_id'),
-              'run_at' => executed_at - 1.hour,
+              scheduler_job_id: 1234,
+              job_class: 'HalfHourlyTestJob',
+              queue: 'something',
+              priority: 100,
+              args: '[5]',
+              job_id: enqueued_jobs[0].attrs.fetch('job_id'),
+              run_at: executed_at - 1.hour,
             },
             {
-              'scheduler_job_id' => 1234,
-              'job_class' => 'HalfHourlyTestJob',
-              'queue' => '',
-              'priority' => 80,
-              'args' => '[]',
-              'job_id' => enqueued_jobs[1].attrs.fetch('job_id'),
-              'run_at' => executed_at - 2.hours,
+              scheduler_job_id: 1234,
+              job_class: 'HalfHourlyTestJob',
+              queue: '',
+              priority: 80,
+              args: '[]',
+              job_id: enqueued_jobs[1].attrs.fetch('job_id'),
+              run_at: executed_at - 2.hours,
             },
             {
-              'scheduler_job_id' => 1234,
-              'job_class' => 'DailyTestJob',
-              'queue' => 'some_queue',
-              'priority' => 100,
-              'args' => '[3]',
-              'job_id' => enqueued_jobs[2].attrs.fetch('job_id'),
-              'run_at' => executed_at - 3.hours,
+              scheduler_job_id: 1234,
+              job_class: 'DailyTestJob',
+              queue: 'some_queue',
+              priority: 100,
+              args: '[3]',
+              job_id: enqueued_jobs[2].attrs.fetch('job_id'),
+              run_at: executed_at - 3.hours,
             }
           ]
         )

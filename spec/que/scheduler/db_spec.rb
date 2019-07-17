@@ -21,7 +21,9 @@ RSpec.describe Que::Scheduler::Db do
 
   describe '.now' do
     it 'returns the time' do
-      expect(Que).to receive(:execute).with(described_class::NOW_SQL).and_return([{ foo: :bar }])
+      expect(Que).to receive(:execute).with(
+        described_class::NOW_SQL, []
+      ).and_return([{ foo: :bar }])
       expect(described_class.now).to eq(:bar)
     end
   end
