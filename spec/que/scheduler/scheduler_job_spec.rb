@@ -64,7 +64,7 @@ RSpec.describe Que::Scheduler::SchedulerJob do
         # The job will have been re-enqueued, not by itself during normal operation, but by the
         # standard que job error retry semantics.
         hash = expect_one_itself_job
-        expect(hash['error_count']).to eq(1)
+        expect(hash.fetch(:error_count)).to eq(1)
       end
 
       def run_test(initial_job_args, to_be_scheduled)
@@ -91,10 +91,10 @@ RSpec.describe Que::Scheduler::SchedulerJob do
         jobs = DbSupport.jobs_by_class(HalfHourlyTestJob)
         expect(jobs.count).to eq(1)
         one_result = jobs.first
-        expect(one_result['args'] || []).to eq(JSON.parse(args.to_json))
-        expect(one_result['queue']).to eq(queue)
-        expect(one_result['priority']).to eq(priority)
-        expect(one_result['job_class']).to eq('HalfHourlyTestJob')
+        expect(one_result.fetch(:args) || []).to eq(JSON.parse(args.to_json))
+        expect(one_result.fetch(:queue)).to eq(queue)
+        expect(one_result.fetch(:priority)).to eq(priority)
+        expect(one_result.fetch(:job_class)).to eq('HalfHourlyTestJob')
       end
 
       it 'schedules nothing if nothing in the result' do
@@ -173,7 +173,8 @@ RSpec.describe Que::Scheduler::SchedulerJob do
         expect(HalfHourlyTestJob).to receive(:enqueue).and_return(false)
         test_enqueued([{ job_class: HalfHourlyTestJob }])
         expect(Que.job_stats).to eq([])
-        expect(Que.execute('select * from que_scheduler_audit_enqueued').count).to eq(0)
+        qsae = Que::Scheduler::VersionSupport.execute('select * from que_scheduler_audit_enqueued')
+        expect(qsae.count).to eq(0)
       end
     end
   end
@@ -194,14 +195,14 @@ RSpec.describe Que::Scheduler::SchedulerJob do
 
   def expect_itself_enqueued
     hash = expect_one_itself_job
-    expect(hash['queue']).to eq('')
-    expect(hash['priority']).to eq(0)
-    expect(hash['error_count']).to eq(0)
-    expect(hash['job_class']).to eq('Que::Scheduler::SchedulerJob')
-    expect(hash['run_at']).to eq(
+    expect(hash.fetch(:queue)).to eq('')
+    expect(hash.fetch(:priority)).to eq(0)
+    expect(hash.fetch(:error_count)).to eq(0)
+    expect(hash.fetch(:job_class)).to eq('Que::Scheduler::SchedulerJob')
+    expect(hash.fetch(:run_at)).to eq(
       run_time.beginning_of_minute + described_class::SCHEDULER_FREQUENCY
     )
-    expect(hash['args']).to eq(
+    expect(hash.fetch(:args)).to eq(
       [{ 'last_run_time' => run_time.iso8601, 'job_dictionary' => full_dictionary }]
     )
   end

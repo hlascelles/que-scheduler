@@ -28,19 +28,19 @@ module DbSupport
       Que.migrate!(version: 3)
       Que::Scheduler::Migrations.migrate!(version: Que::Scheduler::Migrations::MAX_VERSION)
       puts "Setting DB timezone to #{::Time.zone.tzinfo.identifier}"
-      Que.execute("set timezone TO '#{::Time.zone.tzinfo.identifier}';")
+      Que::Scheduler::VersionSupport.execute("set timezone TO '#{::Time.zone.tzinfo.identifier}';")
     end
 
     def jobs_by_class(clazz)
-      Que.execute("SELECT * FROM que_jobs where job_class = '#{clazz}'")
+      Que::Scheduler::VersionSupport.execute("SELECT * FROM que_jobs where job_class = '#{clazz}'")
     end
 
     def column_default(table, column_name)
-      Que.execute(%{
+      Que::Scheduler::VersionSupport.execute(%{
         SELECT column_name, column_default
         FROM information_schema.columns
         WHERE (table_schema, table_name, column_name) = ('public', '#{table}', '#{column_name}')
-      }).first.fetch('column_default')
+      }).first.fetch(:column_default)
     end
 
     def mock_db_time_now
@@ -49,10 +49,10 @@ module DbSupport
     end
 
     def scheduler_job_id_type
-      Que.execute(
+      Que::Scheduler::VersionSupport.execute(
         'select column_name, data_type from information_schema.columns ' \
         "where table_name = 'que_scheduler_audit';"
-      ).find { |row| row.fetch('column_name') == 'scheduler_job_id' }.fetch('data_type')
+      ).find { |row| row.fetch(:column_name) == 'scheduler_job_id' }.fetch(:data_type)
     end
 
     def enqueued_table_exists?

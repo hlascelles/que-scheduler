@@ -13,6 +13,16 @@ module Que
         def job_attributes(enqueued_job)
           enqueued_job.attrs.transform_keys(&:to_sym)
         end
+
+        # Between Que 0.x and 1.x the result of `Que.execute` changed keys from strings to symbols.
+        # Here we wrap the concept and make sure either way produces symbols
+        def execute(str, args = [])
+          normalise_array_of_hashes(Que.execute(str, args))
+        end
+
+        def normalise_array_of_hashes(array)
+          array.map { |row| row.transform_keys(&:to_sym) }
+        end
       end
     end
   end

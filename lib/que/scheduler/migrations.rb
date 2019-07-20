@@ -27,13 +27,15 @@ module Que
         end
 
         def db_version
-          return Que.execute(TABLE_COMMENT).first[:description].to_i if audit_table_exists?
+          if audit_table_exists?
+            return Que::Scheduler::VersionSupport.execute(TABLE_COMMENT).first[:description].to_i
+          end
 
           Que::Scheduler::Db.count_schedulers.zero? ? 0 : 1
         end
 
         def audit_table_exists?
-          result = Que.execute(<<-SQL)
+          result = Que::Scheduler::VersionSupport.execute(<<-SQL)
             SELECT * FROM information_schema.tables WHERE table_name = '#{AUDIT_TABLE_NAME}';
           SQL
           result.any?
@@ -52,10 +54,11 @@ module Que
         end
 
         def execute_step(number, direction)
-          Que.execute(IO.read("#{__dir__}/migrations/#{number}/#{direction}.sql"))
+          sql = IO.read("#{__dir__}/migrations/#{number}/#{direction}.sql")
+          Que::Scheduler::VersionSupport.execute(sql)
           return unless audit_table_exists?
 
-          Que.execute(
+          Que::Scheduler::VersionSupport.execute(
             "COMMENT ON TABLE que_scheduler_audit IS '#{direction == :up ? number : number - 1}'"
           )
         end
