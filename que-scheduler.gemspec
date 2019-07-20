@@ -40,7 +40,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'pry-byebug'
   spec.add_development_dependency 'psych', '~> 3.0.0' # Prevents "Mark" class issues locally
   spec.add_development_dependency 'rake'
-  spec.add_development_dependency 'reek'
+  spec.add_development_dependency 'reek', '~> 4.0'
   spec.add_development_dependency 'rspec'
   spec.add_development_dependency 'rubocop', '~> 0.61'
   spec.add_development_dependency 'sqlite3', '>= 1.3'

@@ -192,7 +192,7 @@ DEPENDENCIES
   que (~> 0.14)
   que-scheduler!
   rake
-  reek
+  reek (~> 4.0)
   rspec
   rubocop (~> 0.61)
   sqlite3 (>= 1.3)

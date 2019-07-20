@@ -190,7 +190,7 @@ DEPENDENCIES
   psych (~> 3.0.0)
   que-scheduler!
   rake
-  reek
+  reek (~> 4.0)
   rspec
   rubocop (~> 0.61)
   sqlite3 (>= 1.3)
