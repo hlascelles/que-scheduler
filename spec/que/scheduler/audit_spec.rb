@@ -34,7 +34,7 @@ RSpec.describe Que::Scheduler::Audit do
             {
               scheduler_job_id: 1234,
               job_class: 'HalfHourlyTestJob',
-              queue: '',
+              queue: Que::Scheduler.configuration.que_scheduler_queue,
               priority: 80,
               args: '[]',
               job_id: enqueued_jobs[1].attrs.fetch('job_id'),

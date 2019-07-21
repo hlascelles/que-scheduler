@@ -1,6 +1,7 @@
 ## Unreleased
 
 - Add facade to handle Que.execute differences between versions [#101](https://github.com/hlascelles/que-scheduler/pull/101)
+- Add facade to handle default queue differences between versions [#103](https://github.com/hlascelles/que-scheduler/pull/103)
 
 ## 3.2.4 (2019-07-14)
 
