@@ -31,4 +31,10 @@ RSpec.describe Que::Scheduler::VersionSupport do
       expect(attrs.fetch(:run_at)).to be_a(Time)
     end
   end
+
+  describe '.default_scheduler_queue' do
+    it 'returns the queue name' do
+      expect(described_class.default_scheduler_queue).to eq('')
+    end
+  end
 end

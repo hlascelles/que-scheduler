@@ -20,6 +20,10 @@ module Que
           normalise_array_of_hashes(Que.execute(str, args))
         end
 
+        def default_scheduler_queue
+          ''
+        end
+
         def normalise_array_of_hashes(array)
           array.map { |row| row.transform_keys(&:to_sym) }
         end

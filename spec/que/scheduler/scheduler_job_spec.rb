@@ -195,7 +195,7 @@ RSpec.describe Que::Scheduler::SchedulerJob do
 
   def expect_itself_enqueued
     hash = expect_one_itself_job
-    expect(hash.fetch(:queue)).to eq('')
+    expect(hash.fetch(:queue)).to eq(Que::Scheduler.configuration.que_scheduler_queue)
     expect(hash.fetch(:priority)).to eq(0)
     expect(hash.fetch(:error_count)).to eq(0)
     expect(hash.fetch(:job_class)).to eq('Que::Scheduler::SchedulerJob')

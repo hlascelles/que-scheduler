@@ -16,6 +16,7 @@ module DbSupport
         reconnect: true,
       }
       ActiveRecord::Base.establish_connection(db_config.merge(database: 'postgres'))
+
       conn = ActiveRecord::Base.connection
       if conn.execute("SELECT 1 from pg_database WHERE datname='#{testing_db}';").count > 0
         conn.execute("DROP DATABASE #{testing_db}")
