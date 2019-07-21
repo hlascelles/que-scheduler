@@ -4,5 +4,6 @@ ruby:
 reek:
   enabled: true
   config_file: .reek
+  version: 4.0.3
 shellcheck:
   enabled: true
