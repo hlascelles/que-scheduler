@@ -24,10 +24,14 @@ module DbSupport
       conn.execute("CREATE DATABASE #{testing_db}")
 
       ActiveRecord::Base.establish_connection(db_config)
-      Que.mode = :off
       Que.connection = ActiveRecord
-      Que.migrate!(version: 3)
+
+      # First migrate Que
+      Que.migrate!(version: ::Que::Migrations::CURRENT_VERSION)
+
+      # Now migrate que scheduler
       Que::Scheduler::Migrations.migrate!(version: Que::Scheduler::Migrations::MAX_VERSION)
+
       puts "Setting DB timezone to #{::Time.zone.tzinfo.identifier}"
       Que::Scheduler::VersionSupport.execute("set timezone TO '#{::Time.zone.tzinfo.identifier}';")
     end
