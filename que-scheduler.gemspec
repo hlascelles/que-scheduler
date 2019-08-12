@@ -42,7 +42,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'rake'
   spec.add_development_dependency 'reek', '5.0.2' # Supported hound version. https://bit.ly/2M02Kx7
   spec.add_development_dependency 'rspec'
-  spec.add_development_dependency 'rubocop', '~> 0.63.0'
+  spec.add_development_dependency 'rubocop', '~> 0.68.1'
   spec.add_development_dependency 'sqlite3', '>= 1.3'
   spec.add_development_dependency 'timecop'
   spec.add_development_dependency 'zonebie'
