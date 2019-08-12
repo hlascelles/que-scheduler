@@ -30,7 +30,7 @@ module Que
           )
 
           # Only now we're sure nothing errored, log the results
-          logs.each { |str| ::Que.log(message: str) }
+          logs.each { |str| ::Que.log(event: 'que-scheduler'.to_sym, message: str) }
           destroy
         end
       end
