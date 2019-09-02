@@ -1,3 +1,7 @@
+## Unreleased
+
+- Add support for Rails 6 [#117](https://github.com/hlascelles/que-scheduler/pull/117)
+
 ## 3.2.5 (2019-07-26)
 
 - Add facade to handle Que.execute differences between versions [#101](https://github.com/hlascelles/que-scheduler/pull/101)
