@@ -37,20 +37,6 @@ stages:
     - unknown_failure
     - api_failure
 
-.ruby_2_3: &ruby_2_3
-  <<: *retries
-  image: ruby:2.3
-  cache:
-    key: ruby_2_3
-    <<: *cache_paths
-
-.ruby_2_4: &ruby_2_4
-  <<: *retries
-  image: ruby:2.4
-  cache:
-    key: ruby_2_4
-    <<: *cache_paths
-
 .ruby_2_5: &ruby_2_5
   <<: *retries
   image: ruby:2.5
@@ -84,14 +70,6 @@ stages:
   script:
   - echo "Gems installed..."
 
-install_ruby_2_3:
-  <<: *install
-  <<: *ruby_2_3
-
-install_ruby_2_4:
-  <<: *install
-  <<: *ruby_2_4
-
 install_ruby_2_5:
   <<: *install
   <<: *ruby_2_5
@@ -106,16 +84,6 @@ quality:
   script:
   - "./quality.sh"
 
-ruby_2_3_postgres_9_4:
-  <<: *test
-  <<: *ruby_2_3
-  <<: *postgres_9_4
-
-ruby_2_4_postgres_9_4:
-  <<: *test
-  <<: *ruby_2_4
-  <<: *postgres_9_4
-
 ruby_2_5_postgres_9_4:
   <<: *test
   <<: *ruby_2_5
@@ -125,16 +93,6 @@ ruby_2_6_postgres_9_4:
   <<: *test
   <<: *ruby_2_6
   <<: *postgres_9_4
-
-ruby_2_3_postgres_9_5:
-  <<: *test
-  <<: *ruby_2_3
-  <<: *postgres_9_5
-
-ruby_2_4_postgres_9_5:
-  <<: *test
-  <<: *ruby_2_4
-  <<: *postgres_9_5
 
 ruby_2_5_postgres_9_5:
   <<: *test
