@@ -26,6 +26,8 @@ module DbSupport
       ActiveRecord::Base.establish_connection(db_config)
       Que.connection = ActiveRecord
 
+      avoid_invalid_testing_scenarios
+
       # First migrate Que
       Que.migrate!(version: ::Que::Migrations::CURRENT_VERSION)
 
@@ -62,6 +64,29 @@ module DbSupport
 
     def enqueued_table_exists?
       ActiveRecord::Base.connection.table_exists?(Que::Scheduler::Audit::ENQUEUED_TABLE_NAME)
+    end
+
+    # When a jsonb column is populated with an array, then when it is selected from the
+    # DB with Que.execute the value differs by Que. For Que 0.x it comes out as a String. For 1.x
+    # it is parsed into an array here: https://t.ly/byDJd. This helper equalises them.
+    def convert_args_column(db_jobs)
+      db_jobs.map do |row|
+        var = row[:args]
+        row[:args] = JSON.parse(var) if var.is_a?(String) && var.start_with?('[')
+        row
+      end
+    end
+
+    private
+
+    def avoid_invalid_testing_scenarios
+      que_version = Que::Scheduler::VersionSupport.execute('SELECT version()').first.fetch(:version)
+      return unless que_version.start_with?('PostgreSQL 9.4') &&
+                    !Que::Scheduler::VersionSupport.zero_major?
+
+      puts 'For Postgres 9.4 we cannot test que 1.x (as it uses new jsonb features), ' \
+           'so we must short circuit here so the CI build for other versions continues...'
+      exit(0) # Exit 0 for CI
     end
   end
 end

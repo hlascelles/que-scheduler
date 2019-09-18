@@ -47,11 +47,13 @@ RSpec.describe Que::Scheduler::Migrations do
       expect(audit.count).to eq(1)
       expect(audit.first[:scheduler_job_id]).to eq(17)
       expect(audit.first[:executed_at].to_s).to start_with('2017-01-01 00:00:00')
+      # .. with the associated enqueued row
       audit = Que::Scheduler::VersionSupport.execute('SELECT * FROM que_scheduler_audit_enqueued')
+      DbSupport.convert_args_column(audit)
       expect(audit.count).to eq(1)
       expect(audit.first[:scheduler_job_id]).to eq(17)
       expect(audit.first[:job_class]).to eq('DailyTestJob')
-      expect(audit.first[:args].to_s).to eq('[1, 2]')
+      expect(audit.first[:args]).to eq([1, 2])
 
       described_class.migrate!(version: 4)
       expect(DbSupport.scheduler_job_id_type).to eq('bigint')
