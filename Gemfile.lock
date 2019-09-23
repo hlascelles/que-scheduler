@@ -74,7 +74,7 @@ GEM
     erubi (1.8.0)
     et-orbi (1.2.2)
       tzinfo
-    fasterer (0.6.0)
+    fasterer (0.7.0)
       colorize (~> 0.7)
       ruby_parser (>= 3.13.0)
     fugit (1.3.3)
