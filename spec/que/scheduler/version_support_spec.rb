@@ -2,24 +2,47 @@ require 'spec_helper'
 
 RSpec.describe Que::Scheduler::VersionSupport do
   describe '.set_priority' do
+    class TestPriority < Que::Scheduler::SchedulerJob
+      Que::Scheduler::VersionSupport.set_priority(self, 3)
+    end
+
     it 'sets the priority' do
-      obj = double
-      described_class.set_priority(obj, 3)
-      expect(obj.instance_variable_get('@priority')).to eq(3)
+      if Que::Scheduler::VersionSupport.zero_major?
+        expect(TestPriority.instance_variable_get('@priority')).to eq(3)
+      else
+        expect(TestPriority.priority).to eq(3)
+      end
     end
   end
 
   describe '.job_attributes' do
     it 'retrieves the job attributes in a consistent manner' do
       job = Que::Scheduler::SchedulerJob.enqueue
-      expected = hash_including(
-        args: [],
-        error_count: 0,
-        job_class: 'Que::Scheduler::SchedulerJob',
-        last_error: nil,
-        priority: 0,
-        queue: ''
-      )
+
+      expected =
+        if Que::Scheduler::VersionSupport.zero_major?
+          hash_including(
+            args: [],
+            error_count: 0,
+            job_class: 'Que::Scheduler::SchedulerJob',
+            last_error: nil,
+            priority: 0,
+            queue: ''
+          )
+        else
+          hash_including(
+            args: [],
+            data: {},
+            error_count: 0,
+            expired_at: nil,
+            finished_at: nil,
+            job_class: 'Que::Scheduler::SchedulerJob',
+            last_error_backtrace: nil,
+            last_error_message: nil,
+            priority: 0,
+            queue: 'default'
+          )
+        end
       attrs = described_class.job_attributes(job)
       expect(attrs).to match(expected)
       # Keys changed from strings to symbols with que 1.0
@@ -34,7 +57,8 @@ RSpec.describe Que::Scheduler::VersionSupport do
 
   describe '.default_scheduler_queue' do
     it 'returns the queue name' do
-      expect(described_class.default_scheduler_queue).to eq('')
+      expected = Que::Scheduler::VersionSupport.zero_major? ? '' : 'default'
+      expect(described_class.default_scheduler_queue).to eq(expected)
     end
   end
 end

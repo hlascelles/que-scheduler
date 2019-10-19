@@ -56,10 +56,10 @@ RSpec.describe Que::Scheduler::SchedulerJob do
       # Some middlewares can cause an enqueue not to enqueue a job.
       # When the main job fails to self enqueue, we must error.
       it "errors when the enqueue call does not enqueue the #{described_class} job" do
-        described_class.enqueue
+        job = described_class.enqueue
         expect(described_class).to receive(:enqueue).and_return(false)
         expect_any_instance_of(::Que::Job).to receive(:handle_error).once.and_call_original
-        ::Que::Job.work
+        DbSupport.work_job(job)
 
         # The job will have been re-enqueued, not by itself during normal operation, but by the
         # standard que job error retry semantics.
@@ -68,8 +68,8 @@ RSpec.describe Que::Scheduler::SchedulerJob do
       end
 
       def run_test(initial_job_args, to_be_scheduled)
-        described_class.enqueue(initial_job_args)
-        ::Que::Job.work
+        job = described_class.enqueue(initial_job_args)
+        DbSupport.work_job(job)
         expect_itself_enqueued
         all_enqueued = Que.job_stats.map do |j|
           j.symbolize_keys.slice(:job_class)
@@ -91,10 +91,11 @@ RSpec.describe Que::Scheduler::SchedulerJob do
         jobs = DbSupport.jobs_by_class(HalfHourlyTestJob)
         expect(jobs.count).to eq(1)
         one_result = jobs.first
-        expect(one_result.fetch(:args) || []).to eq(JSON.parse(args.to_json))
-        expect(one_result.fetch(:queue)).to eq(queue)
-        expect(one_result.fetch(:priority)).to eq(priority)
-        expect(one_result.fetch(:job_class)).to eq('HalfHourlyTestJob')
+
+        expect_job_args_to_equal(one_result[:args] || [], args)
+        expect(one_result[:queue]).to eq(queue)
+        expect(one_result[:priority]).to eq(priority)
+        expect(one_result[:job_class]).to eq('HalfHourlyTestJob')
       end
 
       it 'schedules nothing if nothing in the result' do
@@ -202,8 +203,13 @@ RSpec.describe Que::Scheduler::SchedulerJob do
     expect(hash.fetch(:run_at)).to eq(
       run_time.beginning_of_minute + described_class::SCHEDULER_FREQUENCY
     )
-    expect(hash.fetch(:args)).to eq(
-      [{ 'last_run_time' => run_time.iso8601, 'job_dictionary' => full_dictionary }]
+    expect_job_args_to_equal(
+      hash[:args], [{ last_run_time: run_time.iso8601, job_dictionary: full_dictionary }]
     )
+  end
+
+  def expect_job_args_to_equal(args, to_equal)
+    args_sym = JSON.parse(args.to_json, symbolize_names: true)
+    expect(args_sym).to eq(to_equal)
   end
 end
