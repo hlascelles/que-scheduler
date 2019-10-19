@@ -1,4 +1,4 @@
-## Unreleased
+## 3.2.6 (2019-10-19)
 
 - Add support for Rails 6 [#117](https://github.com/hlascelles/que-scheduler/pull/117)
 
