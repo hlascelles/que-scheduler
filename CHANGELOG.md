@@ -1,6 +1,6 @@
 ## 3.2.7 (2019-10-19)
 
-- Add support for Que 1.0.0.beta3 [#125](https://github.com/hlascelles/que-scheduler/pull/125)
+- Add support for Que 1.0.0.beta3 [#18](https://github.com/hlascelles/que-scheduler/pull/18)
 
 ## 3.2.6 (2019-10-19)
 
