@@ -222,27 +222,6 @@ The scheduler will then continue to retry indefinitely.
 que-scheduler uses [semantic versioning](https://semver.org/), so major version changes will usually 
 require additional actions to be taken upgrading from one major version to another. 
 
-Major feature changes are listed below. The full 
-[CHANGELOG](https://github.com/hlascelles/que-scheduler/blob/master/CHANGELOG.md) can be found in 
-the root of the project. 
-
-#### Versions 3.x 
-  - Addition of a config initializer.
-  - Addition of numerous extra columns to the audit table.
-  - Drop support for ruby 2.1 and rails 3.x
-  - Required cumulative migration: `Que::Scheduler::Migrations.migrate!(version: 4)`
-#### Versions 2.x 
-  - Introduction of the audit table.
-  - Support for older versions of postgres
-  - Required cumulative migration: `Que::Scheduler::Migrations.migrate!(version: 3)`
-#### Versions 1.x
-  - Sequel support
-  - Config specified Timezone support
-  - Required migration adding the initial job: `Que::Scheduler::SchedulerJob.enqueue`
-#### Versions 0.x
-  - The first public release. 
-  - Required migration adding the initial job: `Que::Scheduler::SchedulerJob.enqueue`
-   
 ## System requirements
 
 Your [postgres](https://www.postgresql.org/) database must be at least version 9.4.0.
