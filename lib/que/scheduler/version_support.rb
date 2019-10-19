@@ -5,13 +5,12 @@ require 'que'
 module Que
   module Scheduler
     module VersionSupport
-      # rubocop:disable Style/GuardClause Temporary code
       class << self
         def set_priority(context, priority)
           if zero_major?
             context.instance_variable_set('@priority', priority)
           else
-            raise 'Unsupported Que version'
+            context.priority = priority
           end
         end
 
@@ -19,7 +18,9 @@ module Que
           if zero_major?
             enqueued_job.attrs.transform_keys(&:to_sym)
           else
-            raise 'Unsupported Que version'
+            enqueued_job.que_attrs.transform_keys(&:to_sym).tap do |hash|
+              hash[:job_id] = hash.delete(:id)
+            end
           end
         end
 
@@ -33,7 +34,7 @@ module Que
           if zero_major?
             ''
           else
-            raise 'Unsupported Que version'
+            Que::DEFAULT_QUEUE
           end
         end
 
@@ -48,7 +49,6 @@ module Que
           array.map { |row| row.transform_keys(&:to_sym) }
         end
       end
-      # rubocop:enable Style/GuardClause
     end
   end
 end

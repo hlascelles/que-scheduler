@@ -105,7 +105,7 @@ GEM
     pry-byebug (3.7.0)
       byebug (~> 11.0)
       pry (~> 0.10)
-    que (0.14.3)
+    que (1.0.0.beta3)
     raabro (1.1.6)
     rack (2.0.7)
     rack-test (1.1.0)
@@ -188,7 +188,7 @@ DEPENDENCIES
   fasterer
   pg (~> 0.21)
   pry-byebug
-  que (~> 0.14)
+  que (= 1.0.0.beta3)
   que-scheduler!
   rake
   reek (= 5.0.2)
