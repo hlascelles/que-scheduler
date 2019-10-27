@@ -87,7 +87,7 @@ GEM
     jaro_winkler (1.5.3)
     json (2.2.0)
     kwalify (0.7.2)
-    loofah (2.3.0)
+    loofah (2.3.1)
       crass (~> 1.0.2)
       nokogiri (>= 1.5.9)
     method_source (0.9.2)
