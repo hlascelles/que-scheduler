@@ -1,0 +1,13 @@
+default: &default
+  adapter: postgresql
+  database: testing_db
+  username: postgres
+  password: postgres
+  host: 127.0.0.1
+  port: 5430
+  reconnect: true
+
+development:
+  <<: *default
+test:
+  <<: *default
