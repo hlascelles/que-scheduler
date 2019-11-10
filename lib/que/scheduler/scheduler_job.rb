@@ -13,8 +13,8 @@ module Que
     class SchedulerJob < Que::Job
       SCHEDULER_FREQUENCY = 60
 
-      # Always highest possible priority.
       Que::Scheduler::VersionSupport.set_priority(self, 0)
+      Que::Scheduler::VersionSupport.apply_retry_semantics(self)
 
       def run(options = nil)
         Que::Scheduler::Db.transaction do

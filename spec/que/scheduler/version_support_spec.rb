@@ -7,11 +7,36 @@ RSpec.describe Que::Scheduler::VersionSupport do
     end
 
     it 'sets the priority' do
-      if Que::Scheduler::VersionSupport.zero_major?
+      if described_class.zero_major?
         expect(TestPriority.instance_variable_get('@priority')).to eq(3)
       else
         expect(TestPriority.priority).to eq(3)
       end
+    end
+  end
+
+  describe '.apply_retry_semantics' do
+    class TestRetries < Que::Scheduler::SchedulerJob
+      Que::Scheduler::VersionSupport.apply_retry_semantics(self)
+    end
+
+    it 'sets the retries' do
+      if described_class.zero_major?
+        expect(TestRetries.instance_variable_get('@retry_interval'))
+          .to be(described_class::RETRY_PROC)
+      else
+        expect(TestRetries.retry_interval).to be(described_class::RETRY_PROC)
+        expect(TestRetries.maximum_retry_count).to be > 10_000_000
+      end
+    end
+  end
+
+  describe 'RETRY_PROC' do
+    it 'sets the proc' do
+      expect(described_class::RETRY_PROC.call(6)).to eq(1299)
+      expect(described_class::RETRY_PROC.call(7)).to eq(2404)
+      expect(described_class::RETRY_PROC.call(8)).to eq(3600)
+      expect(described_class::RETRY_PROC.call(9)).to eq(3600)
     end
   end
 
@@ -20,7 +45,7 @@ RSpec.describe Que::Scheduler::VersionSupport do
       job = Que::Scheduler::SchedulerJob.enqueue
 
       expected =
-        if Que::Scheduler::VersionSupport.zero_major?
+        if described_class.zero_major?
           hash_including(
             args: [],
             error_count: 0,
@@ -57,7 +82,7 @@ RSpec.describe Que::Scheduler::VersionSupport do
 
   describe '.default_scheduler_queue' do
     it 'returns the queue name' do
-      expected = Que::Scheduler::VersionSupport.zero_major? ? '' : 'default'
+      expected = described_class.zero_major? ? '' : 'default'
       expect(described_class.default_scheduler_queue).to eq(expected)
     end
   end

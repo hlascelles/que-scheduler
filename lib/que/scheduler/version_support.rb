@@ -5,12 +5,29 @@ require 'que'
 module Que
   module Scheduler
     module VersionSupport
+      RETRY_PROC = proc { |count|
+        # Maximum one hour, otherwise use the default backoff
+        count > 7 ? (60 * 60) : ((count**4) + 3)
+      }
+
       class << self
+        # Ensure que-scheduler runs at the highest priority. This is because its priority is a
+        # the top of all jobs it enqueues.
         def set_priority(context, priority)
           if zero_major?
             context.instance_variable_set('@priority', priority)
           else
             context.priority = priority
+          end
+        end
+
+        # Ensure the job runs at least once an hour when it is backing off due to errors
+        def apply_retry_semantics(context)
+          if zero_major?
+            context.instance_variable_set('@retry_interval', RETRY_PROC)
+          else
+            context.maximum_retry_count = 1 << 128 # Heat death of universe
+            context.retry_interval = RETRY_PROC
           end
         end
 
