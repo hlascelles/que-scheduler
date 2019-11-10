@@ -31,11 +31,15 @@ module Que
         end
 
         def default_scheduler_queue
-          if zero_major?
-            ''
-          else
-            Que::DEFAULT_QUEUE
-          end
+          zero_major? ? '' : Que::DEFAULT_QUEUE
+        end
+
+        def running_synchronously?
+          zero_major? ? (Que.mode == :sync) : Que.run_synchronously
+        end
+
+        def running_synchronously_code?
+          zero_major? ? 'Que.mode == :sync' : 'Que.run_synchronously = true'
         end
 
         def zero_major?

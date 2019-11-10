@@ -61,4 +61,34 @@ RSpec.describe Que::Scheduler::VersionSupport do
       expect(described_class.default_scheduler_queue).to eq(expected)
     end
   end
+
+  describe '.running_synchronously?' do
+    context 'when true' do
+      before(:each) do
+        if Que::Scheduler::VersionSupport.zero_major?
+          Que.mode = :sync
+        else
+          Que.run_synchronously = true
+        end
+      end
+
+      after(:each) do
+        if Que::Scheduler::VersionSupport.zero_major?
+          Que.mode = :off
+        else
+          Que.run_synchronously = false
+        end
+      end
+
+      it 'returns the value' do
+        expect(described_class.running_synchronously?).to eq(true)
+      end
+    end
+
+    context 'when false' do
+      it 'returns the value' do
+        expect(described_class.running_synchronously?).to eq(false)
+      end
+    end
+  end
 end
