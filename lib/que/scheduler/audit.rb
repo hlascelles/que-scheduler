@@ -24,11 +24,18 @@ module Que
         def append(scheduler_job_id, executed_at, enqueued_jobs)
           ::Que::Scheduler::VersionSupport.execute(INSERT_AUDIT, [scheduler_job_id, executed_at])
           enqueued_jobs.each do |j|
-            attrs = Que::Scheduler::VersionSupport.job_attributes(j)
+            params = []
+            if j.is_a?(Que::Job)
+              attrs = Que::Scheduler::VersionSupport.job_attributes(j)
+              params = attrs.values_at(:job_class, :queue, :priority, :args, :job_id, :run_at)
+            elsif j.respond_to?('provider_job_id')
+              data = JSON.parse(j.to_json, symbolize_names: true)
+              params =
+                [j.class.to_s] + data.values_at(:queue_name, :priority, :arguments, :provider_job_id, :scheduled_at)
+            end
             inserted = ::Que::Scheduler::VersionSupport.execute(
               INSERT_AUDIT_ENQUEUED,
-              [scheduler_job_id] +
-                attrs.values_at(:job_class, :queue, :priority, :args, :job_id, :run_at)
+              [scheduler_job_id] + params
             )
             raise "Cannot save audit row #{scheduler_job_id} #{executed_at} #{j}" if inserted.empty?
           end
@@ -37,3 +44,11 @@ module Que
     end
   end
 end
+
+# {\"arguments\":[]
+# \"job_id\":\"773a8d69-f097-44f1-a706-5cd30be0d48f\"
+# \"queue_name\":\"default\"
+# \"priority\":null
+# \"executions\":0
+# \"exception_executions\":{}
+# \"provider_job_id\":55}" 

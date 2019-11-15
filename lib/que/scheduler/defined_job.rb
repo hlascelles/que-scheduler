@@ -16,7 +16,11 @@ module Que
       property :name, required: true
       property :job_class, required: true, transform_with: lambda { |v|
         job_class = Object.const_get(v)
-        job_class < Que::Job ? job_class : err_field(:job_class, v)
+        if job_class.respond_to?(:enqueue) || job_class.respond_to?(:perform_later)
+          return job_class
+        else
+          return err_field(:job_class, v)
+        end
       }
       property :cron, required: true, transform_with: lambda { |v|
         Fugit::Cron.parse(v) || err_field(:cron, v)

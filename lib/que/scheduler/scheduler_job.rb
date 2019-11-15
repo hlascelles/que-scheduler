@@ -42,9 +42,9 @@ module Que
           remaining_hash = to_enqueue.except(:job_class, :args)
           enqueued_job =
             if args.is_a?(Hash)
-              job_class.enqueue(args.merge(remaining_hash))
+              enqueue(job_class, args.merge(remaining_hash))
             else
-              job_class.enqueue(*args, remaining_hash)
+              enqueue(job_class, *args, remaining_hash)
             end
           check_enqueued_job(enqueued_job, job_class, args, logs)
         end.compact
@@ -52,16 +52,28 @@ module Que
 
       private
 
+      def enqueue(*args, **kwargs)
+        job_class = args.shift
+        if job_class.respond_to?(:enqueue)
+          return job_class.enqueue(*args, **kwargs)
+        elsif job_class.respond_to?(:perform_later)
+          return job_class.perform_later(*args, **kwargs)
+        end
+      end
+
       def check_enqueued_job(enqueued_job, job_class, args, logs)
+        job_id = nil
         if enqueued_job.is_a?(Que::Job)
           job_id = Que::Scheduler::VersionSupport.job_attributes(enqueued_job).fetch(:job_id)
-          logs << "que-scheduler enqueueing #{job_class} #{job_id} with args: #{args}"
-          enqueued_job
+        elsif enqueued_job.respond_to?('provider_job_id')
+          job_id = enqueued_job.provider_job_id
         else
           # This can happen if a middleware nixes the enqueue call
           logs << "que-scheduler called enqueue on #{job_class} but did not receive a #{Que::Job}"
-          nil
+          return nil
         end
+        logs << "que-scheduler enqueueing #{job_class} #{job_id} with args: #{args}"
+        return enqueued_job
       end
 
       def enqueue_self_again(scheduler_job_args, last_full_execution, job_dictionary, enqueued_jobs)
