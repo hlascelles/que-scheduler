@@ -44,11 +44,3 @@ module Que
     end
   end
 end
-
-# {\"arguments\":[]
-# \"job_id\":\"773a8d69-f097-44f1-a706-5cd30be0d48f\"
-# \"queue_name\":\"default\"
-# \"priority\":null
-# \"executions\":0
-# \"exception_executions\":{}
-# \"provider_job_id\":55}" 
