@@ -1,4 +1,4 @@
-## Unreleased
+## 3.2.8 (2020-02-09)
 
 - Check for synchronous que [#134](https://github.com/hlascelles/que-scheduler/pull/134)
 - Ensure reliable backoff semantics for Que 1.0 [#135](https://github.com/hlascelles/que-scheduler/pull/135)

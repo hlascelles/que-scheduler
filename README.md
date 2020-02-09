@@ -234,3 +234,4 @@ This gem was inspired by the makers of the excellent [Que](https://github.com/ch
 
 * @jish
 * @joehorsnell
+* @bnauta
