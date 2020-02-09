@@ -6,7 +6,7 @@ PATH
       backports (~> 3.10)
       fugit (~> 1.1, >= 1.1.8)
       hashie (>= 3, < 5)
-      que (>= 0.12, <= 1.0.0.beta3)
+      que (>= 0.12, <= 1.0.0.beta4)
 
 GEM
   remote: https://rubygems.org/
@@ -106,7 +106,7 @@ GEM
     pry-byebug (3.7.0)
       byebug (~> 11.0)
       pry (~> 0.10)
-    que (1.0.0.beta3)
+    que (1.0.0.beta4)
     raabro (1.1.6)
     rack (2.0.7)
     rack-test (1.1.0)
@@ -188,7 +188,7 @@ DEPENDENCIES
   fasterer
   pg (~> 0.21)
   pry-byebug
-  que (= 1.0.0.beta3)
+  que (= 1.0.0.beta4)
   que-scheduler!
   rake
   reek (= 5.0.2)

@@ -6,7 +6,7 @@ PATH
       backports (~> 3.10)
       fugit (~> 1.1, >= 1.1.8)
       hashie (>= 3, < 5)
-      que (>= 0.12, <= 1.0.0.beta3)
+      que (>= 0.12, <= 1.0.0.beta4)
 
 GEM
   remote: https://rubygems.org/
