@@ -6,6 +6,7 @@ MIGRATION_CONSTANT =
   end
 
 class CreateQueSchedulerSchema < MIGRATION_CONSTANT
+  # :reek:UtilityFunction - A migration.
   def change
     Que.migrate!(version: ::Que::Migrations::CURRENT_VERSION)
     Que::Scheduler::Migrations.migrate!(version: ::Que::Scheduler::Migrations::MAX_VERSION)
