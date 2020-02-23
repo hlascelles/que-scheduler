@@ -14,12 +14,12 @@ module Que
     class SchedulerJob < Que::Job
       SCHEDULER_FREQUENCY = 60
 
-      VersionSupport.set_priority(self, 0)
-      VersionSupport.apply_retry_semantics(self)
+      Que::Scheduler::VersionSupport.set_priority(self, 0)
+      Que::Scheduler::VersionSupport.apply_retry_semantics(self)
 
       def run(options = nil)
-        Db.transaction do
-          StateChecks.check
+        Que::Scheduler::Db.transaction do
+          Que::Scheduler::StateChecks.check
 
           scheduler_job_args = SchedulerJobArgs.build(options)
           logs = ["que-scheduler last ran at #{scheduler_job_args.last_run_time}."]
@@ -67,7 +67,7 @@ module Que
 
       def enqueue_self_again(scheduler_job_args, last_full_execution, job_dictionary, enqueued_jobs)
         # Log last run...
-        job_id = VersionSupport.job_attributes(self).fetch(:job_id)
+        job_id = Que::Scheduler::VersionSupport.job_attributes(self).fetch(:job_id)
         Audit.append(job_id, scheduler_job_args.as_time, enqueued_jobs)
 
         # And rerun...
