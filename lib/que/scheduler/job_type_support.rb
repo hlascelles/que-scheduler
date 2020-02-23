@@ -21,14 +21,30 @@ module Que
         end
 
         # rubocop:disable Style/GuardClause This reads better as a conditional
-        def enqueue(*args, **kwargs)
-          job_class = args.shift
+        def enqueue(to_enqueue)
+          job_class = to_enqueue.job_class
           validate_job_class!(job_class)
 
           if job_class < ::Que::Job
-            job_class.enqueue(*args, **kwargs)
+            args = to_enqueue.args
+            job_settings = to_enqueue.slice(:queue, :priority)
+            if args.is_a?(Hash)
+              job_class.enqueue(**args.merge(job_settings))
+            else
+              job_class.enqueue(*args, **job_settings)
+            end
           elsif job_class < ::ActiveJob::Base
-            job_class.perform_later(*args, **kwargs)
+            args = to_enqueue.args
+
+            job_settings = {}
+            job_settings[:queue] = to_enqueue.queue unless to_enqueue.queue.nil?
+            job_settings[:priority] = to_enqueue.priority unless to_enqueue.priority.nil?
+            job_class_set = job_class.set(**job_settings)
+            if args.is_a?(Hash)
+              job_class_set.perform_later(**args)
+            else
+              job_class_set.perform_later(*args)
+            end
           end
         end
         # rubocop:enable Style/GuardClause

@@ -38,16 +38,8 @@ module Que
 
       def enqueue_required_jobs(result, logs)
         result.missed_jobs.map do |to_enqueue|
-          job_class = to_enqueue.job_class
-          args = to_enqueue.args
-          remaining_hash = to_enqueue.except(:job_class, :args)
-          enqueued_job =
-            if args.is_a?(Hash)
-              JobTypeSupport.enqueue(job_class, args.merge(remaining_hash))
-            else
-              JobTypeSupport.enqueue(job_class, *args, remaining_hash)
-            end
-          check_enqueued_job(enqueued_job, job_class, args, logs)
+          enqueued_job = JobTypeSupport.enqueue(to_enqueue)
+          check_enqueued_job(enqueued_job, to_enqueue.job_class, to_enqueue.args, logs)
         end.compact
       end
 
