@@ -1,3 +1,7 @@
+require "active_job"
+require "active_job/queue_adapters/que_adapter"
+require "que"
+
 class HalfHourlyTestJob < ::Que::Job
   def run; end
 end
@@ -23,5 +27,10 @@ class TimezoneTestJob < ::Que::Job
 end
 
 class NotAQueJob
+  def run; end
+end
+
+class TestActiveJob < ::ActiveJob::Base
+  self.queue_adapter = :que
   def run; end
 end

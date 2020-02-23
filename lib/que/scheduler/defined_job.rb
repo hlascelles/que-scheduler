@@ -16,7 +16,7 @@ module Que
       property :name, required: true
       property :job_class, required: true, transform_with: lambda { |v|
         job_class = Object.const_get(v)
-        if job_class.respond_to?(:enqueue) || job_class.respond_to?(:perform_later)
+        if Que::Scheduler::JobTypeSupport.valid_job_class?(job_class)
           return job_class
         else
           return err_field(:job_class, v)

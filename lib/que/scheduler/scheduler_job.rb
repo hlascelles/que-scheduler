@@ -4,6 +4,7 @@ require_relative 'schedule'
 require_relative 'enqueueing_calculator'
 require_relative 'scheduler_job_args'
 require_relative 'state_checks'
+require_relative 'job_type_support'
 require_relative 'version_support'
 
 # The main job that runs every minute, determining what needs to be enqueued, enqueues the required
@@ -13,12 +14,12 @@ module Que
     class SchedulerJob < Que::Job
       SCHEDULER_FREQUENCY = 60
 
-      Que::Scheduler::VersionSupport.set_priority(self, 0)
-      Que::Scheduler::VersionSupport.apply_retry_semantics(self)
+      VersionSupport.set_priority(self, 0)
+      VersionSupport.apply_retry_semantics(self)
 
       def run(options = nil)
-        Que::Scheduler::Db.transaction do
-          Que::Scheduler::StateChecks.check
+        Db.transaction do
+          StateChecks.check
 
           scheduler_job_args = SchedulerJobArgs.build(options)
           logs = ["que-scheduler last ran at #{scheduler_job_args.last_run_time}."]
@@ -42,9 +43,9 @@ module Que
           remaining_hash = to_enqueue.except(:job_class, :args)
           enqueued_job =
             if args.is_a?(Hash)
-              enqueue(job_class, args.merge(remaining_hash))
+              JobTypeSupport.enqueue(job_class, args.merge(remaining_hash))
             else
-              enqueue(job_class, *args, remaining_hash)
+              JobTypeSupport.enqueue(job_class, *args, remaining_hash)
             end
           check_enqueued_job(enqueued_job, job_class, args, logs)
         end.compact
@@ -52,33 +53,21 @@ module Que
 
       private
 
-      def enqueue(*args, **kwargs)
-        job_class = args.shift
-        if job_class.respond_to?(:enqueue)
-          return job_class.enqueue(*args, **kwargs)
-        elsif job_class.respond_to?(:perform_later)
-          return job_class.perform_later(*args, **kwargs)
-        end
-      end
-
       def check_enqueued_job(enqueued_job, job_class, args, logs)
-        job_id = nil
-        if enqueued_job.is_a?(Que::Job)
-          job_id = Que::Scheduler::VersionSupport.job_attributes(enqueued_job).fetch(:job_id)
-        elsif enqueued_job.respond_to?('provider_job_id')
-          job_id = enqueued_job.provider_job_id
-        else
+        unless JobTypeSupport.valid_job_class?(enqueued_job.class)
           # This can happen if a middleware nixes the enqueue call
           logs << "que-scheduler called enqueue on #{job_class} but did not receive a #{Que::Job}"
           return nil
         end
+
+        job_id = JobTypeSupport.job_id(enqueued_job)
         logs << "que-scheduler enqueueing #{job_class} #{job_id} with args: #{args}"
-        return enqueued_job
+        enqueued_job
       end
 
       def enqueue_self_again(scheduler_job_args, last_full_execution, job_dictionary, enqueued_jobs)
         # Log last run...
-        job_id = Que::Scheduler::VersionSupport.job_attributes(self).fetch(:job_id)
+        job_id = VersionSupport.job_attributes(self).fetch(:job_id)
         Audit.append(job_id, scheduler_job_args.as_time, enqueued_jobs)
 
         # And rerun...
