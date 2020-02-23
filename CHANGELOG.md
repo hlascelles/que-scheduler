@@ -1,3 +1,7 @@
+## Unreleased
+
+- General bundle update of test gems [#154](https://github.com/hlascelles/que-scheduler/pull/154)
+
 ## 3.2.8 (2020-02-09)
 
 - Check for synchronous que [#134](https://github.com/hlascelles/que-scheduler/pull/134)
