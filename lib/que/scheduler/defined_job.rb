@@ -10,7 +10,7 @@ module Que
 
       DEFINED_JOB_TYPES = [
         DEFINED_JOB_TYPE_DEFAULT = :default,
-        DEFINED_JOB_TYPE_EVERY_EVENT = :every_event
+        DEFINED_JOB_TYPE_EVERY_EVENT = :every_event,
       ].freeze
 
       property :name, required: true
