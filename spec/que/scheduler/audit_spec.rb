@@ -9,7 +9,7 @@ RSpec.describe Que::Scheduler::Audit do
         enqueued = [
           HalfHourlyTestJob.enqueue(5, queue: 'something', run_at: executed_at - 1.hour),
           HalfHourlyTestJob.enqueue(priority: 80, run_at: executed_at - 2.hours),
-          DailyTestJob.enqueue(3, queue: 'some_queue', run_at: executed_at - 3.hours)
+          DailyTestJob.enqueue(3, queue: 'some_queue', run_at: executed_at - 3.hours),
         ]
         described_class.append(job_id, executed_at, enqueued)
 
@@ -50,7 +50,7 @@ RSpec.describe Que::Scheduler::Audit do
               args: [3],
               job_id: Que::Scheduler::VersionSupport.job_attributes(enqueued[2]).fetch(:job_id),
               run_at: executed_at - 3.hours,
-            }
+            },
           ]
         )
       end

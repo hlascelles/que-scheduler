@@ -117,7 +117,7 @@ RSpec.describe Que::Scheduler::EnqueueingCalculator do
           args: [Time.zone.parse('2017-10-09T16:10:00')],
           queue: 'backlog',
           priority: 35,
-        }
+        },
       ]
     )
   end
