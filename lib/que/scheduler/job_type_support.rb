@@ -30,9 +30,36 @@ module Que
         end
       end
 
-      TYPES = {
-        ::Que::Job => QueJobType,
-      }.freeze
+      # For jobs of type ActiveJob
+      class ActiveJobType
+        class << self
+          def job_id(job)
+            job.provider_job_id
+          end
+
+          def enqueue(to_enqueue)
+            args = to_enqueue.args
+            job_settings = {}
+            job_settings[:queue] = to_enqueue.queue unless to_enqueue.queue.nil?
+            job_settings[:priority] = to_enqueue.priority unless to_enqueue.priority.nil?
+            job_class_set = job_class.set(**job_settings)
+            if args.is_a?(Hash)
+              job_class_set.perform_later(**args)
+            else
+              job_class_set.perform_later(*args)
+            end
+          end
+
+          def params_from_job(job)
+            data = JSON.parse(job.to_json, symbolize_names: true)
+            scheduled_at_float = data[:scheduled_at]
+            scheduled_at = scheduled_at_float ? Time.zone.at(scheduled_at_float) : nil
+            [job.class.to_s] + data.values_at(
+              :queue_name, :priority, :arguments, :provider_job_id
+            ) + [scheduled_at]
+          end
+        end
+      end
 
       class << self
         def valid_job_class?(job_class)
@@ -58,10 +85,21 @@ module Que
         private
 
         def type_from_job_class(job_class)
-          TYPES.each do |type, implementation|
+          types.each do |type, implementation|
             return implementation if job_class < type
           end
           nil
+        end
+
+        def types
+          @types ||=
+            begin
+              hash = {
+                ::Que::Job => QueJobType,
+              }
+              hash[::ActiveJob::Base] = ActiveJobType if Gem.loaded_specs.key?('activejob')
+              hash
+            end
         end
       end
     end
