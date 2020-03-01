@@ -61,14 +61,14 @@ RSpec.describe Que::Scheduler::Audit do
       end
     end
 
-    if Gem.loaded_specs["activejob"].version >= Gem::Version.create("5")
+    if Gem.loaded_specs['activejob'].version >= Gem::Version.create('5')
       it 'appends an audit line for ActiveJob' do
         Timecop.freeze do
           scheduler_job_id = 1234
           executed_at = Time.zone.now.change(usec: 0)
           enqueued = [
             TestActiveJob.set(queue: 'bar', priority: 47).perform_later(2),
-            TestActiveJob.set(queue: 'foo', wait_until: executed_at - 3.hours).perform_later(3)
+            TestActiveJob.set(queue: 'foo', wait_until: executed_at - 3.hours).perform_later(3),
           ]
           db_jobs = append_test_jobs(enqueued, executed_at, scheduler_job_id)
           expect(db_jobs).to eq(
@@ -90,7 +90,7 @@ RSpec.describe Que::Scheduler::Audit do
                 args: [3],
                 job_id: Que::Scheduler::JobTypeSupport.job_id(enqueued[1]),
                 run_at: executed_at - 3.hours,
-              }
+              },
             ]
           )
         end

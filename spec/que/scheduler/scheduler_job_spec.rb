@@ -13,9 +13,9 @@ RSpec.describe Que::Scheduler::SchedulerJob do
   let(:full_dictionary) { ::Que::Scheduler.schedule.keys }
 
   it "prove that ActiveJob doesn't support Que queue names correctly" do
-    TestActiveJob.set(queue: "foo", queue_name: "foo").perform_later
+    TestActiveJob.set(queue: 'foo', queue_name: 'foo').perform_later
     jobs = DbSupport.jobs_by_class(ActiveJob::QueueAdapters::QueAdapter::JobWrapper)
-    expect(jobs.first.fetch(:queue)).to eq("foo")
+    expect(jobs.first.fetch(:queue)).to eq('foo')
   end
 
   context 'scheduling' do
@@ -87,7 +87,7 @@ RSpec.describe Que::Scheduler::SchedulerJob do
 
     {
       HalfHourlyTestJob => [:enqueue, HalfHourlyTestJob],
-      TestActiveJob => [:perform_later, ActiveJob::QueueAdapters::QueAdapter::JobWrapper]
+      TestActiveJob => [:perform_later, ActiveJob::QueueAdapters::QueAdapter::JobWrapper],
     }.each do |job_class, (enqueue_method, enqueued_job_class)|
       describe "#enqueue_required_jobs with #{job_class}" do
         let(:enqueued_job_class) { enqueued_job_class }
@@ -106,9 +106,9 @@ RSpec.describe Que::Scheduler::SchedulerJob do
             job_row[:args]
           else
             # ActiveJob args are held in a wrapper
-            job_row[:args].first["arguments"].each { |arg|
-              arg.delete("_aj_symbol_keys") if arg.is_a?(Hash)
-            }
+            job_row[:args].first['arguments'].each do |arg|
+              arg.delete('_aj_symbol_keys') if arg.is_a?(Hash)
+            end
           end
         end
 
