@@ -12,12 +12,6 @@ RSpec.describe Que::Scheduler::SchedulerJob do
   let(:run_time) { Time.zone.parse('2017-11-08T13:50:32') }
   let(:full_dictionary) { ::Que::Scheduler.schedule.keys }
 
-  it "prove that ActiveJob doesn't support Que queue names correctly" do
-    TestActiveJob.set(queue: 'foo', queue_name: 'foo').perform_later
-    jobs = DbSupport.jobs_by_class(ActiveJob::QueueAdapters::QueAdapter::JobWrapper)
-    expect(jobs.first.fetch(:queue)).to eq('foo')
-  end
-
   context 'scheduling' do
     around(:each) do |example|
       Timecop.freeze(run_time) do
@@ -85,132 +79,109 @@ RSpec.describe Que::Scheduler::SchedulerJob do
       end
     end
 
-    {
-      HalfHourlyTestJob => [:enqueue, HalfHourlyTestJob],
-      TestActiveJob => [:perform_later, ActiveJob::QueueAdapters::QueAdapter::JobWrapper],
-    }.each do |job_class, (enqueue_method, enqueued_job_class)|
-      describe "#enqueue_required_jobs with #{job_class}" do
-        let(:enqueued_job_class) { enqueued_job_class }
-        let(:enqueue_method) { enqueue_method }
-        let(:job_class) { job_class }
+    describe '#enqueue_required_jobs' do
+      # it "prove that ActiveJob doesn't support Que queue names correctly" do
+      #   TestActiveJob.set(queue: "foo", queue_name: "foo").perform_later
+      #   jobs = DbSupport.jobs_by_class(ActiveJob::QueueAdapters::QueAdapter::JobWrapper)
+      #   expect(jobs.first.fetch(:queue)).to eq("foo")
+      # end
 
-        def test_enqueued(overdue_dictionary)
-          result = RESULT.new(
-            missed_jobs: HashSupport.hash_to_enqueues(overdue_dictionary), job_dictionary: []
-          )
-          described_class.new({}).enqueue_required_jobs(result, [])
-        end
+      def test_enqueued(overdue_dictionary)
+        result = RESULT.new(
+          missed_jobs: HashSupport.hash_to_enqueues(overdue_dictionary), job_dictionary: []
+        )
+        described_class.new({}).enqueue_required_jobs(result, [])
+      end
 
-        def job_args(job_row)
-          if enqueue_method == :enqueue
-            job_row[:args]
-          else
-            # ActiveJob args are held in a wrapper
-            job_row[:args].first['arguments'].each do |arg|
-              arg.delete('_aj_symbol_keys') if arg.is_a?(Hash)
-            end
-          end
-        end
+      def expect_one_result(args, queue, priority)
+        jobs = DbSupport.jobs_by_class(HalfHourlyTestJob)
+        expect(jobs.count).to eq(1)
+        one_result = jobs.first
 
-        def null_enqueue_call
-          if enqueue_method == :enqueue
-            expect(job_class).to receive(enqueue_method).and_return(false)
-          else
-            expect_any_instance_of(ActiveJob::ConfiguredJob)
-              .to receive(enqueue_method).and_return(false)
-          end
-        end
+        expect_job_args_to_equal(one_result[:args] || [], args)
+        expect(one_result[:queue]).to eq(queue)
+        expect(one_result[:priority]).to eq(priority)
+        expect(one_result[:job_class]).to eq('HalfHourlyTestJob')
+      end
 
-        def expect_one_result(args, queue, priority)
-          jobs = DbSupport.jobs_by_class(enqueued_job_class)
-          expect(jobs.count).to eq(1)
-          one_result = jobs.first
+      it 'schedules nothing if nothing in the result' do
+        test_enqueued([])
+        expect(Que.job_stats).to eq([])
+      end
 
-          expect_job_args_to_equal(job_args(one_result) || [], args)
-          expect(one_result[:queue]).to eq(queue)
-          expect(one_result[:priority]).to eq(priority)
-          expect(one_result[:job_class]).to eq(enqueued_job_class.to_s)
-        end
+      it 'schedules one job with no args' do
+        test_enqueued([{ job_class: HalfHourlyTestJob }])
+        expect_one_result([], default_queue, default_priority)
+      end
 
-        it 'schedules nothing if nothing in the result' do
-          test_enqueued([])
-          expect(Que.job_stats).to eq([])
-        end
+      it 'schedules one job with one String arg' do
+        test_enqueued([{ job_class: HalfHourlyTestJob, args: 'foo' }])
+        expect_one_result(['foo'], default_queue, default_priority)
+      end
 
-        it 'schedules one job with no args' do
-          test_enqueued([{ job_class: job_class }])
-          expect_one_result([], default_queue, default_priority)
-        end
+      it 'schedules one job with one Hash arg' do
+        test_enqueued([{ job_class: HalfHourlyTestJob, args: { bar: 'foo' } }])
+        expect_one_result([{ bar: 'foo' }], default_queue, default_priority)
+      end
 
-        it 'schedules one job with one String arg' do
-          test_enqueued([{ job_class: job_class, args: 'foo' }])
-          expect_one_result(['foo'], default_queue, default_priority)
-        end
+      it 'schedules one job with one Array arg' do
+        test_enqueued([{ job_class: HalfHourlyTestJob, args: %w[foo bar] }])
+        expect_one_result(%w[foo bar], default_queue, default_priority)
+      end
 
-        it 'schedules one job with one Hash arg' do
-          test_enqueued([{ job_class: job_class, args: { bar: 'foo' } }])
-          expect_one_result([{ bar: 'foo' }], default_queue, default_priority)
-        end
+      it 'schedules one job with one String arg and a queue' do
+        test_enqueued([{ job_class: HalfHourlyTestJob, args: 'foo', queue: 'baz' }])
+        expect_one_result(['foo'], 'baz', default_priority)
+      end
 
-        it 'schedules one job with one Array arg' do
-          test_enqueued([{ job_class: job_class, args: %w[foo bar] }])
-          expect_one_result(%w[foo bar], default_queue, default_priority)
-        end
+      it 'schedules one job with one String arg and a priority' do
+        test_enqueued([{ job_class: HalfHourlyTestJob, args: 'foo', priority: 10 }])
+        expect_one_result(['foo'], default_queue, 10)
+      end
 
-        it 'schedules one job with one String arg and a queue' do
-          test_enqueued([{ job_class: job_class, args: 'foo', queue: 'baz' }])
-          expect_one_result(['foo'], 'baz', default_priority)
-        end
+      it 'schedules one job with one Hash arg and a queue' do
+        test_enqueued([{ job_class: HalfHourlyTestJob, args: { bar: 'foo' }, queue: 'baz' }])
+        expect_one_result([{ bar: 'foo' }], 'baz', default_priority)
+      end
 
-        it 'schedules one job with one String arg and a priority' do
-          test_enqueued([{ job_class: job_class, args: 'foo', priority: 10 }])
-          expect_one_result(['foo'], default_queue, 10)
-        end
+      it 'schedules one job with one Hash arg and a priority' do
+        test_enqueued([{ job_class: HalfHourlyTestJob, args: { bar: 'foo' }, priority: 10 }])
+        expect_one_result([{ bar: 'foo' }], default_queue, 10)
+      end
 
-        it 'schedules one job with one Hash arg and a queue' do
-          test_enqueued([{ job_class: job_class, args: { bar: 'foo' }, queue: 'baz' }])
-          expect_one_result([{ bar: 'foo' }], 'baz', default_priority)
-        end
+      it 'schedules one job with one Array arg and a queue' do
+        test_enqueued([{ job_class: HalfHourlyTestJob, args: %w[foo bar], queue: 'baz' }])
+        expect_one_result(%w[foo bar], 'baz', default_priority)
+      end
 
-        it 'schedules one job with one Hash arg and a priority' do
-          test_enqueued([{ job_class: job_class, args: { bar: 'foo' }, priority: 10 }])
-          expect_one_result([{ bar: 'foo' }], default_queue, 10)
-        end
+      it 'schedules one job with one Array arg and a priority' do
+        test_enqueued([{ job_class: HalfHourlyTestJob, args: %w[foo bar], priority: 10 }])
+        expect_one_result(%w[foo bar], default_queue, 10)
+      end
 
-        it 'schedules one job with one Array arg and a queue' do
-          test_enqueued([{ job_class: job_class, args: %w[foo bar], queue: 'baz' }])
-          expect_one_result(%w[foo bar], 'baz', default_priority)
-        end
+      it 'schedules one job with a mixed arg, and a priority, and a queue' do
+        test_enqueued(
+          [
+            {
+              job_class: HalfHourlyTestJob,
+              args: { baz: 10, array_baz: ['foo'] },
+              queue: 'bar',
+              priority: 10,
+            },
+          ]
+        )
+        expect_one_result([{ baz: 10, array_baz: ['foo'] }], 'bar', 10)
+      end
 
-        it 'schedules one job with one Array arg and a priority' do
-          test_enqueued([{ job_class: job_class, args: %w[foo bar], priority: 10 }])
-          expect_one_result(%w[foo bar], default_queue, 10)
-        end
-
-        it 'schedules one job with a mixed arg, and a priority, and a queue' do
-          test_enqueued(
-            [
-              {
-                job_class: job_class,
-                args: { baz: 10, array_baz: ['foo'] },
-                queue: 'bar',
-                priority: 10,
-              },
-            ]
-          )
-          expect_one_result([{ baz: 10, array_baz: ['foo'] }], 'bar', 10)
-        end
-
-        # Some middlewares can cause an enqueue not to enqueue a job. For example, an equivalent
-        # of resque-solo could decide that the enqueue is not necessary and just short circuit. When
-        # this happens we don't want to error, but just log the fact.
-        it 'handles when the enqueue call does not enqueue a job' do
-          null_enqueue_call
-          test_enqueued([{ job_class: job_class }])
-          expect(Que.job_stats).to eq([])
-          qsa = Que::Scheduler::VersionSupport.execute('select * from que_scheduler_audit_enqueued')
-          expect(qsa.count).to eq(0)
-        end
+      # Some middlewares can cause an enqueue not to enqueue a job. For example, an equivalent
+      # of resque-solo could decide that the enqueue is not necessary and just short circuit. When
+      # this happens we don't want to error, but just log the fact.
+      it 'handles when the enqueue call does not enqueue a job' do
+        expect(HalfHourlyTestJob).to receive(:enqueue).and_return(false)
+        test_enqueued([{ job_class: HalfHourlyTestJob }])
+        expect(Que.job_stats).to eq([])
+        qsae = Que::Scheduler::VersionSupport.execute('select * from que_scheduler_audit_enqueued')
+        expect(qsae.count).to eq(0)
       end
     end
   end

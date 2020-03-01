@@ -30,7 +30,6 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'hashie', '>= 3', '< 5'
   spec.add_dependency 'que', '>= 0.12', '<= 1.0.0.beta4'
 
-  spec.add_development_dependency 'activejob', '>= 4.0'
   spec.add_development_dependency 'activerecord', '>= 4.0'
   spec.add_development_dependency 'appraisal'
   spec.add_development_dependency 'combustion'

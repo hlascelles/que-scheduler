@@ -1,36 +1,34 @@
 require 'que'
-require 'active_job'
-require 'active_job/queue_adapters/que_adapter'
 
-class HalfHourlyTestJob < ::Que::Job
-  def run; end
-end
+%w[
+  HalfHourlyTestJob
+  SpecifiedByClassTestJob
+  WithArgsTestJob
+  DailyTestJob
+  TwiceDailyTestJob
+  TimezoneTestJob
+].each do |name|
+  clazz =
+    if Que::Scheduler::JobTypeSupport::active_job_sufficient_version?
+      require 'active_job'
+      require 'active_job/queue_adapters/que_adapter'
 
-class SpecifiedByClassTestJob < ::Que::Job
-  def run; end
-end
+      Class.new(::ActiveJob::Base) do
+        self.queue_adapter = :que
 
-class WithArgsTestJob < ::Que::Job
-  def run; end
-end
+        def run
+        end
+      end
+    else
+      Class.new(::Que::Job) do
+        def run
+        end
+      end
 
-class DailyTestJob < ::Que::Job
-  def run; end
-end
-
-class TwiceDailyTestJob < ::Que::Job
-  def run; end
-end
-
-class TimezoneTestJob < ::Que::Job
-  def run; end
+    end
+  Object.const_set(name,clazz)
 end
 
 class NotAQueJob
-  def run; end
-end
-
-class TestActiveJob < ::ActiveJob::Base
-  self.queue_adapter = :que
   def run; end
 end

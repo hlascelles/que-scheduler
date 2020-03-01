@@ -42,7 +42,7 @@ module Que
             job_settings = {}
             job_settings[:queue] = to_enqueue.queue unless to_enqueue.queue.nil?
             job_settings[:priority] = to_enqueue.priority unless to_enqueue.priority.nil?
-            job_class_set = job_class.set(**job_settings)
+            job_class_set = to_enqueue.job_class.set(**job_settings)
             if args.is_a?(Hash)
               job_class_set.perform_later(**args)
             else
@@ -52,6 +52,7 @@ module Que
 
           def params_from_job(job)
             data = JSON.parse(job.to_json, symbolize_names: true)
+            # ActiveJob scheduled_at is returned as a float, where we want a Time for consistency
             scheduled_at_float = data[:scheduled_at]
             scheduled_at = scheduled_at_float ? Time.zone.at(scheduled_at_float) : nil
             [job.class.to_s] + data.values_at(
@@ -82,6 +83,13 @@ module Que
           raise "Invalid job class #{job_class}" unless valid_job_class?(job_class)
         end
 
+        def active_job_sufficient_version?
+          gem_spec = Gem.loaded_specs['activejob']
+          # ActiveJob 4.x does not support job_ids correctly
+          # https://github.com/rails/rails/pull/20056/files
+          gem_spec && gem_spec.version > Gem::Version.create('5')
+        end
+
         private
 
         def type_from_job_class(job_class)
@@ -97,7 +105,7 @@ module Que
               hash = {
                 ::Que::Job => QueJobType,
               }
-              hash[::ActiveJob::Base] = ActiveJobType if Gem.loaded_specs.key?('activejob')
+              hash[::ActiveJob::Base] = ActiveJobType if active_job_sufficient_version?
               hash
             end
         end
