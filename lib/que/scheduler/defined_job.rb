@@ -16,7 +16,13 @@ module Que
       property :name, required: true
       property :job_class, required: true, transform_with: lambda { |v|
         job_class = Object.const_get(v)
-        job_class < Que::Job ? job_class : err_field(:job_class, v)
+        # rubocop:disable Style/GuardClause This reads better as a conditional
+        if Que::Scheduler::JobTypeSupport.valid_job_class?(job_class)
+          return job_class
+        else
+          return err_field(:job_class, v)
+        end
+        # rubocop:enable Style/GuardClause
       }
       property :cron, required: true, transform_with: lambda { |v|
         Fugit::Cron.parse(v) || err_field(:cron, v)

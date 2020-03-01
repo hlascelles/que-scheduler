@@ -4,6 +4,7 @@ require_relative 'schedule'
 require_relative 'enqueueing_calculator'
 require_relative 'scheduler_job_args'
 require_relative 'state_checks'
+require_relative 'job_type_support'
 require_relative 'version_support'
 
 # The main job that runs every minute, determining what needs to be enqueued, enqueues the required
@@ -37,31 +38,23 @@ module Que
 
       def enqueue_required_jobs(result, logs)
         result.missed_jobs.map do |to_enqueue|
-          job_class = to_enqueue.job_class
-          args = to_enqueue.args
-          remaining_hash = to_enqueue.except(:job_class, :args)
-          enqueued_job =
-            if args.is_a?(Hash)
-              job_class.enqueue(args.merge(remaining_hash))
-            else
-              job_class.enqueue(*args, remaining_hash)
-            end
-          check_enqueued_job(enqueued_job, job_class, args, logs)
+          enqueued_job = JobTypeSupport.enqueue(to_enqueue)
+          check_enqueued_job(enqueued_job, to_enqueue.job_class, to_enqueue.args, logs)
         end.compact
       end
 
       private
 
       def check_enqueued_job(enqueued_job, job_class, args, logs)
-        if enqueued_job.is_a?(Que::Job)
-          job_id = Que::Scheduler::VersionSupport.job_attributes(enqueued_job).fetch(:job_id)
-          logs << "que-scheduler enqueueing #{job_class} #{job_id} with args: #{args}"
-          enqueued_job
-        else
+        unless JobTypeSupport.valid_job_class?(enqueued_job.class)
           # This can happen if a middleware nixes the enqueue call
           logs << "que-scheduler called enqueue on #{job_class} but did not receive a #{Que::Job}"
-          nil
+          return nil
         end
+
+        job_id = JobTypeSupport.job_id(enqueued_job)
+        logs << "que-scheduler enqueueing #{job_class} #{job_id} with args: #{args}"
+        enqueued_job
       end
 
       def enqueue_self_again(scheduler_job_args, last_full_execution, job_dictionary, enqueued_jobs)

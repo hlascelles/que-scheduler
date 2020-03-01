@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require_relative 'job_type_support'
+
 module Que
   module Scheduler
     module Audit
@@ -24,11 +26,9 @@ module Que
         def append(scheduler_job_id, executed_at, enqueued_jobs)
           ::Que::Scheduler::VersionSupport.execute(INSERT_AUDIT, [scheduler_job_id, executed_at])
           enqueued_jobs.each do |j|
-            attrs = Que::Scheduler::VersionSupport.job_attributes(j)
             inserted = ::Que::Scheduler::VersionSupport.execute(
               INSERT_AUDIT_ENQUEUED,
-              [scheduler_job_id] +
-                attrs.values_at(:job_class, :queue, :priority, :args, :job_id, :run_at)
+              [scheduler_job_id] + Que::Scheduler::JobTypeSupport.params_from_job(j)
             )
             raise "Cannot save audit row #{scheduler_job_id} #{executed_at} #{j}" if inserted.empty?
           end

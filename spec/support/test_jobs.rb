@@ -1,3 +1,5 @@
+require 'que'
+
 class HalfHourlyTestJob < ::Que::Job
   def run; end
 end
