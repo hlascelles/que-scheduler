@@ -195,7 +195,7 @@ RSpec.describe Que::Scheduler::SchedulerJob do
                 args: { baz: 10, array_baz: ['foo'] },
                 queue: 'bar',
                 priority: 10,
-              }
+              },
             ]
           )
           expect_one_result([{ baz: 10, array_baz: ['foo'] }], 'bar', 10)

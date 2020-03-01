@@ -1,6 +1,6 @@
+require 'que'
 require "active_job"
 require "active_job/queue_adapters/que_adapter"
-require "que"
 
 class HalfHourlyTestJob < ::Que::Job
   def run; end
