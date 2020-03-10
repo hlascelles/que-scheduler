@@ -64,14 +64,15 @@ module Que
         end
       end
 
-      private
-
       class ToEnqueue < Hashie::Dash
         property :args, required: true, default: []
         property :queue
         property :priority
+        property :run_at
         property :job_class, required: true
       end
+
+      private
 
       def generate_to_enqueue_list(missed_times)
         return [] if missed_times.empty?

@@ -22,9 +22,15 @@ RSpec.describe Que::Scheduler::Audit do
         scheduler_job_id = 1234
         executed_at = Time.zone.now.change(usec: 0)
         enqueued = [
-          HalfHourlyTestJob.enqueue(5, queue: 'something', run_at: executed_at - 1.hour),
-          HalfHourlyTestJob.enqueue(priority: 80, run_at: executed_at - 2.hours),
-          DailyTestJob.enqueue(3, queue: 'some_queue', run_at: executed_at - 3.hours),
+          Que::Scheduler::JobTypeSupport.enqueue(
+            Que::Scheduler::DefinedJob::ToEnqueue.new(job_class: HalfHourlyTestJob, args: 5, queue: 'something', run_at: executed_at - 1.hour)
+          ),
+          Que::Scheduler::JobTypeSupport.enqueue(
+            Que::Scheduler::DefinedJob::ToEnqueue.new(job_class: HalfHourlyTestJob, priority: 80, queue: 'something', run_at: executed_at - 2.hour)
+          ),
+          Que::Scheduler::JobTypeSupport.enqueue(
+            Que::Scheduler::DefinedJob::ToEnqueue.new(job_class: DailyTestJob, args: 3, queue: 'some_queue', run_at: executed_at - 3.hour)
+          ),
         ]
         db_jobs = append_test_jobs(enqueued, executed_at, scheduler_job_id)
         expect(db_jobs).to eq(
