@@ -66,41 +66,5 @@ RSpec.describe Que::Scheduler::Audit do
         )
       end
     end
-
-    # if Que::Scheduler::JobTypeSupport.active_job_sufficient_version?
-    #   it 'appends an audit line for ActiveJob' do
-    #     Timecop.freeze do
-    #       scheduler_job_id = 1234
-    #       executed_at = Time.zone.now.change(usec: 0)
-    #       enqueued = [
-    #         TestActiveJob.set(queue: 'bar', priority: 47).perform_later(2),
-    #         TestActiveJob.set(queue: 'foo', wait_until: executed_at - 3.hours).perform_later(3),
-    #       ]
-    #       db_jobs = append_test_jobs(enqueued, executed_at, scheduler_job_id)
-    #       expect(db_jobs).to eq(
-    #         [
-    #           {
-    #             scheduler_job_id: scheduler_job_id,
-    #             job_class: 'TestActiveJob',
-    #             queue: 'bar',
-    #             priority: 47,
-    #             args: [2],
-    #             job_id: Que::Scheduler::JobTypeSupport.job_id(enqueued[0]),
-    #             run_at: nil,
-    #           },
-    #           {
-    #             scheduler_job_id: scheduler_job_id,
-    #             job_class: 'TestActiveJob',
-    #             queue: 'foo',
-    #             priority: nil,
-    #             args: [3],
-    #             job_id: Que::Scheduler::JobTypeSupport.job_id(enqueued[1]),
-    #             run_at: executed_at - 3.hours,
-    #           },
-    #         ]
-    #       )
-    #     end
-    #   end
-    # end
   end
 end
