@@ -20,15 +20,19 @@ RSpec.describe Que::Scheduler::Audit do
     it 'appends an audit line' do
       Timecop.freeze do
         scheduler_job_id = 1234
-        executed_at = Time.zone.now.change(usec: 0)
+        # Roundtripping through postgres can yield usec differences which give spurious
+        # spec failures, so we ignore usec.
+        audit_insertion_time = Time.zone.now.change(usec: 0)
+        jobs_set_to_run_at = Que::Scheduler::Db.now.change(usec: 0)
+
         to_enqueue = [
-          Que::Scheduler::ToEnqueue.create(job_class: HalfHourlyTestJob, args: 5, queue: 'something1', run_at: executed_at - 1.hour),
-          Que::Scheduler::ToEnqueue.create(job_class: HalfHourlyTestJob, priority: 80, run_at: executed_at - 2.hour),
-          Que::Scheduler::ToEnqueue.create(job_class: DailyTestJob, args: 3, queue: 'something3', run_at: executed_at - 3.hour, priority: 42)
+          Que::Scheduler::ToEnqueue.create(job_class: HalfHourlyTestJob, args: 5, queue: 'something1'),
+          Que::Scheduler::ToEnqueue.create(job_class: HalfHourlyTestJob, priority: 80),
+          Que::Scheduler::ToEnqueue.create(job_class: DailyTestJob, args: 3, queue: 'something3', priority: 42)
         ]
 
         enqueued = to_enqueue.map(&:enqueue)
-        db_jobs = append_test_jobs(enqueued, executed_at, scheduler_job_id)
+        db_jobs = append_test_jobs(enqueued, audit_insertion_time, scheduler_job_id)
 
         expect(db_jobs).to eq(
           [
@@ -39,7 +43,7 @@ RSpec.describe Que::Scheduler::Audit do
               priority: 100,
               args: [5],
               job_id: enqueued[0].job_id,
-              run_at: executed_at - 1.hour,
+              run_at: jobs_set_to_run_at,
             },
             {
               scheduler_job_id: scheduler_job_id,
@@ -48,7 +52,7 @@ RSpec.describe Que::Scheduler::Audit do
               priority: 80,
               args: [],
               job_id: enqueued[1].job_id,
-              run_at: executed_at - 2.hours,
+              run_at: jobs_set_to_run_at,
             },
             {
               scheduler_job_id: scheduler_job_id,
@@ -57,7 +61,7 @@ RSpec.describe Que::Scheduler::Audit do
               priority: 42,
               args: [3],
               job_id: enqueued[2].job_id,
-              run_at: executed_at - 3.hours,
+              run_at: jobs_set_to_run_at,
             },
           ]
         )

@@ -8,12 +8,15 @@ module Que
       property :args, required: true, default: []
       property :queue
       property :priority
-      property :run_at
+      property :run_at, required: true
       property :job_class, required: true
 
       class << self
         def create(options)
-          type_from_job_class(options.fetch(:job_class)).new(options)
+          type_from_job_class(options.fetch(:job_class)).new(
+            # todo test usec
+            options.merge(run_at: Que::Scheduler::Db.now.change(usec: 0))
+          )
         end
 
         def valid_job_class?(job_class)
@@ -64,20 +67,26 @@ module Que
             job_class.enqueue(*args, **job_settings)
           end
 
-        return nil if job.nil? || !job
+        return nil if job.nil? || !job # nil in Rails < 6.1, false after.
 
-        EnqueuedJobType.new(
-          Que::Scheduler::VersionSupport.job_attributes(job).slice(
-            :args, :queue, :priority, :run_at, :job_class, :job_id
-          )
+        # Now read the just inserted job back out of the DB to get the actual values that will
+        # be used when the job is worked.
+        values = Que::Scheduler::VersionSupport.job_attributes(job).slice(
+          :args, :queue, :priority, :run_at, :job_class, :job_id
         )
+        EnqueuedJobType.new(values)
       end
     end
 
     # For jobs of type ActiveJob
     class ActiveJobType < ToEnqueue
       def enqueue
-        job_settings = to_h.slice(:queue, :priority, :wait_until).compact
+        job_settings = {
+          queue_name: queue,
+          priority: priority,
+          wait_until: run_at
+        }.compact
+
         job_class_set = job_class.set(**job_settings)
         job =
           if args.is_a?(Hash)
@@ -86,8 +95,10 @@ module Que
             job_class_set.perform_later(*args)
           end
 
-        return nil if job.nil? || !job
+        return nil if job.nil? || !job # nil in Rails < 6.1, false after.
 
+        # Now read the just inserted job back out of the DB to get the actual values that will
+        # be used when the job is worked.
         data = JSON.parse(job.to_json, symbolize_names: true)
         # ActiveJob scheduled_at is returned as a float, where we want a Time for consistency
         scheduled_at_float = data[:scheduled_at]
@@ -104,13 +115,15 @@ module Que
       end
     end
 
+    # A value object returned after a job has been enqueued. This is necessary as Que (normal) and
+    # ActiveJob return very different objects from the `enqueue` call.
     class EnqueuedJobType < Hashie::Dash
       property :args
       property :queue
       property :priority
-      property :run_at
-      property :job_class
-      property :job_id
+      property :run_at, required: true
+      property :job_class, required: true
+      property :job_id, required: true
     end
   end
 end
