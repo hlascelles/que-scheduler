@@ -28,7 +28,8 @@ module Que
           enqueued_jobs.each do |j|
             inserted = ::Que::Scheduler::VersionSupport.execute(
               INSERT_AUDIT_ENQUEUED,
-              [scheduler_job_id] + Que::Scheduler::ToEnqueue.params_from_job(j)
+              [scheduler_job_id] +
+                j.values_at(:job_class, :queue, :priority, :args, :job_id, :run_at)
             )
             raise "Cannot save audit row #{scheduler_job_id} #{executed_at} #{j}" if inserted.empty?
           end

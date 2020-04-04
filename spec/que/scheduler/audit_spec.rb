@@ -21,12 +21,15 @@ RSpec.describe Que::Scheduler::Audit do
       Timecop.freeze do
         scheduler_job_id = 1234
         executed_at = Time.zone.now.change(usec: 0)
-        enqueued = [
-          Que::Scheduler::ToEnqueue.create(job_class: HalfHourlyTestJob, args: 5, queue: 'something1', run_at: executed_at - 1.hour).enqueue,
-          Que::Scheduler::ToEnqueue.create(job_class: HalfHourlyTestJob, priority: 80, run_at: executed_at - 2.hour).enqueue,
-          Que::Scheduler::ToEnqueue.create(job_class: DailyTestJob, args: 3, queue: 'something3', run_at: executed_at - 3.hour, priority: 42).enqueue
+        to_enqueue = [
+          Que::Scheduler::ToEnqueue.create(job_class: HalfHourlyTestJob, args: 5, queue: 'something1', run_at: executed_at - 1.hour),
+          Que::Scheduler::ToEnqueue.create(job_class: HalfHourlyTestJob, priority: 80, run_at: executed_at - 2.hour),
+          Que::Scheduler::ToEnqueue.create(job_class: DailyTestJob, args: 3, queue: 'something3', run_at: executed_at - 3.hour, priority: 42)
         ]
+
+        enqueued = to_enqueue.map(&:enqueue)
         db_jobs = append_test_jobs(enqueued, executed_at, scheduler_job_id)
+
         expect(db_jobs).to eq(
           [
             {
@@ -35,7 +38,7 @@ RSpec.describe Que::Scheduler::Audit do
               queue: 'something1',
               priority: 100,
               args: [5],
-              job_id: Que::Scheduler::ToEnqueue.job_id(enqueued[0]),
+              job_id: enqueued[0].job_id,
               run_at: executed_at - 1.hour,
             },
             {
@@ -44,7 +47,7 @@ RSpec.describe Que::Scheduler::Audit do
               queue: Que::Scheduler.configuration.que_scheduler_queue,
               priority: 80,
               args: [],
-              job_id: Que::Scheduler::ToEnqueue.job_id(enqueued[1]),
+              job_id: enqueued[1].job_id,
               run_at: executed_at - 2.hours,
             },
             {
@@ -53,7 +56,7 @@ RSpec.describe Que::Scheduler::Audit do
               queue: 'something3',
               priority: 42,
               args: [3],
-              job_id: Que::Scheduler::ToEnqueue.job_id(enqueued[2]),
+              job_id: enqueued[2].job_id,
               run_at: executed_at - 3.hours,
             },
           ]
