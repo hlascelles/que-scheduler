@@ -13,32 +13,20 @@ module Que
         DEFINED_JOB_TYPE_EVERY_EVENT = :every_event,
       ].freeze
 
-      property :name, required: true
-      property :job_class, required: true, transform_with: lambda { |v|
-        job_class = Object.const_get(v)
-        # rubocop:disable Style/GuardClause This reads better as a conditional
-        if Que::Scheduler::ToEnqueue.valid_job_class?(job_class)
-          return job_class
-        else
-          return err_field(:job_class, v)
-        end
-        # rubocop:enable Style/GuardClause
-      }
-      property :cron, required: true, transform_with: lambda { |v|
-        Fugit::Cron.parse(v) || err_field(:cron, v)
-      }
-      property :queue, transform_with: ->(v) {
-        # TODO raise error here if using Activejob with link to reason
-        #
-        #
-        # NB it works again in Rails 6.0.3? https://github.com/rails/rails/pull/38635
-        v.is_a?(String) ? v : err_field(:queue, v)
-      }
-      property :priority, transform_with: ->(v) { v.is_a?(Integer) ? v : err_field(:priority, v) }
+      property :name
+      property :job_class, transform_with: lambda { |v| Object.const_get(v) }
+      property :cron, transform_with: lambda { |v| Fugit::Cron.parse(v) }
+      property :queue
+      property :priority
       property :args
-      property :schedule_type, default: DEFINED_JOB_TYPE_DEFAULT, transform_with: lambda { |v|
-        v.to_sym.tap { |vs| DEFINED_JOB_TYPES.include?(vs) || err_field(:schedule_type, v) }
-      }
+      property :schedule_type, default: DEFINED_JOB_TYPE_DEFAULT
+
+      class << self
+        def create(options)
+          defined_job = new(options.compact)
+          defined_job.freeze.tap { |dj| dj.validate(options) }
+        end
+      end
 
       # Given a "last time", return the next Time the event will occur, or nil if it
       # is after "to".
@@ -61,16 +49,52 @@ module Que
         generate_to_enqueue_list(missed_times)
       end
 
-      class << self
-        private
+      def validate(options)
+        err_field(:name, options, "name must be present") if name.nil?
+        err_field(:job_class, options, "job_class must be present") if job_class.nil?
+        # An invalid cron is nil
+        err_field(:cron, options, "cron must be present") if cron.nil?
+        unless queue.nil? || queue.is_a?(String)
+          err_field(:queue, options, "queue must be a string")
+        end
+        unless priority.nil? || priority.is_a?(Integer)
+          err_field(:priority, options, "priority must be an integer")
+        end
+        unless DEFINED_JOB_TYPES.include?(schedule_type)
+          err_field(:schedule_type, options, "Not in #{DEFINED_JOB_TYPES}")
+        end
 
-        def err_field(field, value)
-          schedule = Que::Scheduler.configuration.schedule_location
-          raise "Invalid #{field} '#{value}' in que-scheduler schedule #{schedule}"
+        # Only support known job engines
+        unless Que::Scheduler::ToEnqueue.valid_job_class?(job_class)
+          err_field(:job_class, options, "Job #{job_class} was not a supported job type")
+        end
+
+        # queue name is only supported for a subrange of ActiveJob versions
+        if Que::Scheduler::ToEnqueue.active_job_sufficient_version? &&
+           job_class < ::ActiveJob::Base &&
+           Que::Scheduler::ToEnqueue.active_job_version < Gem::Version.create('6.0.3')
+          reason <<-ERR
+            Between versions 4.2.3 and 6.0.2 (inclusive) Rails did not support setting queue names
+            on que jobs with ActiveJob, so que-scheduler cannot support it.
+            See removed in Rails 4.2.3
+              https://github.com/rails/rails/pull/19498
+            And readded in Rails 6.0.3
+              https://github.com/rails/rails/pull/38635
+
+            Please remove all "queue" keys from ActiveJobs defined in the que-scheduler config.
+          ERR
+          err_field(:queue, options, reason)
         end
       end
 
       private
+
+      def err_field(field, options, reason = "")
+        schedule = Que::Scheduler.configuration.schedule_location
+        value = options[field]
+        raise "Invalid #{field} '#{value}' for '#{name}' in que-scheduler schedule #{schedule}.\n" \
+              "#{reason}"
+      end
 
       def generate_to_enqueue_list(missed_times)
         return [] if missed_times.empty?
