@@ -70,7 +70,8 @@ module Que
         end
 
         # queue name is only supported for a subrange of ActiveJob versions
-        if Que::Scheduler::ToEnqueue.active_job_sufficient_version? &&
+        if queue &&
+           Que::Scheduler::ToEnqueue.active_job_sufficient_version? &&
            job_class < ::ActiveJob::Base &&
            Que::Scheduler::ToEnqueue.active_job_version < Gem::Version.create('6.0.3')
           reason = <<-ERR
