@@ -27,11 +27,14 @@ module Que
           raise "Invalid job class #{job_class}" unless valid_job_class?(job_class)
         end
 
+        def active_job_version
+          Gem.loaded_specs['activejob']&.version
+        end
+
         def active_job_sufficient_version?
-          gem_spec = Gem.loaded_specs['activejob']
           # ActiveJob 4.x does not support job_ids correctly
           # https://github.com/rails/rails/pull/20056/files
-          gem_spec && gem_spec.version > Gem::Version.create('5')
+          active_job_version && active_job_version > Gem::Version.create('5')
         end
 
         private

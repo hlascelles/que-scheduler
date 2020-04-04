@@ -100,7 +100,7 @@ RSpec.describe Que::Scheduler::SchedulerJob do
         expect(jobs.count).to eq(1)
         one_result = jobs.first
 
-        expect_job_args_to_equal(job_args(one_result) || [], args)
+        expect_job_args_to_equal(job_args_from_db_row(one_result) || [], args)
         expect(one_result[:queue]).to eq(queue) if handles_queue_name
         expect(one_result[:priority]).to eq(priority)
         expect(one_result[:job_class]).to eq(expected_class_in_db(HalfHourlyTestJob).to_s)
