@@ -82,7 +82,6 @@ module Que
     class ActiveJobType < ToEnqueue
       def enqueue
         job_settings = {
-          queue_name: queue,
           priority: priority,
           wait_until: run_at
         }.compact
@@ -106,7 +105,9 @@ module Que
 
         EnqueuedJobType.new(
           args: data.fetch(:arguments),
-          queue: data.fetch(:queue_name),
+          # Rails doesn't support queues for ActiveJob
+          # https://github.com/rails/rails/pull/19498
+          queue: nil,
           priority: data.fetch(:priority),
           run_at: scheduled_at,
           job_class: job_class.to_s,

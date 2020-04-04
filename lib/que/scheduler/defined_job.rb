@@ -27,7 +27,10 @@ module Que
       property :cron, required: true, transform_with: lambda { |v|
         Fugit::Cron.parse(v) || err_field(:cron, v)
       }
-      property :queue, transform_with: ->(v) { v.is_a?(String) ? v : err_field(:queue, v) }
+      property :queue, transform_with: ->(v) {
+        # TODO raise error here if using Activejob with link to reason
+        v.is_a?(String) ? v : err_field(:queue, v)
+      }
       property :priority, transform_with: ->(v) { v.is_a?(Integer) ? v : err_field(:priority, v) }
       property :args
       property :schedule_type, default: DEFINED_JOB_TYPE_DEFAULT, transform_with: lambda { |v|

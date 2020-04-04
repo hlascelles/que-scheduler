@@ -1,6 +1,8 @@
 require 'spec_helper'
 
 RSpec.describe Que::Scheduler::Audit do
+  include_context "job testing"
+
   describe '.append' do
     def append_test_jobs(enqueued, executed_at, job_id)
       described_class.append(job_id, executed_at, enqueued)
@@ -39,7 +41,7 @@ RSpec.describe Que::Scheduler::Audit do
             {
               scheduler_job_id: scheduler_job_id,
               job_class: 'HalfHourlyTestJob',
-              queue: 'something1',
+              queue: handles_queue_name ? 'something1' : nil,
               priority: 100,
               args: [5],
               job_id: enqueued[0].job_id,
@@ -48,7 +50,7 @@ RSpec.describe Que::Scheduler::Audit do
             {
               scheduler_job_id: scheduler_job_id,
               job_class: 'HalfHourlyTestJob',
-              queue: Que::Scheduler.configuration.que_scheduler_queue,
+              queue: handles_queue_name ? Que::Scheduler.configuration.que_scheduler_queue : nil,
               priority: 80,
               args: [],
               job_id: enqueued[1].job_id,
@@ -57,7 +59,7 @@ RSpec.describe Que::Scheduler::Audit do
             {
               scheduler_job_id: scheduler_job_id,
               job_class: 'DailyTestJob',
-              queue: 'something3',
+              queue: handles_queue_name ? 'something3' : nil,
               priority: 42,
               args: [3],
               job_id: enqueued[2].job_id,
