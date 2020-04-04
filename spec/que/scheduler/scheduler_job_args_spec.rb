@@ -2,7 +2,7 @@ require 'spec_helper'
 require 'timecop'
 
 RSpec.describe Que::Scheduler::SchedulerJobArgs do
-  it 'should prepare default args' do
+  it 'prepares default args' do
     Timecop.freeze do
       DbSupport.mock_db_time_now
       args = described_class.build(nil)

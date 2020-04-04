@@ -1,5 +1,6 @@
 require 'spec_helper'
 
+# rubocop:disable RSpec/DescribeClass
 RSpec.describe 'readme' do
   describe 'README.md' do
     it 'shows the right version in the migration' do
@@ -8,3 +9,4 @@ RSpec.describe 'readme' do
     end
   end
 end
+# rubocop:enable RSpec/DescribeClass

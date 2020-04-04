@@ -40,7 +40,7 @@ RSpec.configure do |config|
   config.mock_with :rspec do |mocks|
     mocks.verify_partial_doubles = true
   end
-  config.before(:each) do
+  config.before do
     ::Que.clear!
     qsa = Que::Scheduler::VersionSupport.execute('select * from que_scheduler_audit')
     expect(qsa.count).to eq(0)
@@ -50,7 +50,7 @@ RSpec.configure do |config|
   config.before(:suite) do
     DbSupport.setup_db
   end
-  config.around(:each) do |example|
+  config.around do |example|
     DatabaseCleaner.cleaning do
       example.run
     end

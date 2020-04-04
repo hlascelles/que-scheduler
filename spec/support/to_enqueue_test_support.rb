@@ -1,4 +1,4 @@
-shared_context 'job testing' do
+shared_context 'when job testing' do
   if Que::Scheduler::ToEnqueue.active_job_sufficient_version?
     let(:handles_queue_name) {
       # This was removed in Rails 4.2.3

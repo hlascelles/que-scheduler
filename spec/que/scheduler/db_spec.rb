@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 RSpec.describe Que::Scheduler::Db do
-  context 'constants' do
+  context 'when checking constants' do
     it 'has the right scheduler count query string' do
       expect(described_class::SCHEDULER_COUNT_SQL).to eq(
         "SELECT COUNT(*) FROM que_jobs WHERE job_class = '#{Que::Scheduler::SchedulerJob.name}'"
