@@ -3,7 +3,7 @@ require 'spec_helper'
 RSpec.describe Que::Scheduler::Schedule do
   describe '.schedule' do
     it 'allows access via ::Que::Scheduler.schedule' do
-      expect(Que::Scheduler::Schedule).to receive(:schedule)
+      expect(described_class).to receive(:schedule)
       Que::Scheduler.schedule
     end
 
@@ -14,7 +14,7 @@ RSpec.describe Que::Scheduler::Schedule do
 
   describe '.from_file' do
     it 'loads the given file' do
-      result = Que::Scheduler::Schedule.from_file('spec/config/que_schedule2.yml')
+      result = described_class.from_file('spec/config/que_schedule2.yml')
       expect(result.size).to eq(1)
       expect(result.keys.first).to eq('test_schedule_2')
     end

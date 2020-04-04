@@ -2,31 +2,35 @@ require 'spec_helper'
 
 RSpec.describe Que::Scheduler::VersionSupport do
   describe '.set_priority' do
-    class TestPriority < Que::Scheduler::SchedulerJob
-      Que::Scheduler::VersionSupport.set_priority(self, 3)
+    let(:test_class) do
+      Class.new(Que::Scheduler::SchedulerJob) do
+        Que::Scheduler::VersionSupport.set_priority(self, 3)
+      end
     end
 
     it 'sets the priority' do
       if described_class.zero_major?
-        expect(TestPriority.instance_variable_get('@priority')).to eq(3)
+        expect(test_class.instance_variable_get('@priority')).to eq(3)
       else
-        expect(TestPriority.priority).to eq(3)
+        expect(test_class.priority).to eq(3)
       end
     end
   end
 
   describe '.apply_retry_semantics' do
-    class TestRetries < Que::Scheduler::SchedulerJob
-      Que::Scheduler::VersionSupport.apply_retry_semantics(self)
+    let(:test_class) do
+      Class.new(Que::Scheduler::SchedulerJob) do
+        Que::Scheduler::VersionSupport.apply_retry_semantics(self)
+      end
     end
 
     it 'sets the retries' do
       if described_class.zero_major?
-        expect(TestRetries.instance_variable_get('@retry_interval'))
+        expect(test_class.instance_variable_get('@retry_interval'))
           .to be(described_class::RETRY_PROC)
       else
-        expect(TestRetries.retry_interval).to be(described_class::RETRY_PROC)
-        expect(TestRetries.maximum_retry_count).to be > 10_000_000
+        expect(test_class.retry_interval).to be(described_class::RETRY_PROC)
+        expect(test_class.maximum_retry_count).to be > 10_000_000
       end
     end
   end
@@ -89,16 +93,16 @@ RSpec.describe Que::Scheduler::VersionSupport do
 
   describe '.running_synchronously?' do
     context 'when true' do
-      before(:each) do
-        if Que::Scheduler::VersionSupport.zero_major?
+      before do
+        if described_class.zero_major?
           Que.mode = :sync
         else
           Que.run_synchronously = true
         end
       end
 
-      after(:each) do
-        if Que::Scheduler::VersionSupport.zero_major?
+      after do
+        if described_class.zero_major?
           Que.mode = :off
         else
           Que.run_synchronously = false

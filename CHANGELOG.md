@@ -2,6 +2,7 @@
 
 - General bundle update of test gems [#154](https://github.com/hlascelles/que-scheduler/pull/154)
 - Support ActiveJob [#164](https://github.com/hlascelles/que-scheduler/pull/164)
+- Support Rubocop RSpec [#165](https://github.com/hlascelles/que-scheduler/pull/165)
 
 ## 3.2.8 (2020-02-09)
 

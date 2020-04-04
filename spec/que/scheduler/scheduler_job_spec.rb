@@ -4,24 +4,21 @@ require 'yaml'
 require 'active_support/core_ext/numeric/time'
 
 RSpec.describe Que::Scheduler::SchedulerJob do
-  include_context 'job testing'
+  include_context 'when job testing'
 
-  QS = Que::Scheduler
-  PARSER = QS::EnqueueingCalculator
-  RESULT = QS::EnqueueingCalculator::Result
   let(:default_queue) { DbSupport.column_default('que_jobs', 'queue').split(':').first[1..-2] }
   let(:default_priority) { DbSupport.column_default('que_jobs', 'priority').to_i }
   let(:run_time) { Time.zone.parse('2017-11-08T13:50:32') }
   let(:full_dictionary) { ::Que::Scheduler.schedule.keys }
 
-  context 'scheduling' do
-    around(:each) do |example|
+  context 'when scheduling' do
+    around do |example|
       Timecop.freeze(run_time) do
         example.run
       end
     end
 
-    before(:each) do
+    before do
       DbSupport.mock_db_time_now
     end
 
@@ -82,14 +79,8 @@ RSpec.describe Que::Scheduler::SchedulerJob do
     end
 
     describe '#enqueue_required_jobs' do
-      # it "prove that ActiveJob doesn't support Que queue names correctly" do
-      #   TestActiveJob.set(queue: "foo", queue_name: "foo").perform_later
-      #   jobs = DbSupport.jobs_by_class(ActiveJob::QueueAdapters::QueAdapter::JobWrapper)
-      #   expect(jobs.first.fetch(:queue)).to eq("foo")
-      # end
-
       def test_enqueued(overdue_dictionary)
-        result = RESULT.new(
+        result = Que::Scheduler::EnqueueingCalculator::Result.new(
           missed_jobs: HashSupport.hash_to_enqueues(overdue_dictionary), job_dictionary: []
         )
         described_class.new({}).enqueue_required_jobs(result, [])
@@ -188,16 +179,16 @@ RSpec.describe Que::Scheduler::SchedulerJob do
     end
   end
 
-  context 'configuration' do
+  context 'with configuration' do
     # The scheduler job must run at the highest priority, as it must serve the highest common
     # denominator of all schedulable jobs.
-    it 'should run the scheduler at highest priority' do
+    it 'runs the scheduler at highest priority' do
       expect(described_class.instance_variable_get('@priority')).to eq(0)
     end
   end
 
   def expect_one_itself_job
-    itself_jobs = DbSupport.jobs_by_class(QS::SchedulerJob)
+    itself_jobs = DbSupport.jobs_by_class(Que::Scheduler::SchedulerJob)
     expect(itself_jobs.count).to eq(1)
     itself_jobs.first.to_h
   end

@@ -2,8 +2,6 @@ require 'spec_helper'
 require 'active_support/core_ext/numeric/time'
 
 RSpec.describe Que::Scheduler::EnqueueingCalculator do
-  QSSP = described_class
-
   let(:all_keys) {
     %w[
       HalfHourlyTestJob
@@ -15,24 +13,24 @@ RSpec.describe Que::Scheduler::EnqueueingCalculator do
     ]
   }
 
-  it 'should not enqueue anything if not enough time has gone by' do
+  it 'does not enqueue anything if not enough time has gone by' do
     run_test('2017-10-08T16:40:32', 1.second, [])
   end
 
-  it 'should enqueue the HalfHourlyTestJob if half an hour has gone by' do
+  it 'enqueues the HalfHourlyTestJob if half an hour has gone by' do
     run_test('2017-10-08T16:40:32', 31.minutes, [{ job_class: HalfHourlyTestJob }])
   end
 
-  it 'should enqueue the HalfHourlyTestJob just once if more than an hour has gone by' do
+  it 'enqueues the HalfHourlyTestJob just once if more than an hour has gone by' do
     # Not "every_event", so, we just schedule the latest
     run_test('2017-10-08T16:40:32', 61.minutes, [{ job_class: HalfHourlyTestJob }])
   end
 
-  it 'should enqueue if the run time is exactly the cron time' do
+  it 'enqueues if the run time is exactly the cron time' do
     run_test('2017-10-08T16:59:59', 1.seconds, [{ job_class: HalfHourlyTestJob }])
   end
 
-  it 'should enqueue if a job has been defined in a different timezone' do
+  it 'enqueues if a job has been defined in a different timezone' do
     # Last scheduler run time is 18:04:58 in Finland (+3).
     # This run time is 10:04:59 in New York (-5)
     last_run = Time.zone.parse('2017-12-01T18:04:58+03')
@@ -53,11 +51,11 @@ RSpec.describe Que::Scheduler::EnqueueingCalculator do
 
   # This is testing that the fugit cron "next_time" doesn't return the current time if it matches.
   # It truly is the "next" time.
-  it 'should not enqueue if the previous run time was exactly the cron time' do
+  it 'does not enqueue if the previous run time was exactly the cron time' do
     run_test('2017-10-08T16:00:00', 1.seconds, [])
   end
 
-  it 'should enqueue jobs with args' do
+  it 'enqueues jobs with args' do
     run_test(
       '2017-10-08T11:39:59',
       2.seconds,
@@ -65,7 +63,7 @@ RSpec.describe Que::Scheduler::EnqueueingCalculator do
     )
   end
 
-  it 'should enqueue jobs that specify the job class as an arg' do
+  it 'enqueues jobs that specify the job class as an arg' do
     run_test(
       '2017-10-08T03:09:59',
       2.seconds,
@@ -73,7 +71,7 @@ RSpec.describe Que::Scheduler::EnqueueingCalculator do
     )
   end
 
-  it 'should enqueue an every_event job once with date arg if seen to be missed once' do
+  it 'enqueues an every_event job once with date arg if seen to be missed once' do
     run_test(
       '2017-10-08T06:09:59',
       2.seconds,
@@ -81,7 +79,7 @@ RSpec.describe Que::Scheduler::EnqueueingCalculator do
     )
   end
 
-  it 'should enqueue an every_event job multiple times if missed repeatedly' do
+  it 'enqueues an every_event job multiple times if missed repeatedly' do
     run_test(
       '2017-10-08T02:09:59',
       2.days,
@@ -134,7 +132,7 @@ RSpec.describe Que::Scheduler::EnqueueingCalculator do
       job_dictionary: all_keys,
       as_time: as_time
     )
-    out = QSSP.parse(::Que::Scheduler.schedule.values, scheduler_job_args)
+    out = described_class.parse(::Que::Scheduler.schedule.values, scheduler_job_args)
     exp = Que::Scheduler::EnqueueingCalculator::Result.new(
       missed_jobs: HashSupport.hash_to_enqueues(expect_scheduled), job_dictionary: all_keys
     )

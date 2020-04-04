@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 RSpec.describe Que::Scheduler::Audit do
-  include_context 'job testing'
+  include_context 'when job testing'
 
   describe '.append' do
     def append_test_jobs(enqueued, executed_at, job_id)

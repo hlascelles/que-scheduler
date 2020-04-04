@@ -1,3 +1,5 @@
+require: rubocop-rspec
+
 AllCops:
   TargetRubyVersion: 2.4
   DisplayCopNames: true
@@ -22,6 +24,14 @@ Layout/LineLength:
   Max: 100
 Metrics/MethodLength:
   Max: 30
+RSpec/AnyInstance:
+  Enabled: false
+RSpec/ExampleLength:
+  Max: 50
+RSpec/MessageSpies:
+  Enabled: false
+RSpec/MultipleExpectations:
+  Max: 5
 Style/BlockDelimiters:
   Enabled: false
 Style/HashEachMethods:

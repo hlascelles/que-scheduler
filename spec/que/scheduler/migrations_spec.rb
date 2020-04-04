@@ -2,6 +2,7 @@ require 'spec_helper'
 
 RSpec.describe Que::Scheduler::Migrations do
   describe '.migrate!' do
+    # rubocop:disable RSpec/MultipleExpectations
     it 'migrates up and down versions' do
       # Readd the job that was removed by the rspec before all
       ::Que::Scheduler::SchedulerJob.enqueue
@@ -15,21 +16,21 @@ RSpec.describe Que::Scheduler::Migrations do
       described_class.migrate!(version: 2)
       expect(described_class.db_version).to eq(2)
       expect(DbSupport.enqueued_table_exists?).to be false
-      expect(Que::Scheduler::Migrations.audit_table_exists?).to be true
+      expect(described_class.audit_table_exists?).to be true
       described_class.migrate!(version: 1)
       expect(described_class.db_version).to eq(1)
       expect(Que::Scheduler::Db.count_schedulers).to eq(1)
-      expect(Que::Scheduler::Migrations.audit_table_exists?).to be false
+      expect(described_class.audit_table_exists?).to be false
       described_class.migrate!(version: 0)
       expect(described_class.db_version).to eq(0)
       expect(Que::Scheduler::Db.count_schedulers).to eq(0)
       described_class.migrate!(version: 1)
       expect(described_class.db_version).to eq(1)
       expect(Que::Scheduler::Db.count_schedulers).to eq(1)
-      expect(Que::Scheduler::Migrations.audit_table_exists?).to be false
+      expect(described_class.audit_table_exists?).to be false
       described_class.migrate!(version: 2)
       expect(described_class.db_version).to eq(2)
-      expect(Que::Scheduler::Migrations.audit_table_exists?).to be true
+      expect(described_class.audit_table_exists?).to be true
 
       # Add a row to check conversion from schema 2 to schema 3
       Que::Scheduler::VersionSupport.execute(<<-SQL)
@@ -62,11 +63,12 @@ RSpec.describe Que::Scheduler::Migrations do
       audit = Que::Scheduler::VersionSupport.execute('SELECT * FROM que_scheduler_audit_enqueued')
       expect(audit.first[:scheduler_job_id]).to eq(17)
     end
+    # rubocop:enable RSpec/MultipleExpectations
 
     it 'returns the right migration number if the job has been deliberately deleted' do
       Que::Scheduler::VersionSupport.execute('DELETE FROM que_jobs')
       expect(Que::Scheduler::Db.count_schedulers).to eq(0)
-      expect(Que::Scheduler::Migrations.audit_table_exists?).to be true
+      expect(described_class.audit_table_exists?).to be true
       expect(described_class.db_version).to eq(Que::Scheduler::Migrations::MAX_VERSION)
     end
 
@@ -79,7 +81,7 @@ RSpec.describe Que::Scheduler::Migrations do
       described_class.migrate!(version: 0)
       stub_const('Que::Testing', true)
       described_class.migrate!(version: 4)
-      expect(Que::Scheduler::Migrations.audit_table_exists?).to be false
+      expect(described_class.audit_table_exists?).to be false
     end
   end
 end
