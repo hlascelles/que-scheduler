@@ -99,16 +99,28 @@ module Que
         # Now read the just inserted job back out of the DB to get the actual values that will
         # be used when the job is worked.
         data = JSON.parse(job.to_json, symbolize_names: true)
+
         # ActiveJob scheduled_at is returned as a float, where we want a Time for consistency
-        scheduled_at_float = data[:scheduled_at]
-        scheduled_at = scheduled_at_float ? Time.zone.at(scheduled_at_float) : nil
+        scheduled_at =
+          begin
+            scheduled_at_float = data[:scheduled_at]
+            scheduled_at_float ? Time.zone.at(scheduled_at_float) : nil
+          end
+
+        # Rails doesn't support queues for ActiveJob
+        # https://github.com/rails/rails/pull/19498
+        used_queue = nil
+
+        # We can't get the priority out of the DB, as the returned `job` doesn't give us access
+        # to the underlying ActiveJob that was scheduled. We have no option but to assume
+        # it was what we told it to use. If no priority was specified, we must assume it was
+        # the Que default, which is 100 t.ly/1jRK5
+        assume_used_priority = priority.nil? ? 100 : priority
 
         EnqueuedJobType.new(
           args: data.fetch(:arguments),
-          # Rails doesn't support queues for ActiveJob
-          # https://github.com/rails/rails/pull/19498
-          queue: nil,
-          priority: data.fetch(:priority),
+          queue: used_queue,
+          priority: assume_used_priority,
           run_at: scheduled_at,
           job_class: job_class.to_s,
           job_id: data.fetch(:provider_job_id)
