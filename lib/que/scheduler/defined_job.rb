@@ -69,12 +69,14 @@ module Que
           err_field(:job_class, options, "Job #{job_class} was not a supported job type")
         end
 
-        # queue name is only supported for a subrange of ActiveJob versions
+        # queue name is only supported for a subrange of ActiveJob versions. Print this out as a
+        # warning.
         if queue &&
            Que::Scheduler::ToEnqueue.active_job_sufficient_version? &&
            job_class < ::ActiveJob::Base &&
            Que::Scheduler::ToEnqueue.active_job_version < Gem::Version.create('6.0.3')
-          reason = <<-ERR
+          puts <<-ERR
+            WARNING from que-scheduler....
             Between versions 4.2.3 and 6.0.2 (inclusive) Rails did not support setting queue names
             on que jobs with ActiveJob, so que-scheduler cannot support it.
             See removed in Rails 4.2.3
@@ -82,9 +84,9 @@ module Que
             And readded in Rails 6.0.3
               https://github.com/rails/rails/pull/38635
 
-            Please remove all "queue" keys from ActiveJobs defined in the que-scheduler config.
+            Please remove all "queue" keys from ActiveJobs defined in the que-scheduler.yml config.
+            Specifically #{queue} for job #{name}.
           ERR
-          err_field(:queue, options, reason)
         end
       end
 
