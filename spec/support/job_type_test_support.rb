@@ -1,5 +1,5 @@
 shared_context "job testing" do
-  if Que::Scheduler::JobTypeSupport::active_job_sufficient_version?
+  if Que::Scheduler::JobTypeSupport.active_job_sufficient_version?
     let(:handles_queue_name) { false }
 
     def expected_class_in_db(_enqueued_class)
