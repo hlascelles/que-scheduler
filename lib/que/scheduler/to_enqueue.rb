@@ -98,7 +98,7 @@ module Que
           queue: data.fetch(:queue_name),
           priority: data.fetch(:priority),
           run_at: scheduled_at,
-          job_class: raw_job.class.to_s,
+          job_class: job_class.to_s,
           job_id: data.fetch(:provider_job_id)
         )
       end
