@@ -1,16 +1,13 @@
----
-engines:
-  duplication:
+version: "2"
+
+# https://docs.codeclimate.com/docs/advanced-configuration
+checks:
+  method-complexity:
     enabled: true
     config:
-      languages:
-      - ruby
-  fixme:
-    enabled: true
+      threshold: 8
+
+plugins:
   rubocop:
     enabled: true
-    channel: rubocop-0-54
-ratings:
-  paths:
-  - "**.rb"
-  - "**.md"
+    channel: rubocop-0-80

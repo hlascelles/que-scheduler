@@ -4,7 +4,7 @@ require 'active_support/core_ext/numeric/time'
 RSpec.describe Que::Scheduler::EnqueueingCalculator do
   QSSP = described_class
 
-  let(:all_keys) do
+  let(:all_keys) {
     %w[
       HalfHourlyTestJob
       WithArgsTestJob
@@ -13,7 +13,7 @@ RSpec.describe Que::Scheduler::EnqueueingCalculator do
       TwiceDailyTestJob
       TimezoneTestJob
     ]
-  end
+  }
 
   it 'should not enqueue anything if not enough time has gone by' do
     run_test('2017-10-08T16:40:32', 1.second, [])

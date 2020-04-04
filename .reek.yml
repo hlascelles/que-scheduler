@@ -111,6 +111,8 @@ detectors:
   UtilityFunction:
     enabled: true
     public_methods_only: true
+    exclude:
+    - job_args_from_db_row
 
 exclude_paths:
 - vendor
