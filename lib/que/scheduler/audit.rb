@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative 'job_type_support'
+require_relative 'to_enqueue'
 
 module Que
   module Scheduler
@@ -28,7 +28,7 @@ module Que
           enqueued_jobs.each do |j|
             inserted = ::Que::Scheduler::VersionSupport.execute(
               INSERT_AUDIT_ENQUEUED,
-              [scheduler_job_id] + Que::Scheduler::JobTypeSupport.params_from_job(j)
+              [scheduler_job_id] + Que::Scheduler::ToEnqueue.params_from_job(j)
             )
             raise "Cannot save audit row #{scheduler_job_id} #{executed_at} #{j}" if inserted.empty?
           end

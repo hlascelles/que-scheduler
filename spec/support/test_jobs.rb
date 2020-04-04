@@ -9,7 +9,7 @@ require 'que'
   TimezoneTestJob
 ].each do |name|
   clazz =
-    if Que::Scheduler::JobTypeSupport.active_job_sufficient_version?
+    if Que::Scheduler::ToEnqueue.active_job_sufficient_version?
       require 'active_job'
       require 'active_job/queue_adapters/que_adapter'
 

@@ -1,7 +1,7 @@
-appraise 'activesupport-4-que-0-12' do
-  gem 'activesupport', '~> 4.0'
-  gem 'que', '~> 0.12.1'
-end
+# appraise 'activesupport-4-que-0-12' do
+#   gem 'activesupport', '~> 4.0'
+#   gem 'que', '~> 0.12.1'
+# end
 #
 # # ActiveJob 4.x does not support job_ids correctly
 # # https://github.com/rails/rails/pull/20056/files

@@ -17,7 +17,7 @@ module Que
       property :job_class, required: true, transform_with: lambda { |v|
         job_class = Object.const_get(v)
         # rubocop:disable Style/GuardClause This reads better as a conditional
-        if Que::Scheduler::JobTypeSupport.valid_job_class?(job_class)
+        if Que::Scheduler::ToEnqueue.valid_job_class?(job_class)
           return job_class
         else
           return err_field(:job_class, v)
@@ -64,14 +64,6 @@ module Que
         end
       end
 
-      class ToEnqueue < Hashie::Dash
-        property :args, required: true, default: []
-        property :queue
-        property :priority
-        property :run_at
-        property :job_class, required: true
-      end
-
       private
 
       def generate_to_enqueue_list(missed_times)
@@ -82,10 +74,10 @@ module Que
 
         if schedule_type == DefinedJob::DEFINED_JOB_TYPE_EVERY_EVENT
           missed_times.map do |time_missed|
-            ToEnqueue.new(options.merge(args: [time_missed] + args_array))
+            ToEnqueue.create(options.merge(args: [time_missed] + args_array))
           end
         else
-          [ToEnqueue.new(options.merge(args: args_array))]
+          [ToEnqueue.create(options.merge(args: args_array))]
         end
       end
     end
