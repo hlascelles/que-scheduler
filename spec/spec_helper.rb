@@ -16,6 +16,12 @@ if ENV['CI'].present?
 end
 require 'zonebie/rspec'
 
+# Enforce load order here due to https://github.com/que-rb/que/issues/284
+if Gem.loaded_specs['activejob']
+  require 'active_job'
+  require 'active_job/queue_adapters/que_adapter'
+end
+
 Bundler.require :default, :development
 
 Dir["#{__dir__}/../spec/support/**/*.rb"].sort.each { |f| require f }

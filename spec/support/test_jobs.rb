@@ -10,8 +10,6 @@ require 'que'
 ].each do |name|
   clazz =
     if Que::Scheduler::ToEnqueue.active_job_sufficient_version?
-      require 'active_job'
-      require 'active_job/queue_adapters/que_adapter'
 
       Class.new(::ActiveJob::Base) do
         self.queue_adapter = :que
