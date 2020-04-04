@@ -35,7 +35,10 @@ RSpec.describe Que::Scheduler::Audit do
         ]
 
         enqueued = to_enqueue.map(&:enqueue)
-        db_jobs = append_test_jobs(enqueued, audit_insertion_time, scheduler_job_id)
+        db_jobs = append_test_jobs(enqueued, audit_insertion_time, scheduler_job_id).each { |row|
+          # Do the other part of the usec removal from above here
+          row[:run_at] = row[:run_at].change(usec: 0)
+        }
 
         expect(db_jobs).to eq(
           [

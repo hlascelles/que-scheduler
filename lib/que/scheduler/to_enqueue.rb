@@ -14,8 +14,7 @@ module Que
       class << self
         def create(options)
           type_from_job_class(options.fetch(:job_class)).new(
-            # TODO: test usec
-            options.merge(run_at: Que::Scheduler::Db.now.change(usec: 0))
+            options.merge(run_at: Que::Scheduler::Db.now)
           )
         end
 
