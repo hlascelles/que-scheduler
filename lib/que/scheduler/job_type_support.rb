@@ -15,7 +15,7 @@ module Que
           def enqueue(to_enqueue)
             job_class = to_enqueue.job_class
             args = to_enqueue.args
-            job_settings = to_enqueue.to_h.slice(:queue, :priority, :wait_until).compact
+            job_settings = to_enqueue.to_h.slice(:queue, :priority, :run_at).compact
             if args.is_a?(Hash)
               job_class.enqueue(**args.merge(job_settings))
             else

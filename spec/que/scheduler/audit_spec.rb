@@ -23,13 +23,13 @@ RSpec.describe Que::Scheduler::Audit do
         executed_at = Time.zone.now.change(usec: 0)
         enqueued = [
           Que::Scheduler::JobTypeSupport.enqueue(
-            Que::Scheduler::DefinedJob::ToEnqueue.new(job_class: HalfHourlyTestJob, args: 5, queue: 'something', run_at: executed_at - 1.hour)
+            Que::Scheduler::DefinedJob::ToEnqueue.new(job_class: HalfHourlyTestJob, args: 5, queue: 'something1', run_at: executed_at - 1.hour)
           ),
           Que::Scheduler::JobTypeSupport.enqueue(
-            Que::Scheduler::DefinedJob::ToEnqueue.new(job_class: HalfHourlyTestJob, priority: 80, queue: 'something', run_at: executed_at - 2.hour)
+            Que::Scheduler::DefinedJob::ToEnqueue.new(job_class: HalfHourlyTestJob, priority: 80, run_at: executed_at - 2.hour)
           ),
           Que::Scheduler::JobTypeSupport.enqueue(
-            Que::Scheduler::DefinedJob::ToEnqueue.new(job_class: DailyTestJob, args: 3, queue: 'some_queue', run_at: executed_at - 3.hour)
+            Que::Scheduler::DefinedJob::ToEnqueue.new(job_class: DailyTestJob, args: 3, queue: 'something3', run_at: executed_at - 3.hour)
           ),
         ]
         db_jobs = append_test_jobs(enqueued, executed_at, scheduler_job_id)
@@ -38,7 +38,7 @@ RSpec.describe Que::Scheduler::Audit do
             {
               scheduler_job_id: scheduler_job_id,
               job_class: 'HalfHourlyTestJob',
-              queue: 'something',
+              queue: 'something1',
               priority: 100,
               args: [5],
               job_id: Que::Scheduler::JobTypeSupport.job_id(enqueued[0]),
@@ -56,7 +56,7 @@ RSpec.describe Que::Scheduler::Audit do
             {
               scheduler_job_id: scheduler_job_id,
               job_class: 'DailyTestJob',
-              queue: 'some_queue',
+              queue: 'something3',
               priority: 100,
               args: [3],
               job_id: Que::Scheduler::JobTypeSupport.job_id(enqueued[2]),
