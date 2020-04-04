@@ -24,7 +24,7 @@ RSpec.describe Que::Scheduler::Audit do
         enqueued = [
           Que::Scheduler::ToEnqueue.create(job_class: HalfHourlyTestJob, args: 5, queue: 'something1', run_at: executed_at - 1.hour).enqueue,
           Que::Scheduler::ToEnqueue.create(job_class: HalfHourlyTestJob, priority: 80, run_at: executed_at - 2.hour).enqueue,
-          Que::Scheduler::ToEnqueue.create(job_class: DailyTestJob, args: 3, queue: 'something3', run_at: executed_at - 3.hour).enqueue
+          Que::Scheduler::ToEnqueue.create(job_class: DailyTestJob, args: 3, queue: 'something3', run_at: executed_at - 3.hour, priority: 42).enqueue
         ]
         db_jobs = append_test_jobs(enqueued, executed_at, scheduler_job_id)
         expect(db_jobs).to eq(
@@ -51,7 +51,7 @@ RSpec.describe Que::Scheduler::Audit do
               scheduler_job_id: scheduler_job_id,
               job_class: 'DailyTestJob',
               queue: 'something3',
-              priority: 100,
+              priority: 42,
               args: [3],
               job_id: Que::Scheduler::ToEnqueue.job_id(enqueued[2]),
               run_at: executed_at - 3.hours,
