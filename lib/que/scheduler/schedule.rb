@@ -27,17 +27,15 @@ module Que
         private
 
         def hash_item_to_defined_job(name, defined_job_hash)
-          Que::Scheduler::DefinedJob.new(
-            {
-              name: name,
-              job_class: defined_job_hash['class'] || name,
-              queue: defined_job_hash['queue'],
-              args: defined_job_hash['args'],
-              priority: defined_job_hash['priority'],
-              cron: defined_job_hash['cron'],
-              schedule_type: defined_job_hash['schedule_type'],
-            }.compact
-          ).freeze
+          Que::Scheduler::DefinedJob.create(
+            name: name,
+            job_class: defined_job_hash['class'] || name,
+            queue: defined_job_hash['queue'],
+            args: defined_job_hash['args'],
+            priority: defined_job_hash['priority'],
+            cron: defined_job_hash['cron'],
+            schedule_type: defined_job_hash['schedule_type']&.to_sym
+          )
         end
       end
     end

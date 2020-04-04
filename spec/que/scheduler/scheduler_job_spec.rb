@@ -4,6 +4,8 @@ require 'yaml'
 require 'active_support/core_ext/numeric/time'
 
 RSpec.describe Que::Scheduler::SchedulerJob do
+  include_context 'job testing'
+
   QS = Que::Scheduler
   PARSER = QS::EnqueueingCalculator
   RESULT = QS::EnqueueingCalculator::Result
@@ -49,7 +51,7 @@ RSpec.describe Que::Scheduler::SchedulerJob do
             last_run_time: (run_time - 45.minutes).iso8601,
             job_dictionary: %w[HalfHourlyTestJob],
           },
-          [{ job_class: 'HalfHourlyTestJob' }]
+          [{ job_class: expected_class_in_db(HalfHourlyTestJob).to_s }]
         )
       end
 
@@ -80,6 +82,12 @@ RSpec.describe Que::Scheduler::SchedulerJob do
     end
 
     describe '#enqueue_required_jobs' do
+      # it "prove that ActiveJob doesn't support Que queue names correctly" do
+      #   TestActiveJob.set(queue: "foo", queue_name: "foo").perform_later
+      #   jobs = DbSupport.jobs_by_class(ActiveJob::QueueAdapters::QueAdapter::JobWrapper)
+      #   expect(jobs.first.fetch(:queue)).to eq("foo")
+      # end
+
       def test_enqueued(overdue_dictionary)
         result = RESULT.new(
           missed_jobs: HashSupport.hash_to_enqueues(overdue_dictionary), job_dictionary: []
@@ -88,14 +96,14 @@ RSpec.describe Que::Scheduler::SchedulerJob do
       end
 
       def expect_one_result(args, queue, priority)
-        jobs = DbSupport.jobs_by_class(HalfHourlyTestJob)
+        jobs = DbSupport.jobs_by_class(expected_class_in_db(HalfHourlyTestJob))
         expect(jobs.count).to eq(1)
         one_result = jobs.first
 
-        expect_job_args_to_equal(one_result[:args] || [], args)
-        expect(one_result[:queue]).to eq(queue)
+        expect_job_args_to_equal(job_args_from_db_row(one_result) || [], args)
+        expect(one_result[:queue]).to eq(queue) if handles_queue_name
         expect(one_result[:priority]).to eq(priority)
-        expect(one_result[:job_class]).to eq('HalfHourlyTestJob')
+        expect(one_result[:job_class]).to eq(expected_class_in_db(HalfHourlyTestJob).to_s)
       end
 
       it 'schedules nothing if nothing in the result' do
@@ -171,7 +179,7 @@ RSpec.describe Que::Scheduler::SchedulerJob do
       # of resque-solo could decide that the enqueue is not necessary and just short circuit. When
       # this happens we don't want to error, but just log the fact.
       it 'handles when the enqueue call does not enqueue a job' do
-        expect(HalfHourlyTestJob).to receive(:enqueue).and_return(false)
+        null_enqueue_call(HalfHourlyTestJob)
         test_enqueued([{ job_class: HalfHourlyTestJob }])
         expect(Que.job_stats).to eq([])
         qsae = Que::Scheduler::VersionSupport.execute('select * from que_scheduler_audit_enqueued')
