@@ -4,7 +4,7 @@ require 'yaml'
 require 'active_support/core_ext/numeric/time'
 
 RSpec.describe Que::Scheduler::SchedulerJob do
-  include_context "job testing"
+  include_context 'job testing'
 
   QS = Que::Scheduler
   PARSER = QS::EnqueueingCalculator

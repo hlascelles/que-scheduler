@@ -1,13 +1,13 @@
 require 'spec_helper'
 
 RSpec.describe Que::Scheduler::DefinedJob do
-  let(:valid_options) {
+  let(:valid_options) do
     {
       name: 'testing_job_definitions',
       job_class: 'HalfHourlyTestJob',
-      cron: '14 17 * * *'
+      cron: '14 17 * * *',
     }
-  }
+  end
 
   describe '#next_run_time' do
     let(:job) do

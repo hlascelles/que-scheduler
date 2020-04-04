@@ -45,14 +45,14 @@ module Que
       private
 
       def check_enqueued_job(to_enqueue, enqueued_job, logs)
-        if enqueued_job.present?
-          logs << "que-scheduler enqueueing #{enqueued_job.job_class} " \
-                      "#{enqueued_job.job_id} with args: #{enqueued_job.args}"
-        else
-          # This can happen if a middleware nixes the enqueue call
-          logs << "que-scheduler called enqueue on #{to_enqueue.job_class} " \
-                      "but it reported no job was scheduled. Has `enqueue` been overridden?"
-        end
+        logs << if enqueued_job.present?
+                  "que-scheduler enqueueing #{enqueued_job.job_class} " \
+                              "#{enqueued_job.job_id} with args: #{enqueued_job.args}"
+                else
+                  # This can happen if a middleware nixes the enqueue call
+                  "que-scheduler called enqueue on #{to_enqueue.job_class} " \
+                              'but it reported no job was scheduled. Has `enqueue` been overridden?'
+                end
       end
 
       def enqueue_self_again(scheduler_job_args, last_full_execution, job_dictionary, enqueued_jobs)

@@ -14,17 +14,13 @@ module Que
       class << self
         def create(options)
           type_from_job_class(options.fetch(:job_class)).new(
-            # todo test usec
+            # TODO: test usec
             options.merge(run_at: Que::Scheduler::Db.now.change(usec: 0))
           )
         end
 
         def valid_job_class?(job_class)
           type_from_job_class(job_class).present?
-        end
-
-        def validate_job_class!(job_class)
-          raise "Invalid job class #{job_class}" unless valid_job_class?(job_class)
         end
 
         def active_job_version
@@ -83,10 +79,11 @@ module Que
 
     # For jobs of type ActiveJob
     class ActiveJobType < ToEnqueue
+      # rubocop:disable Metrics/AbcSize
       def enqueue
         job_settings = {
           priority: priority,
-          wait_until: run_at
+          wait_until: run_at,
         }.compact
 
         job_class_set = job_class.set(**job_settings)
@@ -129,6 +126,7 @@ module Que
           job_id: data.fetch(:provider_job_id)
         )
       end
+      # rubocop:enable Metrics/AbcSize
     end
 
     # A value object returned after a job has been enqueued. This is necessary as Que (normal) and

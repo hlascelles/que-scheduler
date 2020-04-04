@@ -14,17 +14,15 @@ require 'que'
       Class.new(::ActiveJob::Base) do
         self.queue_adapter = :que
 
-        def run
-        end
+        def run; end
       end
     else
       Class.new(::Que::Job) do
-        def run
-        end
+        def run; end
       end
 
     end
-  Object.const_set(name,clazz)
+  Object.const_set(name, clazz)
 end
 
 class NotAQueJob

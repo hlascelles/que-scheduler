@@ -1,12 +1,12 @@
-shared_context "job testing" do
+shared_context 'job testing' do
   if Que::Scheduler::ToEnqueue.active_job_sufficient_version?
-    let(:handles_queue_name) {
+    let(:handles_queue_name) do
       # This was removed in Rails 4.2.3
       # https://github.com/rails/rails/pull/19498
       # and readded in Rails 6.0.3
       # https://github.com/rails/rails/pull/38635
       Que::Scheduler::ToEnqueue.active_job_version >= Gem::Version.create('6.0.3')
-    }
+    end
 
     def expected_class_in_db(_enqueued_class)
       ActiveJob::QueueAdapters::QueAdapter::JobWrapper

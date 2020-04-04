@@ -14,8 +14,8 @@ module Que
       ].freeze
 
       property :name
-      property :job_class, transform_with: lambda { |v| Object.const_get(v) }
-      property :cron, transform_with: lambda { |v| Fugit::Cron.parse(v) }
+      property :job_class, transform_with: ->(v) { Object.const_get(v) }
+      property :cron, transform_with: ->(v) { Fugit::Cron.parse(v) }
       property :queue
       property :priority
       property :args
@@ -49,16 +49,20 @@ module Que
         generate_to_enqueue_list(missed_times)
       end
 
+      # rubocop:disable Metrics/AbcSize
+      # rubocop:disable Metrics/CyclomaticComplexity
+      # rubocop:disable Metrics/MethodLength
+      # rubocop:disable Metrics/PerceivedComplexity
       def validate(options)
-        err_field(:name, options, "name must be present") if name.nil?
-        err_field(:job_class, options, "job_class must be present") if job_class.nil?
+        err_field(:name, options, 'name must be present') if name.nil?
+        err_field(:job_class, options, 'job_class must be present') if job_class.nil?
         # An invalid cron is nil
-        err_field(:cron, options, "cron must be present") if cron.nil?
+        err_field(:cron, options, 'cron must be present') if cron.nil?
         unless queue.nil? || queue.is_a?(String)
-          err_field(:queue, options, "queue must be a string")
+          err_field(:queue, options, 'queue must be a string')
         end
         unless priority.nil? || priority.is_a?(Integer)
-          err_field(:priority, options, "priority must be an integer")
+          err_field(:priority, options, 'priority must be an integer')
         end
         unless DEFINED_JOB_TYPES.include?(schedule_type)
           err_field(:schedule_type, options, "Not in #{DEFINED_JOB_TYPES}")
@@ -89,10 +93,14 @@ module Que
           ERR
         end
       end
+      # rubocop:enable Metrics/AbcSize
+      # rubocop:enable Metrics/CyclomaticComplexity
+      # rubocop:enable Metrics/MethodLength
+      # rubocop:enable Metrics/PerceivedComplexity
 
       private
 
-      def err_field(field, options, reason = "")
+      def err_field(field, options, reason = '')
         schedule = Que::Scheduler.configuration.schedule_location
         value = options[field]
         raise "Invalid #{field} '#{value}' for '#{name}' in que-scheduler schedule #{schedule}.\n" \

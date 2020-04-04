@@ -34,7 +34,7 @@ module Que
             args: defined_job_hash['args'],
             priority: defined_job_hash['priority'],
             cron: defined_job_hash['cron'],
-            schedule_type: defined_job_hash['schedule_type']&.to_sym,
+            schedule_type: defined_job_hash['schedule_type']&.to_sym
           )
         end
       end

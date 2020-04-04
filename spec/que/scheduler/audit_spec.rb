@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 RSpec.describe Que::Scheduler::Audit do
-  include_context "job testing"
+  include_context 'job testing'
 
   describe '.append' do
     def append_test_jobs(enqueued, executed_at, job_id)
@@ -27,10 +27,11 @@ RSpec.describe Que::Scheduler::Audit do
         audit_insertion_time = Time.zone.now.change(usec: 0)
         jobs_set_to_run_at = Que::Scheduler::Db.now.change(usec: 0)
 
+        te = Que::Scheduler::ToEnqueue
         to_enqueue = [
-          Que::Scheduler::ToEnqueue.create(job_class: HalfHourlyTestJob, args: 5, queue: 'something1'),
-          Que::Scheduler::ToEnqueue.create(job_class: HalfHourlyTestJob, priority: 80),
-          Que::Scheduler::ToEnqueue.create(job_class: DailyTestJob, args: 3, queue: 'something3', priority: 42)
+          te.create(job_class: HalfHourlyTestJob, args: 5, queue: 'something1'),
+          te.create(job_class: HalfHourlyTestJob, priority: 80),
+          te.create(job_class: DailyTestJob, args: 3, queue: 'something3', priority: 42),
         ]
 
         enqueued = to_enqueue.map(&:enqueue)
