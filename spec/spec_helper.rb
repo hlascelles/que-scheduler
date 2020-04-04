@@ -18,7 +18,7 @@ require 'zonebie/rspec'
 
 Bundler.require :default, :development
 
-Dir["#{__dir__}/../spec/support/**/*.rb"].each { |f| require f }
+Dir["#{__dir__}/../spec/support/**/*.rb"].sort.each { |f| require f }
 
 Que::Scheduler.configure do |config|
   config.schedule_location = "#{__dir__}/config/que_schedule.yml"

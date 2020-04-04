@@ -3,7 +3,7 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'que/scheduler/version'
 
 Gem::Specification.new do |spec|
-  # rubocop:disable Layout/AlignHash
+  # rubocop:disable Layout/HashAlignment
   spec.name          = 'que-scheduler'
   spec.version       = Que::Scheduler::VERSION
   spec.authors       = ['Harry Lascelles']
@@ -39,11 +39,11 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'pg', '~> 0.21'
   spec.add_development_dependency 'pry-byebug'
   spec.add_development_dependency 'rake'
-  spec.add_development_dependency 'reek', '5.0.2' # Supported hound version. https://bit.ly/2M02Kx7
+  spec.add_development_dependency 'reek'
   spec.add_development_dependency 'rspec'
-  spec.add_development_dependency 'rubocop', '~> 0.68.1'
+  spec.add_development_dependency 'rubocop', '0.80.0' # Hound version
   spec.add_development_dependency 'sqlite3', '>= 1.3'
   spec.add_development_dependency 'timecop'
   spec.add_development_dependency 'zonebie'
-  # rubocop:enable Layout/AlignHash
+  # rubocop:enable Layout/HashAlignment
 end
