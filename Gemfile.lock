@@ -40,7 +40,7 @@ GEM
       rake
       thor (>= 0.14.0)
     ast (2.4.0)
-    backports (3.17.0)
+    backports (3.17.1)
     builder (3.2.4)
     byebug (11.1.1)
     coderay (1.1.2)
