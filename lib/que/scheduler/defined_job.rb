@@ -1,6 +1,5 @@
 require 'hashie'
 require 'fugit'
-require 'backports/2.4.0/hash/compact'
 
 # This is the definition of one scheduleable job in the que-scheduler config yml file.
 module Que

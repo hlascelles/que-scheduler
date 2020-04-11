@@ -1,3 +1,7 @@
+##
+
+- Remove backports gem  [#170](https://github.com/hlascelles/que-scheduler/pull/170)
+
 ## 3.3.0 (2020-04-04)
 
 - General bundle update of test gems [#154](https://github.com/hlascelles/que-scheduler/pull/154)
