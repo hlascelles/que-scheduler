@@ -32,6 +32,15 @@ module Que
           active_job_version && active_job_version > Gem::Version.create('5')
         end
 
+        def active_job_version_supports_queues?
+          # Supporting queue name in ActiveJob was removed in Rails 4.2.3
+          # https://github.com/rails/rails/pull/19498
+          # and readded in Rails 6.0.3
+          # https://github.com/rails/rails/pull/38635
+          ToEnqueue.active_job_version && ToEnqueue.active_job_version >=
+            Gem::Version.create('6.0.3')
+        end
+
         private
 
         def type_from_job_class(job_class)
@@ -87,8 +96,6 @@ module Que
         EnqueuedJobType.new(enqueued_values)
       end
 
-      private
-
       def calculate_enqueued_values(job)
         # Now read the just inserted job back out of the DB to get the actual values that will
         # be used when the job is worked.
@@ -101,9 +108,8 @@ module Que
             scheduled_at_float ? Time.zone.at(scheduled_at_float) : nil
           end
 
-        # Rails doesn't support queues for ActiveJob
-        # https://github.com/rails/rails/pull/19498
-        used_queue = nil
+        # Rails didn't support queues for ActiveJob for a while
+        used_queue = data[:queue_name] if ToEnqueue.active_job_version_supports_queues?
 
         # We can't get the priority out of the DB, as the returned `job` doesn't give us access
         # to the underlying ActiveJob that was scheduled. We have no option but to assume
@@ -125,6 +131,7 @@ module Que
         job_settings = {
           priority: priority,
           wait_until: run_at,
+          queue: queue || Que::Scheduler::VersionSupport.default_scheduler_queue,
         }.compact
 
         job_class_set = job_class.set(**job_settings)

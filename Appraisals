@@ -41,10 +41,16 @@ appraise 'activesupport-6-que-0-14' do
   gem 'que', '~> 0.14'
 end
 
-appraise 'activesupport-6-que-0-14-activejob' do
+appraise 'activesupport-6-without-queue-names-que-0-14-activejob' do
   gem 'activesupport', '~> 6.0'
   gem 'que', '~> 0.14'
-  gem 'activejob', '~> 6.0'
+  gem 'activejob', '6.0.2'
+end
+
+appraise 'activesupport-6-with-queue-names-que-0-14-activejob' do
+  gem 'activesupport', '~> 6.0'
+  gem 'que', '~> 0.14'
+  gem 'activejob', '~> 6.0', '>= 6.0.3'
 end
 
 appraise 'activesupport-4-que-1-x' do
@@ -68,8 +74,14 @@ appraise 'activesupport-6-que-1-x' do
   gem 'que', '1.0.0.beta4'
 end
 
-appraise 'activesupport-6-que-1-x-activejob' do
+appraise 'activesupport-6-without-queue-names-1-x-activejob' do
   gem 'activesupport', '~> 6.0'
   gem 'que', '1.0.0.beta4'
-  gem 'activejob', '~> 6.0'
+  gem 'activejob', '6.0.2'
+end
+
+appraise 'activesupport-6-with-queue-names-que-1-x-activejob' do
+  gem 'activesupport', '~> 6.0'
+  gem 'que', '1.0.0.beta4'
+  gem 'activejob', '~> 6.0', '>= 6.0.3'
 end
