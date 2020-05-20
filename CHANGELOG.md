@@ -1,5 +1,6 @@
-##
+## Unreleased
 
+- Include new support for queue names in Rails 6 [#180](https://github.com/hlascelles/que-scheduler/pull/180)
 - Remove backports gem  [#170](https://github.com/hlascelles/que-scheduler/pull/170)
 
 ## 3.3.0 (2020-04-04)
