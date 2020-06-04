@@ -1,0 +1,1 @@
+CREATE UNIQUE INDEX index_que_scheduler_audit_on_scheduler_job_id ON que_scheduler_audit USING btree (scheduler_job_id);
