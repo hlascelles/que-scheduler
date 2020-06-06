@@ -1,0 +1,1 @@
+DROP INDEX index_que_scheduler_audit_on_scheduler_job_id;
