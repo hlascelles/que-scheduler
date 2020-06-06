@@ -10,6 +10,8 @@ Layout/BlockAlignment:
   EnforcedStyleAlignWith: start_of_block
 Layout/DotPosition:
   EnforcedStyle: leading
+Layout/EmptyLinesAroundAttributeAccessor:
+  Enabled: true
 Metrics/AbcSize:
   Max: 20
   Exclude:
@@ -22,6 +24,14 @@ Metrics/BlockLength:
   - '**/spec/**/*.rb'
 Layout/LineLength:
   Max: 100
+Layout/SpaceAroundMethodCallOperator:
+  Enabled: true
+Lint/DeprecatedOpenSSLConstant:
+  Enabled: true
+Lint/RaiseException:
+  Enabled: true
+Lint/StructNewOverride:
+  Enabled: true
 Metrics/MethodLength:
   Max: 30
 RSpec/AnyInstance:
@@ -34,11 +44,15 @@ RSpec/MultipleExpectations:
   Max: 5
 Style/BlockDelimiters:
   Enabled: false
+Style/ExponentialNotation:
+  Enabled: true
 Style/HashEachMethods:
   Enabled: true
 Style/HashTransformKeys:
   Enabled: true
 Style/HashTransformValues:
+  Enabled: true
+Style/SlicingWithRange:
   Enabled: true
 Style/TrailingCommaInArguments:
   Enabled: false
@@ -52,3 +66,4 @@ Style/FrozenStringLiteralComment:
   Enabled: false
 Style/StringLiterals:
   EnforcedStyle: single_quotes
+

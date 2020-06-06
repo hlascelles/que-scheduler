@@ -22,12 +22,13 @@ needs to be run, enqueueing those jobs, then enqueueing itself to check again la
 look for it is `config/que_schedule.yml`. They are essentially the same as resque-scheduler
 files, but with additional features.
 
-1. Add a migration to start the job scheduler and prepare the audit table. Note that this migration will fail if Que is set to execute jobs synchronously, i.e. `Que::Job.run_synchronously = true`.
+1. Add a migration to start the job scheduler and prepare the audit table. Note that this migration 
+   will fail if Que is set to execute jobs synchronously, i.e. `Que::Job.run_synchronously = true`.
 
     ```ruby
     class CreateQueSchedulerSchema < ActiveRecord::Migration
       def change
-        Que::Scheduler::Migrations.migrate!(version: 4)
+        Que::Scheduler::Migrations.migrate!(version: 5)
       end
     end
     ```
@@ -136,8 +137,38 @@ end
 
 ## Scheduler Audit
 
-An audit table _que_scheduler_audit_ is written to by the scheduler to keep a history of what jobs 
-were enqueued when. It is created by the included migration tasks.
+An audit table `que_scheduler_audit` is written to by the scheduler to keep a history of when the 
+scheduler ran to calculate what was necessary to run (if anything). It is created by the included 
+migration tasks.
+
+Additionally, there is the audit table `que_scheduler_audit_enqueued`. This logs every job that 
+the scheduler enqueues.
+
+When there is a major version (breaking) change, a migration should be run in. The version of the 
+migration proceeds at a faster rate than the version of the gem. To run in all the migrations required
+up to a number, just migrate to that number with one line, and it will perform all the intermediary steps. 
+
+ie, This will perform all migrations necessary up to the latest version, skipping any already 
+performed.
+
+    ```ruby
+    class CreateQueSchedulerSchema < ActiveRecord::Migration
+      def change
+        Que::Scheduler::Migrations.migrate!(version: 5)
+      end
+    end
+    ```
+
+The changes in past migrations were: 
+
+| Version | Changes                                                                         |
+|:-------:|---------------------------------------------------------------------------------|
+|    1    | Enqueued the main Que::Scheduler. This is the job that performs the scheduling. |
+|    2    | Added the audit table `que_scheduler_audit`.                                    |
+|    3    | Added the audit table `que_scheduler_audit_enqueued`.                           |
+|    4    | Updated the the audit tables to use bigints                                     |
+|    5    | Dropped an unnecessary index                                                    |
+
 
 ## HA Redundancy and DB restores
 
@@ -172,23 +203,6 @@ then reschedules itself. The flow is as follows:
 1. After a deploy that changes the schedule, the job notices any new jobs to schedule, and knows which
    ones to forget. It does not need to be re-enqueued or restarted.
    
-## DB Migrations
-
-When there is a major version (breaking) change, a migration should be run in. The version of the 
-migration proceeds at a faster rate than the version of the gem. To run in all the migrations required
-up to a number, just migrate to that number with one line, and it will perform all the intermediary steps. 
-
-ie, `Que::Scheduler::Migrations.migrate!(version: 4)` will perform all migrations necessary to 
-reach migration version `4`.
-
-As of migration `4`, two elements are added to the DB for que-scheduler to run. 
-
-1. The first is the scheduler job itself, which runs forever, re-enqueuing itself to performs its 
-   duties.
-1. The second part comprises the audit table `que_scheduler_audit` and the "enqueued" table 
-  `que_scheduler_audit_enqueued`. The first tracks when the scheduler calculated what was necessary to run 
-  (if anything). The second then logs every job that the scheduler enqueues. 
-
 ## Testing Configuration
 
 You can add tests to validate your configuration during the spec phase. This will perform a variety 
@@ -236,3 +250,4 @@ This gem was inspired by the makers of the excellent [Que](https://github.com/ch
 * @joehorsnell
 * @bnauta
 * @papodaca
+* @krzyzak

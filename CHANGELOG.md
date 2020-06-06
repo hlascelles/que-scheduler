@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Drop redundant index (thanks @krzyzak) [#188](https://github.com/hlascelles/que-scheduler/pull/188)
 - Include new support for queue names in Rails 6 [#180](https://github.com/hlascelles/que-scheduler/pull/180)
 - Remove backports gem  [#170](https://github.com/hlascelles/que-scheduler/pull/170)
 
