@@ -34,8 +34,8 @@ module Que
         end
       end
 
-      def enqueue_required_jobs(result, logs)
-        result.missed_jobs.map do |to_enqueue|
+      def enqueue_required_jobs(calculator_result, logs)
+        calculator_result.missed_jobs.map do |to_enqueue|
           to_enqueue.enqueue.tap do |enqueued_job|
             check_enqueued_job(to_enqueue, enqueued_job, logs)
           end
