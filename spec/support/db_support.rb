@@ -1,21 +1,21 @@
-require 'active_record'
+require "active_record"
 
 module DbSupport
   class << self
     RSpec::Mocks::Syntax.enable_expect(self)
 
     def setup_db
-      testing_db = 'que_scheduler_testing'
+      testing_db = "que_scheduler_testing"
       db_config = {
-        adapter: 'postgresql',
+        adapter: "postgresql",
         database: testing_db,
-        username: 'postgres',
-        password: ENV.fetch('DB_PASSWORD'),
-        host: ENV.fetch('DB_HOST', '127.0.0.1'),
-        port: ENV.fetch('DB_PORT', 5432),
+        username: "postgres",
+        password: ENV.fetch("DB_PASSWORD"),
+        host: ENV.fetch("DB_HOST", "127.0.0.1"),
+        port: ENV.fetch("DB_PORT", 5432),
         reconnect: true,
       }
-      ActiveRecord::Base.establish_connection(db_config.merge(database: 'postgres'))
+      ActiveRecord::Base.establish_connection(db_config.merge(database: "postgres"))
 
       conn = ActiveRecord::Base.connection
       if conn.execute("SELECT 1 from pg_database WHERE datname='#{testing_db}';").count > 0
@@ -57,9 +57,9 @@ module DbSupport
 
     def scheduler_job_id_type
       Que::Scheduler::VersionSupport.execute(
-        'select column_name, data_type from information_schema.columns ' \
+        "select column_name, data_type from information_schema.columns " \
         "where table_name = 'que_scheduler_audit';"
-      ).find { |row| row.fetch(:column_name) == 'scheduler_job_id' }.fetch(:data_type)
+      ).find { |row| row.fetch(:column_name) == "scheduler_job_id" }.fetch(:data_type)
     end
 
     def enqueued_table_exists?
@@ -72,7 +72,7 @@ module DbSupport
     def convert_args_column(db_jobs)
       db_jobs.map do |row|
         var = row[:args]
-        row[:args] = JSON.parse(var) if var.is_a?(String) && var.start_with?('[')
+        row[:args] = JSON.parse(var) if var.is_a?(String) && var.start_with?("[")
         row
       end
     end
@@ -88,12 +88,12 @@ module DbSupport
     private
 
     def avoid_invalid_testing_scenarios
-      pg_version = Que::Scheduler::VersionSupport.execute('SELECT version()').first.fetch(:version)
-      return unless pg_version.start_with?('PostgreSQL 9.4') &&
+      pg_version = Que::Scheduler::VersionSupport.execute("SELECT version()").first.fetch(:version)
+      return unless pg_version.start_with?("PostgreSQL 9.4") &&
                     !Que::Scheduler::VersionSupport.zero_major?
 
-      puts 'For Postgres 9.4 we cannot test que 1.x (as it uses new jsonb features), ' \
-           'so we must short circuit here so the CI build for other versions continues...'
+      puts "For Postgres 9.4 we cannot test que 1.x (as it uses new jsonb features), " \
+           "so we must short circuit here so the CI build for other versions continues..."
       exit(0) # Exit 0 for CI
     end
   end

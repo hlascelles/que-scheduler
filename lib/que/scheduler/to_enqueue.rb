@@ -1,4 +1,4 @@
-require 'que'
+require "que"
 
 # This module uses polymorphic dispatch to centralise the differences between supporting Que::Job
 # and other job systems.
@@ -23,13 +23,13 @@ module Que
         end
 
         def active_job_version
-          Gem.loaded_specs['activejob']&.version
+          Gem.loaded_specs["activejob"]&.version
         end
 
         def active_job_sufficient_version?
           # ActiveJob 4.x does not support job_ids correctly
           # https://github.com/rails/rails/pull/20056/files
-          active_job_version && active_job_version > Gem::Version.create('5')
+          active_job_version && active_job_version > Gem::Version.create("5")
         end
 
         def active_job_version_supports_queues?
@@ -38,7 +38,7 @@ module Que
           # and readded in Rails 6.0.3
           # https://github.com/rails/rails/pull/38635
           ToEnqueue.active_job_version && ToEnqueue.active_job_version >=
-            Gem::Version.create('6.0.3')
+            Gem::Version.create("6.0.3")
         end
 
         private

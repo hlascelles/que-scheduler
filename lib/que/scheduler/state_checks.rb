@@ -1,6 +1,6 @@
-require_relative 'audit'
-require_relative 'db'
-require_relative 'migrations'
+require_relative "audit"
+require_relative "db"
+require_relative "migrations"
 
 module Que
   module Scheduler

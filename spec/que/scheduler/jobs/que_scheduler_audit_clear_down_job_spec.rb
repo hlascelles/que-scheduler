@@ -1,7 +1,7 @@
-require 'spec_helper'
+require "spec_helper"
 
 RSpec.describe Que::Scheduler::Jobs::QueSchedulerAuditClearDownJob do
-  include_context 'when audit testing'
+  include_context "when audit testing"
 
   def insert_test_rows
     now = Que::Scheduler::Db.now
@@ -13,8 +13,8 @@ RSpec.describe Que::Scheduler::Jobs::QueSchedulerAuditClearDownJob do
     initial
   end
 
-  describe '#run' do
-    it 'clears down a given number of audit rows' do
+  describe "#run" do
+    it "clears down a given number of audit rows" do
       initial = insert_test_rows
 
       retain = 2
@@ -41,7 +41,7 @@ RSpec.describe Que::Scheduler::Jobs::QueSchedulerAuditClearDownJob do
       find_audit_rows(expect: initial)
     end
 
-    it 'does nothing if no audit rows' do
+    it "does nothing if no audit rows" do
       find_audit_rows(expect: 0)
       expect {
         described_class.run(retain_row_count: 2)

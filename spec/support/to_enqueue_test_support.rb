@@ -1,4 +1,4 @@
-shared_context 'when job testing' do
+shared_context "when job testing" do
   if Que::Scheduler::ToEnqueue.active_job_sufficient_version?
     let(:handles_queue_name) {
       Que::Scheduler::ToEnqueue.active_job_version_supports_queues?
@@ -12,10 +12,10 @@ shared_context 'when job testing' do
       # ActiveJob args are held in a wrapper which we must mine down to.
       first_args = job_row[:args].first
       # Depending on Que version it may be by symbol or string.
-      first_arguments = (first_args['arguments'] || first_args[:arguments])
+      first_arguments = (first_args["arguments"] || first_args[:arguments])
       first_arguments.each do |arg|
         if arg.is_a?(Hash)
-          arg.delete('_aj_symbol_keys')
+          arg.delete("_aj_symbol_keys")
           arg.delete(:_aj_symbol_keys)
         end
       end

@@ -1,4 +1,4 @@
-require 'que'
+require "que"
 
 # This job can optionally be scheduled to clear down the que-scheduler audit log if it
 # isn't required in the long term.
@@ -21,8 +21,8 @@ module Que
           end
         end
 
-        DELETE_AUDIT_ENQUEUED_SQL = build_sql('que_scheduler_audit_enqueued').freeze
-        DELETE_AUDIT_SQL = build_sql('que_scheduler_audit').freeze
+        DELETE_AUDIT_ENQUEUED_SQL = build_sql("que_scheduler_audit_enqueued").freeze
+        DELETE_AUDIT_SQL = build_sql("que_scheduler_audit").freeze
 
         # Very low priority
         Que::Scheduler::VersionSupport.set_priority(self, 100)
@@ -36,7 +36,7 @@ module Que
             # This will delete all but `retain_row_count` oldest rows
             count = Que::Scheduler::VersionSupport.execute(DELETE_AUDIT_SQL, [retain_row_count])
             log = "#{self.class} cleared down #{count.first.fetch(:count)} rows"
-            ::Que.log(event: 'que-scheduler'.to_sym, message: log)
+            ::Que.log(event: "que-scheduler".to_sym, message: log)
           end
         end
       end

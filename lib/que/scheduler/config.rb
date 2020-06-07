@@ -1,5 +1,5 @@
-require 'que'
-require_relative 'version_support'
+require "que"
+require_relative "version_support"
 
 module Que
   module Scheduler
@@ -21,7 +21,7 @@ module Que
 end
 
 Que::Scheduler.configure do |config|
-  config.schedule_location = ENV.fetch('QUE_SCHEDULER_CONFIG_LOCATION', 'config/que_schedule.yml')
+  config.schedule_location = ENV.fetch("QUE_SCHEDULER_CONFIG_LOCATION", "config/que_schedule.yml")
   config.transaction_adapter = ::Que.method(:transaction)
   config.que_scheduler_queue = Que::Scheduler::VersionSupport.default_scheduler_queue
 end

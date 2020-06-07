@@ -1,11 +1,11 @@
-require 'que'
+require "que"
 
-require_relative 'schedule'
-require_relative 'enqueueing_calculator'
-require_relative 'scheduler_job_args'
-require_relative 'state_checks'
-require_relative 'to_enqueue'
-require_relative 'version_support'
+require_relative "schedule"
+require_relative "enqueueing_calculator"
+require_relative "scheduler_job_args"
+require_relative "state_checks"
+require_relative "to_enqueue"
+require_relative "version_support"
 
 # The main job that runs every minute, determining what needs to be enqueued, enqueues the required
 # jobs, then re-enqueues itself.
@@ -29,7 +29,7 @@ module Que
             scheduler_job_args, scheduler_job_args.as_time, result.job_dictionary, enqueued_jobs
           )
           # Only now we're sure nothing errored, log the results
-          logs.each { |str| ::Que.log(event: 'que-scheduler'.to_sym, message: str) }
+          logs.each { |str| ::Que.log(event: "que-scheduler".to_sym, message: str) }
           destroy
         end
       end
@@ -51,7 +51,7 @@ module Que
                 else
                   # This can happen if a middleware nixes the enqueue call
                   "que-scheduler called enqueue on #{to_enqueue.job_class} " \
-                              'but it reported no job was scheduled. Has `enqueue` been overridden?'
+                              "but it reported no job was scheduled. Has `enqueue` been overridden?"
                 end
       end
 
@@ -71,7 +71,7 @@ module Que
 
         # rubocop:disable Style/GuardClause This reads better as a conditional
         unless Que::Scheduler::VersionSupport.job_attributes(enqueued_job).fetch(:job_id)
-          raise 'SchedulerJob could not self-schedule. Has `.enqueue` been monkey patched?'
+          raise "SchedulerJob could not self-schedule. Has `.enqueue` been monkey patched?"
         end
         # rubocop:enable Style/GuardClause
       end

@@ -1,4 +1,4 @@
-require 'que'
+require "que"
 
 ALL_TEST_JOB_NAMES = %w[
   HalfHourlyTestJob

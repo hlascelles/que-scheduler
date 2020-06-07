@@ -1,6 +1,6 @@
-require 'hashie'
-require 'active_support'
-require 'active_support/time_with_zone'
+require "hashie"
+require "active_support"
+require "active_support/time_with_zone"
 
 # These are the args that are used for this particular run of the scheduler.
 module Que
