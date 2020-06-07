@@ -1,12 +1,12 @@
 # frozen_string_literal: true
 
-require_relative 'to_enqueue'
+require_relative "to_enqueue"
 
 module Que
   module Scheduler
     module Audit
-      TABLE_NAME = 'que_scheduler_audit'
-      ENQUEUED_TABLE_NAME = 'que_scheduler_audit_enqueued'
+      TABLE_NAME = "que_scheduler_audit"
+      ENQUEUED_TABLE_NAME = "que_scheduler_audit_enqueued"
       INSERT_AUDIT = %{
         INSERT INTO #{TABLE_NAME} (scheduler_job_id, executed_at)
         VALUES ($1::bigint, $2::timestamptz)

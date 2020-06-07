@@ -1,4 +1,4 @@
-require 'fugit'
+require "fugit"
 
 module Que
   module Scheduler

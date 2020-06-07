@@ -1,5 +1,5 @@
-require 'hashie'
-require 'fugit'
+require "hashie"
+require "fugit"
 
 # This is the definition of one scheduleable job in the que-scheduler config yml file.
 module Que
@@ -59,10 +59,10 @@ module Que
       # rubocop:disable Style/GuardClause This reads better as a conditional
       def validate_fields_types(options)
         unless queue.nil? || queue.is_a?(String)
-          err_field(:queue, options, 'queue must be a string')
+          err_field(:queue, options, "queue must be a string")
         end
         unless priority.nil? || priority.is_a?(Integer)
-          err_field(:priority, options, 'priority must be an integer')
+          err_field(:priority, options, "priority must be an integer")
         end
         unless DEFINED_JOB_TYPES.include?(schedule_type)
           err_field(:schedule_type, options, "Not in #{DEFINED_JOB_TYPES}")
@@ -71,10 +71,10 @@ module Que
       # rubocop:enable Style/GuardClause
 
       def validate_fields_presence(options)
-        err_field(:name, options, 'name must be present') if name.nil?
-        err_field(:job_class, options, 'job_class must be present') if job_class.nil?
+        err_field(:name, options, "name must be present") if name.nil?
+        err_field(:job_class, options, "job_class must be present") if job_class.nil?
         # An invalid cron is nil
-        err_field(:cron, options, 'cron must be present') if cron.nil?
+        err_field(:cron, options, "cron must be present") if cron.nil?
       end
 
       def validate_job_class_related(options)
@@ -88,7 +88,7 @@ module Que
         if queue &&
            Que::Scheduler::ToEnqueue.active_job_sufficient_version? &&
            job_class < ::ActiveJob::Base &&
-           Que::Scheduler::ToEnqueue.active_job_version < Gem::Version.create('6.0.3')
+           Que::Scheduler::ToEnqueue.active_job_version < Gem::Version.create("6.0.3")
           puts <<-ERR
             WARNING from que-scheduler....
             Between versions 4.2.3 and 6.0.2 (inclusive) Rails did not support setting queue names
@@ -104,7 +104,7 @@ module Que
         end
       end
 
-      def err_field(field, options, reason = '')
+      def err_field(field, options, reason = "")
         schedule = Que::Scheduler.configuration.schedule_location
         value = options[field]
         raise "Invalid #{field} '#{value}' for '#{name}' in que-scheduler schedule #{schedule}.\n" \

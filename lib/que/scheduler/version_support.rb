@@ -1,4 +1,4 @@
-require 'que'
+require "que"
 
 # The purpose of this module is to centralise the differences when supporting both que 0.x and
 # 1.x with the same gem.
@@ -15,7 +15,7 @@ module Que
         # the top of all jobs it enqueues.
         def set_priority(context, priority)
           if zero_major?
-            context.instance_variable_set('@priority', priority)
+            context.instance_variable_set("@priority", priority)
           else
             context.priority = priority
           end
@@ -24,7 +24,7 @@ module Que
         # Ensure the job runs at least once an hour when it is backing off due to errors
         def apply_retry_semantics(context)
           if zero_major?
-            context.instance_variable_set('@retry_interval', RETRY_PROC)
+            context.instance_variable_set("@retry_interval", RETRY_PROC)
           else
             context.maximum_retry_count = 1 << 128 # Heat death of universe
             context.retry_interval = RETRY_PROC
@@ -48,7 +48,7 @@ module Que
         end
 
         def default_scheduler_queue
-          zero_major? ? '' : Que::DEFAULT_QUEUE
+          zero_major? ? "" : Que::DEFAULT_QUEUE
         end
 
         def running_synchronously?
@@ -56,12 +56,12 @@ module Que
         end
 
         def running_synchronously_code?
-          zero_major? ? 'Que.mode == :sync' : 'Que.run_synchronously = true'
+          zero_major? ? "Que.mode == :sync" : "Que.run_synchronously = true"
         end
 
         def zero_major?
           # This is the only way to handle beta releases too
-          @zero_major ||= Gem.loaded_specs['que'].version.to_s.split('.').first.to_i.zero?
+          @zero_major ||= Gem.loaded_specs["que"].version.to_s.split(".").first.to_i.zero?
         end
 
         private

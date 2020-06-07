@@ -1,4 +1,4 @@
-require_relative 'defined_job'
+require_relative "defined_job"
 
 module Que
   module Scheduler
@@ -30,11 +30,11 @@ module Que
           # an array with one item which is that value (this includes if it is a hash). It could
           # also be a single nil value.
           args_array =
-            if !defined_job_hash.key?('args')
+            if !defined_job_hash.key?("args")
               # No args were requested
               []
             else
-              args = defined_job_hash['args']
+              args = defined_job_hash["args"]
               if args.is_a?(Array)
                 # An array of args was requested
                 args
@@ -47,12 +47,12 @@ module Que
 
           Que::Scheduler::DefinedJob.create(
             name: name,
-            job_class: defined_job_hash['class'] || name,
-            queue: defined_job_hash['queue'],
+            job_class: defined_job_hash["class"] || name,
+            queue: defined_job_hash["queue"],
             args_array: args_array,
-            priority: defined_job_hash['priority'],
-            cron: defined_job_hash['cron'],
-            schedule_type: defined_job_hash['schedule_type']&.to_sym
+            priority: defined_job_hash["priority"],
+            cron: defined_job_hash["cron"],
+            schedule_type: defined_job_hash["schedule_type"]&.to_sym
           )
         end
       end

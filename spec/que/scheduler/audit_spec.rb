@@ -1,10 +1,10 @@
-require 'spec_helper'
+require "spec_helper"
 
 RSpec.describe Que::Scheduler::Audit do
-  include_context 'when job testing'
-  include_context 'when audit testing'
+  include_context "when job testing"
+  include_context "when audit testing"
 
-  describe '.append' do
+  describe ".append" do
     def append_test_jobs(scheduler_job_id, executed_at, enqueued)
       described_class.append(scheduler_job_id, executed_at, enqueued)
 
@@ -18,7 +18,7 @@ RSpec.describe Que::Scheduler::Audit do
       db_jobs
     end
 
-    it 'appends an audit line' do
+    it "appends an audit line" do
       Timecop.freeze do
         scheduler_job_id = 1234
         # Roundtripping through postgres can yield usec differences which give spurious
@@ -36,8 +36,8 @@ RSpec.describe Que::Scheduler::Audit do
           [
             {
               scheduler_job_id: scheduler_job_id,
-              job_class: 'HalfHourlyTestJob',
-              queue: handles_queue_name ? 'something1' : nil,
+              job_class: "HalfHourlyTestJob",
+              queue: handles_queue_name ? "something1" : nil,
               priority: 100,
               args: [5],
               job_id: enqueued[0].job_id,
@@ -45,7 +45,7 @@ RSpec.describe Que::Scheduler::Audit do
             },
             {
               scheduler_job_id: scheduler_job_id,
-              job_class: 'HalfHourlyTestJob',
+              job_class: "HalfHourlyTestJob",
               queue: handles_queue_name ? Que::Scheduler.configuration.que_scheduler_queue : nil,
               priority: 80,
               args: [],
@@ -54,8 +54,8 @@ RSpec.describe Que::Scheduler::Audit do
             },
             {
               scheduler_job_id: scheduler_job_id,
-              job_class: 'DailyTestJob',
-              queue: handles_queue_name ? 'something3' : nil,
+              job_class: "DailyTestJob",
+              queue: handles_queue_name ? "something3" : nil,
               priority: 42,
               args: [3],
               job_id: enqueued[2].job_id,

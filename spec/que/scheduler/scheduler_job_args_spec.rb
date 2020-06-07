@@ -1,8 +1,8 @@
-require 'spec_helper'
-require 'timecop'
+require "spec_helper"
+require "timecop"
 
 RSpec.describe Que::Scheduler::SchedulerJobArgs do
-  it 'prepares default args' do
+  it "prepares default args" do
     Timecop.freeze do
       DbSupport.mock_db_time_now
       args = described_class.build(nil)
@@ -12,7 +12,7 @@ RSpec.describe Que::Scheduler::SchedulerJobArgs do
     end
   end
 
-  describe 'should parse current args' do
+  describe "should parse current args" do
     let(:last_time) { Time.zone.now - 45.minutes }
     let(:dictionary) { %w[HalfHourlyTestJob OldRemovedJob] }
 
@@ -27,7 +27,7 @@ RSpec.describe Que::Scheduler::SchedulerJobArgs do
     end
 
     # Since que 1.0 args are always symbols
-    it 'as symbols' do
+    it "as symbols" do
       attempt_parse(
         last_run_time: last_time.iso8601,
         job_dictionary: dictionary
@@ -35,10 +35,10 @@ RSpec.describe Que::Scheduler::SchedulerJobArgs do
     end
 
     # Ensure we can support que 0.x (strings)
-    it 'as strings' do
+    it "as strings" do
       attempt_parse(
-        'last_run_time' => last_time.iso8601,
-        'job_dictionary' => dictionary
+        "last_run_time" => last_time.iso8601,
+        "job_dictionary" => dictionary
       )
     end
   end
