@@ -8,6 +8,15 @@ WithArgsTestJob:
     - 1234
     - some_hash: true
 
+WithHashArgsTestJob:
+  cron: "42 11 * * *"
+  args:
+    this: that
+
+WithNilArgTestJob:
+  cron: "44 11 * * *"
+  args: ~
+
 daily_test_job_specifying_class:
   class: SpecifiedByClassTestJob
   cron: "10 3 * * *"

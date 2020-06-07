@@ -66,10 +66,21 @@ BatchOrders:
   cron: "0 0 * * *"
   priority: 25
   
-# Specify job arguments
+# Specify array job arguments
 SendOrders:
   cron: "0 0 * * *"
   args: ['open']
+  
+# Specify hash job arguments. Note, this appears as a single hash to `run`, not as kwargs.
+SendPreorders:
+  cron: "0 0 * * *"
+  args:
+    order_type: special
+  
+# Specify a single nil argument
+SendPostorders:
+  cron: "0 0 * * *"
+  args: ~ # See https://stackoverflow.com/a/51990876/1267203
   
 # Use simpler cron syntax
 SendBilling:

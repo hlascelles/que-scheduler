@@ -24,14 +24,32 @@ module Que
           end.to_h
         end
 
-        private
-
         def hash_item_to_defined_job(name, defined_job_hash)
+          # Que stores arguments as a json array. If the args we have to provide are already an
+          # array we can can simply pass them through. If it is a single non-nil value, then we make
+          # an array with one item which is that value (this includes if it is a hash). It could
+          # also be a single nil value.
+          args_array =
+            if !defined_job_hash.key?('args')
+              # No args were requested
+              []
+            else
+              args = defined_job_hash['args']
+              if args.is_a?(Array)
+                # An array of args was requested
+                args
+              else
+                # A single value, a nil, or a hash was requested. que expects this to
+                # be enqueued as an array of 1 item
+                [args]
+              end
+            end
+
           Que::Scheduler::DefinedJob.create(
             name: name,
             job_class: defined_job_hash['class'] || name,
             queue: defined_job_hash['queue'],
-            args: defined_job_hash['args'],
+            args_array: args_array,
             priority: defined_job_hash['priority'],
             cron: defined_job_hash['cron'],
             schedule_type: defined_job_hash['schedule_type']&.to_sym
