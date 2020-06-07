@@ -70,7 +70,7 @@ BatchOrders:
 SendOrders:
   cron: "0 0 * * *"
   args: ['open']
-  
+
 # Specify hash job arguments. Note, this appears as a single hash to `run`, not as kwargs.
 SendPreorders:
   cron: "0 0 * * *"
@@ -180,6 +180,22 @@ The changes in past migrations were:
 |    4    | Updated the the audit tables to use bigints                                     |
 |    5    | Dropped an unnecessary index                                                    |
 
+## Built in optional job for audit clear down
+
+que-scheduler comes with the `QueSchedulerAuditClearDownJob` job built in that you can optionally
+schedule to clear down audit rows if you don't need to retain them indefinitely. You should add this
+to your own scheduler config yaml.
+
+For example:
+
+```yaml
+# This will clear down the oldest que-scheduler audit rows. Since que-scheduler
+# runs approximately every minute, 129600 is 90 days.
+Que::Scheduler::Jobs::QueSchedulerAuditClearDownJob:
+  cron: "0 0 * * *"
+  args:
+    retain_row_count: 129600
+```
 
 ## HA Redundancy and DB restores
 

@@ -2,18 +2,17 @@ require 'spec_helper'
 
 RSpec.describe Que::Scheduler::Audit do
   include_context 'when job testing'
+  include_context 'when audit testing'
 
   describe '.append' do
-    def append_test_jobs(enqueued, executed_at, job_id)
-      described_class.append(job_id, executed_at, enqueued)
+    def append_test_jobs(scheduler_job_id, executed_at, enqueued)
+      described_class.append(scheduler_job_id, executed_at, enqueued)
 
-      audit = Que::Scheduler::VersionSupport.execute('select * from que_scheduler_audit')
-      expect(audit.count).to eq(1)
-      expect(audit.first[:scheduler_job_id]).to eq(job_id)
+      audit = find_audit_rows(expect: 1)
+      expect(audit.first[:scheduler_job_id]).to eq(scheduler_job_id)
       expect(audit.first[:executed_at]).to eq(executed_at)
 
-      db_jobs =
-        Que::Scheduler::VersionSupport.execute('select * from que_scheduler_audit_enqueued')
+      db_jobs = find_audit_enqueued_rows(expect: 3)
       DbSupport.convert_args_column(db_jobs)
       expect(db_jobs.count).to eq(enqueued.count)
       db_jobs
@@ -27,16 +26,9 @@ RSpec.describe Que::Scheduler::Audit do
         audit_insertion_time = Time.zone.now.change(usec: 0)
         jobs_set_to_run_at = Que::Scheduler::Db.now.change(usec: 0)
 
-        te = Que::Scheduler::ToEnqueue
-        to_enqueue = [
-          te.create(job_class: HalfHourlyTestJob, args: 5, queue: 'something1'),
-          te.create(job_class: HalfHourlyTestJob, priority: 80),
-          te.create(job_class: DailyTestJob, args: 3, queue: 'something3', priority: 42),
-        ]
-
-        enqueued = to_enqueue.map(&:enqueue)
+        enqueued = enqueue_test_jobs_for_audit
         # Do the other part of the usec removal from above here
-        db_jobs = append_test_jobs(enqueued, audit_insertion_time, scheduler_job_id).each { |row|
+        db_jobs = append_test_jobs(scheduler_job_id, audit_insertion_time, enqueued).each { |row|
           row[:run_at] = row[:run_at].change(usec: 0)
         }
 
