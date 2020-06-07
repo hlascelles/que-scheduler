@@ -6,6 +6,8 @@ RSpec.describe Que::Scheduler::EnqueueingCalculator do
     %w[
       HalfHourlyTestJob
       WithArgsTestJob
+      WithHashArgsTestJob
+      WithNilArgTestJob
       daily_test_job_specifying_class
       DailyTestJob
       TwiceDailyTestJob
@@ -55,11 +57,27 @@ RSpec.describe Que::Scheduler::EnqueueingCalculator do
     run_test('2017-10-08T16:00:00', 1.seconds, [])
   end
 
-  it 'enqueues jobs with args' do
+  it 'enqueues jobs with array args' do
     run_test(
       '2017-10-08T11:39:59',
       2.seconds,
       [{ job_class: WithArgsTestJob, args: ['My Args', 1234, { 'some_hash' => true }] }]
+    )
+  end
+
+  it 'enqueues jobs with hash args' do
+    run_test(
+      '2017-10-08T11:41:59',
+      2.seconds,
+      [{ job_class: WithHashArgsTestJob, args: [{ 'this' => 'that' }] }]
+    )
+  end
+
+  it 'enqueues jobs with a single nil arg' do
+    run_test(
+      '2017-10-08T11:43:59',
+      2.seconds,
+      [{ job_class: WithNilArgTestJob, args: [nil] }]
     )
   end
 
@@ -87,6 +105,8 @@ RSpec.describe Que::Scheduler::EnqueueingCalculator do
         # These are "missable", so only come up once
         { job_class: HalfHourlyTestJob },
         { job_class: WithArgsTestJob, args: ['My Args', 1234, { 'some_hash' => true }] },
+        { job_class: WithHashArgsTestJob, args: [{ 'this' => 'that' }] }, # One arg which is a hash
+        { job_class: WithNilArgTestJob, args: [nil] }, # One arg which is a nil
         { job_class: SpecifiedByClassTestJob, args: ['One arg'] },
         # These are "every_event", so all their missed schedules are enqueued, with that
         # Time as an argument.
@@ -133,8 +153,9 @@ RSpec.describe Que::Scheduler::EnqueueingCalculator do
       as_time: as_time
     )
     out = described_class.parse(::Que::Scheduler.schedule.values, scheduler_job_args)
+    missed_jobs = HashSupport.hash_to_enqueues(expect_scheduled)
     exp = Que::Scheduler::EnqueueingCalculator::Result.new(
-      missed_jobs: HashSupport.hash_to_enqueues(expect_scheduled), job_dictionary: all_keys
+      missed_jobs: missed_jobs, job_dictionary: all_keys
     )
     expect(out.missed_jobs).to eq(exp.missed_jobs)
     expect(out.job_dictionary).to eq(exp.job_dictionary)

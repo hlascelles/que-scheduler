@@ -17,7 +17,7 @@ module Que
       property :cron, transform_with: ->(v) { Fugit::Cron.parse(v) }
       property :queue
       property :priority
-      property :args
+      property :args_array
       property :schedule_type, default: DEFINED_JOB_TYPE_DEFAULT
 
       class << self
@@ -115,7 +115,6 @@ module Que
         return [] if missed_times.empty?
 
         options = to_h.slice(:args, :queue, :priority, :job_class).compact
-        args_array = args.is_a?(Array) ? args : Array(args)
 
         if schedule_type == DefinedJob::DEFINED_JOB_TYPE_EVERY_EVENT
           missed_times.map do |time_missed|
