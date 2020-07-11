@@ -1,3 +1,10 @@
+# Que changes some of its config if Rails is present. We should run a test that config:
+# https://github.com/que-rb/que/blob/45e68691f2599c13b401e2d70cde6f6fbfcac708/lib/que/railtie.rb#L10
+appraise "rails-6-que-0-14" do
+  gem "rails", "~> 6.0"
+  gem "que", "~> 0.14"
+end
+
 appraise "activesupport-4-que-0-12" do
   gem "activesupport", "~> 4.0"
   gem "que", "~> 0.12.1"

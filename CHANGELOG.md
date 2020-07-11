@@ -1,3 +1,7 @@
+## Unreleased
+
+- Handle jobs using hashes with indifferent access [#205](https://github.com/hlascelles/que-scheduler/pull/205)[#206](https://github.com/hlascelles/que-scheduler/pull/206)
+
 ## 3.4.0 (2020-06-07)
 
 - Add built in QueSchedulerAuditClearDownJob [#193](https://github.com/hlascelles/que-scheduler/pull/193)
