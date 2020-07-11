@@ -35,7 +35,7 @@ module Que
           if zero_major?
             enqueued_job.attrs.to_h.transform_keys(&:to_sym)
           else
-            enqueued_job.que_attrs.transform_keys(&:to_sym).tap do |hash|
+            enqueued_job.que_attrs.to_h.transform_keys(&:to_sym).tap do |hash|
               hash[:job_id] = hash.delete(:id)
             end
           end
@@ -67,7 +67,7 @@ module Que
         private
 
         def normalise_array_of_hashes(array)
-          array.map { |row| row.transform_keys(&:to_sym) }
+          array.map { |row| row.to_h.transform_keys(&:to_sym) }
         end
       end
     end
