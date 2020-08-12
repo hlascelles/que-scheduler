@@ -15,3 +15,4 @@ coverage
 spec/internal/log/*
 /target/*
 /spec/install_test_files/target/
+/.rakeTasks

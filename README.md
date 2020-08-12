@@ -162,13 +162,13 @@ up to a number, just migrate to that number with one line, and it will perform a
 ie, This will perform all migrations necessary up to the latest version, skipping any already 
 performed.
 
-    ```ruby
-    class CreateQueSchedulerSchema < ActiveRecord::Migration
-      def change
-        Que::Scheduler::Migrations.migrate!(version: 5)
-      end
-    end
-    ```
+```ruby
+class CreateQueSchedulerSchema < ActiveRecord::Migration
+  def change
+    Que::Scheduler::Migrations.migrate!(version: 5)
+  end
+end
+```
 
 The changes in past migrations were: 
 
