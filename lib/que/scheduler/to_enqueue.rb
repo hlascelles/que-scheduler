@@ -5,12 +5,12 @@ require_relative "sorbet/struct"
 # and other job systems.
 module Que
   module Scheduler
-    class ToEnqueue < Hashie::Dash
-      property :args, required: true, default: []
-      property :queue
-      property :priority
-      property :run_at, required: true
-      property :job_class, required: true
+    class ToEnqueue < Que::Scheduler::Sorbet::Struct
+      const :args, Object, default: [] # TODO review these nilables
+      const :queue, T.nilable(String) # TODO review these nilables
+      const :priority, T.nilable(Integer) # TODO review these nilables
+      const :run_at, Time
+      const :job_class, Class
 
       class << self
         def create(options)
