@@ -16,3 +16,6 @@ spec/internal/log/*
 /target/*
 /spec/install_test_files/target/
 /.rakeTasks
+
+# Sorbet
+/**/sorbet/rbi/hidden-definitions/errors.txt

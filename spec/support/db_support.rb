@@ -1,3 +1,4 @@
+# typed: false
 require "active_record"
 
 module DbSupport

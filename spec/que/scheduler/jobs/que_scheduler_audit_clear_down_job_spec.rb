@@ -1,3 +1,4 @@
+# typed: false
 require "spec_helper"
 
 RSpec.describe Que::Scheduler::Jobs::QueSchedulerAuditClearDownJob do

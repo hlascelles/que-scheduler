@@ -1,3 +1,4 @@
+# typed: false
 MIGRATION_CONSTANT =
   if ENV.fetch("RAILS_VERSION").split(".").first.to_i > 4
     ActiveRecord::Migration[5.2]

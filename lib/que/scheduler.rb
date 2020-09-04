@@ -1,3 +1,4 @@
+# typed: strict
 require "que/scheduler/version"
 require "que/scheduler/version_support"
 require "que/scheduler/config"

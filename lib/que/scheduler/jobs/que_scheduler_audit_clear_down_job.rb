@@ -1,3 +1,4 @@
+# typed: true
 require "que"
 
 # This job can optionally be scheduled to clear down the que-scheduler audit log if it

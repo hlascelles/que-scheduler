@@ -1,3 +1,4 @@
+# typed: false
 shared_context "when audit testing" do
   let(:test_jobs_for_audit_count) { 3 }
 

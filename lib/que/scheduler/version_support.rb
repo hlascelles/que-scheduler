@@ -1,3 +1,4 @@
+# typed: false
 require "que"
 
 # The purpose of this module is to centralise the differences when supporting both que 0.x and

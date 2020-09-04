@@ -1,3 +1,4 @@
+# typed: true
 require_relative "defined_job"
 
 module Que

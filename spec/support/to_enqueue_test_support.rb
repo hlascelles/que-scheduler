@@ -1,3 +1,4 @@
+# typed: false
 shared_context "when job testing" do
   if Que::Scheduler::ToEnqueue.active_job_sufficient_version?
     let(:handles_queue_name) {

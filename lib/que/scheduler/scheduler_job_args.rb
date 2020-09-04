@@ -1,3 +1,4 @@
+# typed: true
 require_relative "sorbet/struct"
 require "active_support"
 require "active_support/time_with_zone"

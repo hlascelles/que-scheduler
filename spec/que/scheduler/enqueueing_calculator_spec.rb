@@ -1,3 +1,4 @@
+# typed: false
 require "spec_helper"
 require "active_support/core_ext/numeric/time"
 

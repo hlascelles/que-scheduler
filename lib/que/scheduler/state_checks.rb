@@ -1,3 +1,4 @@
+# typed: true
 require_relative "audit"
 require_relative "db"
 require_relative "migrations"

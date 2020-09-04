@@ -1,3 +1,4 @@
+# typed: false
 require "que"
 require_relative "sorbet/struct"
 

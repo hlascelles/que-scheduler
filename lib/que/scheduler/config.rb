@@ -1,3 +1,4 @@
+# typed: true
 require "que"
 require_relative "version_support"
 

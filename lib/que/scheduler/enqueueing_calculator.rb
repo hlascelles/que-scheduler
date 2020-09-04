@@ -1,3 +1,4 @@
+# typed: true
 require "fugit"
 require_relative "to_enqueue"
 require_relative "sorbet/struct"
