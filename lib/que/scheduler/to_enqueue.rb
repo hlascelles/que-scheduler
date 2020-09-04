@@ -67,7 +67,11 @@ module Que
     # For jobs of type Que::Job
     class QueJobType < ToEnqueue
       def enqueue
-        job_settings = to_h.slice(:queue, :priority, :run_at).compact
+        job_settings = {
+          queue: queue,
+          priority: priority,
+          run_at: run_at,
+        }.compact
         job =
           if args.is_a?(Hash)
             job_class.enqueue(**args.merge(job_settings))
