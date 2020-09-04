@@ -1,4 +1,5 @@
 require "que"
+require_relative "sorbet/struct"
 
 # This module uses polymorphic dispatch to centralise the differences between supporting Que::Job
 # and other job systems.
@@ -145,13 +146,13 @@ module Que
 
     # A value object returned after a job has been enqueued. This is necessary as Que (normal) and
     # ActiveJob return very different objects from the `enqueue` call.
-    class EnqueuedJobType < Hashie::Dash
-      property :args
-      property :queue
-      property :priority
-      property :run_at, required: true
-      property :job_class, required: true
-      property :job_id, required: true
+    class EnqueuedJobType < Que::Scheduler::Sorbet::Struct
+      const :args, T.nilable(T::Array[Object]) # TODO review these nilables
+      const :queue, T.nilable(String) # TODO review these nilables
+      const :priority, T.nilable(Integer) # TODO review these nilables
+      const :run_at, Time
+      const :job_class, String
+      const :job_id, Integer
     end
   end
 end
