@@ -10,8 +10,8 @@ module Que
       class Struct < T::InexactStruct
         include T::Struct::ActsAsComparable
 
-        def serialize(strict = nil)
-          super.transform_keys!(&:to_sym)
+        def to_h
+          serialize.transform_keys!(&:to_sym)
         end
       end
     end

@@ -5,9 +5,8 @@ require "fugit"
 # This is the definition of one scheduleable job in the que-scheduler config yml file.
 module Que
   module Scheduler
-    class DefinedJob < Hashie::Dash
-      include Hashie::Extensions::Dash::PropertyTranslation
-
+    class DefinedJob < Que::Scheduler::Sorbet::Struct
+      # TODO use enums
       DEFINED_JOB_TYPES = [
         DEFINED_JOB_TYPE_DEFAULT = :default,
         DEFINED_JOB_TYPE_EVERY_EVENT = :every_event,
