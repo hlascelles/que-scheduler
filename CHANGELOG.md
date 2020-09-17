@@ -1,3 +1,7 @@
+## 3.4.2 (2020-09-17)
+
+- Fix NoMethodError in a non-Rails app [#213](https://github.com/hlascelles/que-scheduler/pull/213)
+
 ## 3.4.1 (2020-07-11)
 
 - Handle jobs using hashes with indifferent access [#205](https://github.com/hlascelles/que-scheduler/pull/205), [#206](https://github.com/hlascelles/que-scheduler/pull/206)
