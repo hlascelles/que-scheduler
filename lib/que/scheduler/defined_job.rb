@@ -1,6 +1,8 @@
 # typed: true
 require "hashie"
 require "fugit"
+require "sorbet-runtime"
+require_relative "sorbet/struct"
 
 # This is the definition of one scheduleable job in the que-scheduler config yml file.
 module Que
@@ -12,19 +14,21 @@ module Que
         DEFINED_JOB_TYPE_EVERY_EVENT = :every_event,
       ].freeze
 
-      property :name
-      property :job_class, transform_with: ->(v) { Object.const_get(v) }
-      property :cron, transform_with: ->(v) { Fugit::Cron.parse(v) }
-      property :queue
-      property :priority
-      property :args_array
-      property :schedule_type, default: DEFINED_JOB_TYPE_DEFAULT
+      const :name, String
+      const :job_class, Class
+      const :cron, Fugit::Cron
+      const :queue, T.nilable(String)
+      const :priority, T.nilable(Integer)
+      const :args_array, T::Array[Object], default: [] # TODO why default?
+      const :schedule_type, Symbol, default: DEFINED_JOB_TYPE_DEFAULT
 
-      class << self
-        def create(options)
-          defined_job = new(options.compact)
-          defined_job.freeze.tap { |dj| dj.validate(options) }
-        end
+      def initialize(hash)
+        resolved_hash = hash.compact.merge(
+          job_class: Object.const_get(hash.fetch(:job_class)),
+          cron: Fugit::Cron.parse(hash[:cron])
+        )
+        validate(hash, resolved_hash)
+        super(resolved_hash)
       end
 
       # Given a "last time", return the next Time the event will occur, or nil if it
@@ -48,46 +52,48 @@ module Que
         generate_to_enqueue_list(missed_times)
       end
 
-      def validate(options)
-        validate_fields_presence(options)
-        validate_fields_types(options)
-        validate_job_class_related(options)
+      def validate(hash, options)
+        validate_fields_presence(hash, options)
+        validate_fields_types(hash, options)
+        validate_job_class_related(hash, options)
       end
 
       private
 
       # rubocop:disable Style/GuardClause This reads better as a conditional
-      def validate_fields_types(options)
-        unless queue.nil? || queue.is_a?(String)
-          err_field(:queue, options, "queue must be a string")
+      def validate_fields_types(hash, options)
+        unless options[:queue].nil? || options[:queue].is_a?(String)
+          err_field(:queue, hash, "queue must be a string")
         end
-        unless priority.nil? || priority.is_a?(Integer)
-          err_field(:priority, options, "priority must be an integer")
+        unless options[:priority].nil? || options[:priority].is_a?(Integer)
+          err_field(:priority, hash, "priority must be an integer")
         end
-        unless DEFINED_JOB_TYPES.include?(schedule_type)
-          err_field(:schedule_type, options, "Not in #{DEFINED_JOB_TYPES}")
+        unless options[:schedule_type].nil? || DEFINED_JOB_TYPES.include?(options[:schedule_type])
+          err_field(:schedule_type, hash, "Not in #{DEFINED_JOB_TYPES}")
         end
       end
       # rubocop:enable Style/GuardClause
 
-      def validate_fields_presence(options)
-        err_field(:name, options, "name must be present") if name.nil?
-        err_field(:job_class, options, "job_class must be present") if job_class.nil?
+      def validate_fields_presence(hash, options)
+        err_field(:name, hash, "name must be present") if options[:name].nil?
+        err_field(:job_class, hash, "job_class must be present") if options[:job_class].nil?
         # An invalid cron is nil
-        err_field(:cron, options, "cron must be present") if cron.nil?
+        err_field(:cron, hash, "cron must be present") if options[:cron].nil?
       end
 
-      def validate_job_class_related(options)
+      def validate_job_class_related(hash, options)
         # Only support known job engines
-        unless Que::Scheduler::ToEnqueue.valid_job_class?(job_class)
-          err_field(:job_class, options, "Job #{job_class} was not a supported job type")
+        determined_job_class = options.fetch(:job_class)
+        determined_queue = options[:queue]
+        unless Que::Scheduler::ToEnqueue.valid_job_class?(determined_job_class)
+          err_field(:job_class, hash, "Job #{determined_job_class} was not a supported job type")
         end
 
         # queue name is only supported for a subrange of ActiveJob versions. Print this out as a
         # warning.
-        if queue &&
+        if determined_queue &&
            Que::Scheduler::ToEnqueue.active_job_sufficient_version? &&
-           job_class < ::ActiveJob::Base &&
+           determined_job_class < ::ActiveJob::Base &&
            Que::Scheduler::ToEnqueue.active_job_version < Gem::Version.create("6.0.3")
           puts <<-ERR
             WARNING from que-scheduler....
@@ -99,7 +105,7 @@ module Que
               https://github.com/rails/rails/pull/38635
 
             Please remove all "queue" keys from ActiveJobs defined in the que-scheduler.yml config.
-            Specifically #{queue} for job #{name}.
+            Specifically #{determined_queue} for job #{determined_queue}.
           ERR
         end
       end
@@ -107,6 +113,7 @@ module Que
       def err_field(field, options, reason = "")
         schedule = Que::Scheduler.configuration.schedule_location
         value = options[field]
+        name = options[:name]
         raise "Invalid #{field} '#{value}' for '#{name}' in que-scheduler schedule #{schedule}.\n" \
               "#{reason}"
       end

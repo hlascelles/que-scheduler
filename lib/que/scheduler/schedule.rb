@@ -46,7 +46,7 @@ module Que
               end
             end
 
-          Que::Scheduler::DefinedJob.create(
+          Que::Scheduler::DefinedJob.new(
             name: name,
             job_class: defined_job_hash["class"] || name,
             queue: defined_job_hash["queue"],
