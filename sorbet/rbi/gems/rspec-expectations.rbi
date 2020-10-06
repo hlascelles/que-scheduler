@@ -323,6 +323,8 @@ module RSpec::Expectations::Syntax
   def warn_about_should_unless_configured(method_name); end
 end
 class BasicObject
+  def should(matcher = nil, message = nil, &block); end
+  def should_not(matcher = nil, message = nil, &block); end
 end
 class RSpec::Expectations::Configuration
   def add_should_and_should_not_to(*modules); end

@@ -1,5 +1,4 @@
 # typed: true
-require "hashie"
 require "fugit"
 require "sorbet-runtime"
 require_relative "sorbet/struct"
@@ -121,7 +120,11 @@ module Que
       def generate_to_enqueue_list(missed_times)
         return [] if missed_times.empty?
 
-        options = to_h.slice(:args, :queue, :priority, :job_class).compact
+        options = {
+          queue: queue,
+          priority: priority,
+          job_class: job_class,
+        }.compact
 
         if schedule_type == DefinedJob::DEFINED_JOB_TYPE_EVERY_EVENT
           missed_times.map do |time_missed|

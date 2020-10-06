@@ -7,7 +7,7 @@
 #
 #   https://github.com/sorbet/sorbet-typed/new/master?filename=lib/raabro/all/raabro.rbi
 #
-# raabro-1.3.1
+# raabro-1.4.0
 
 module Raabro
   def self.included(target); end
@@ -59,11 +59,18 @@ class Raabro::Tree
   def result; end
   def result=(arg0); end
   def strim; end
+  def strind; end
   def string; end
+  def stringd; end
+  def stringpd; end
   def strinp; end
+  def strinpd; end
   def subgather(name = nil, acc = nil); end
   def sublookup(name = nil); end
   def successful_children; end
+  def symbod; end
+  def symbol; end
+  def symbold; end
   def to_a(opts = nil); end
   def to_s(depth = nil, io = nil); end
   def visual(line, column); end

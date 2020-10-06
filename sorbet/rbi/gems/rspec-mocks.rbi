@@ -667,8 +667,17 @@ module RSpec::Mocks::Syntax
   def self.warn_unless_should_configured(method_name, replacement = nil); end
 end
 class BasicObject
+  def as_null_object; end
+  def null_object?; end
+  def received_message?(message, *args, &block); end
+  def should_not_receive(message, &block); end
+  def should_receive(message, opts = nil, &block); end
+  def stub(message_or_hash, opts = nil, &block); end
+  def stub_chain(*chain, &blk); end
+  def unstub(message); end
 end
 class Class < Module
+  def any_instance; end
 end
 class RSpec::Mocks::Configuration
   def add_stub_and_should_receive_to(*modules); end

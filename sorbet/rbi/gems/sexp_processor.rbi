@@ -7,7 +7,7 @@
 #
 #   https://github.com/sorbet/sorbet-typed/new/master?filename=lib/sexp_processor/all/sexp_processor.rbi
 #
-# sexp_processor-4.15.0
+# sexp_processor-4.15.1
 
 class Sexp < Array
   def /(pattern); end

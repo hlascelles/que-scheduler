@@ -7,7 +7,7 @@
 #
 #   https://github.com/sorbet/sorbet-typed/new/master?filename=lib/fugit/all/fugit.rbi
 #
-# fugit-1.3.8
+# fugit-1.3.9
 
 module Fugit
   def self.determine_type(s); end

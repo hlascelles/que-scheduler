@@ -32,3 +32,12 @@ class Zonebie::Backends::TZInfo
   def self.zone=(zone); end
   def self.zones; end
 end
+module RuboCop
+end
+module RuboCop::Cop
+end
+module RuboCop::Cop::Style
+end
+class RuboCop::Cop::Style::RedundantConditional < RuboCop::Cop::Cop
+  include RuboCop::Cop::Alignment
+end

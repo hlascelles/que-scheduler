@@ -7,7 +7,7 @@
 #
 #   https://github.com/sorbet/sorbet-typed/new/master?filename=lib/rspec-core/all/rspec-core.rbi
 #
-# rspec-core-3.9.2
+# rspec-core-3.9.3
 
 module RSpec
   def self.clear_examples; end
@@ -176,6 +176,7 @@ class RSpec::Core::Formatters::ExceptionPresenter
   def exception_backtrace; end
   def exception_class_name(exception = nil); end
   def exception_lines; end
+  def exception_message_string(exception); end
   def extra_detail_formatter; end
   def extra_failure_lines; end
   def failure_lines; end
@@ -1240,8 +1241,8 @@ class RSpec::Core::Configuration
   def seed_used?(*args, &block); end
   def self.add_read_only_setting(name, opts = nil); end
   def self.add_setting(name, opts = nil); end
-  def self.define_aliases(name, alias_name); end
-  def self.define_predicate_for(*names); end
+  def self.define_alias(name, alias_name); end
+  def self.define_predicate(name); end
   def self.define_reader(name); end
   def self.delegate_to_ordering_manager(*methods); end
   def shared_context_metadata_behavior; end
@@ -1298,7 +1299,6 @@ module RSpec::Core::Configuration::Readers
   def output_stream; end
   def pattern; end
   def pending_color; end
-  def profile_examples; end
   def project_source_dirs; end
   def requires; end
   def run_all_when_everything_filtered; end
@@ -1673,6 +1673,16 @@ class RSpec::Core::Time
   def self.now; end
 end
 class Module
+  def context(*a, &b); end
+  def describe(*a, &b); end
+  def example_group(*a, &b); end
+  def fcontext(*a, &b); end
+  def fdescribe(*a, &b); end
+  def shared_context(name, *args, &block); end
+  def shared_examples(name, *args, &block); end
+  def shared_examples_for(name, *args, &block); end
+  def xcontext(*a, &b); end
+  def xdescribe(*a, &b); end
 end
 module RSpec::Core::SharedContext
   def __shared_context_recordings; end
@@ -1901,15 +1911,4 @@ class RSpec::Core::Formatters::FailureListFormatter < RSpec::Core::Formatters::B
   def dump_profile(_profile); end
   def example_failed(failure); end
   def message(_message); end
-end
-module RSpec::Core::MockingAdapters
-end
-module RSpec::Core::MockingAdapters::RSpec
-  def self.configuration; end
-  def self.framework_name; end
-  def setup_mocks_for_rspec; end
-  def teardown_mocks_for_rspec; end
-  def verify_mocks_for_rspec; end
-  include RSpec::Mocks::ExampleMethods
-  include RSpec::Mocks::ExampleMethods::ExpectHost
 end

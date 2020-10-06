@@ -7,7 +7,7 @@
 #
 #   https://github.com/sorbet/sorbet-typed/new/master?filename=lib/combustion/all/combustion.rbi
 #
-# combustion-1.3.0
+# combustion-1.3.1
 
 class Combustion::Configurations::ActionController
   def self.call(config); end
@@ -114,6 +114,7 @@ class Combustion::Database::Reset
   def initialize; end
   def operator_class(adapter); end
   def resettable_db_configs; end
+  def resettable_db_configs_for_6_1; end
   def self.call; end
 end
 class Combustion::Database::Reset::UnsupportedDatabase < StandardError
