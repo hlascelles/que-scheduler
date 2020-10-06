@@ -1,5 +1,7 @@
 # typed: true
 require "que"
+require "active_support"
+require "active_support/core_ext/time"
 
 require_relative "schedule"
 require_relative "enqueueing_calculator"
