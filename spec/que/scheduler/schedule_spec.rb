@@ -14,6 +14,32 @@ RSpec.describe Que::Scheduler::Schedule do
     end
   end
 
+  describe ".schedule=" do
+    let(:new_config_hash) {
+      '
+      SpecifiedByClassTestJob:
+        cron: "02 11 * * *"
+        args:
+          - First
+          - 1234
+          - some_hash: true
+      '
+    }
+
+    it "sets new schedule" do
+      default_schedule = Que::Scheduler.schedule
+
+      Que::Scheduler.schedule = new_config_hash
+      expect(Que::Scheduler.schedule.size).to eq(1)
+      job_config = Que::Scheduler.schedule['SpecifiedByClassTestJob']
+      expect(job_config[:name]).to eq("SpecifiedByClassTestJob")
+      expect(job_config[:args_array]).to eq(["First", 1234, {"some_hash"=>true}])
+
+      Que::Scheduler.schedule = nil
+      expect(Que::Scheduler.schedule).to eq(default_schedule)
+    end
+  end
+
   describe ".from_file" do
     it "loads the given file" do
       result = described_class.from_file("spec/config/que_schedule2.yml")

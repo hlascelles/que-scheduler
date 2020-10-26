@@ -12,9 +12,18 @@ module Que
             end
         end
 
+        def schedule=(schedule_config)
+          @schedule = from_yaml(schedule_config)
+        end
+
         def from_file(location)
-          yml = IO.read(location)
-          config_hash = YAML.safe_load(yml)
+          from_yaml(IO.read(location))
+        end
+
+        def from_yaml(config)
+          return unless config
+
+          config_hash = YAML.safe_load(config)
           from_hash(config_hash)
         end
 
@@ -61,6 +70,10 @@ module Que
     class << self
       def schedule
         Schedule.schedule
+      end
+
+      def schedule=(value)
+        Schedule.schedule = value
       end
     end
   end
