@@ -1,3 +1,7 @@
+## 3.4.3 (2020-10-28)
+
+- Allow programmatically specifying schedule [#220](https://github.com/hlascelles/que-scheduler/pull/220)
+
 ## 3.4.2 (2020-09-17)
 
 - Fix NoMethodError in a non-Rails app [#213](https://github.com/hlascelles/que-scheduler/pull/213)

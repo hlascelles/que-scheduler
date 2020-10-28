@@ -31,9 +31,9 @@ RSpec.describe Que::Scheduler::Schedule do
 
       Que::Scheduler.schedule = new_config_hash
       expect(Que::Scheduler.schedule.size).to eq(1)
-      job_config = Que::Scheduler.schedule['SpecifiedByClassTestJob']
+      job_config = Que::Scheduler.schedule["SpecifiedByClassTestJob"]
       expect(job_config[:name]).to eq("SpecifiedByClassTestJob")
-      expect(job_config[:args_array]).to eq(["First", 1234, {"some_hash"=>true}])
+      expect(job_config[:args_array]).to eq(["First", 1234, { "some_hash" => true }])
 
       Que::Scheduler.schedule = nil
       expect(Que::Scheduler.schedule).to eq(default_schedule)

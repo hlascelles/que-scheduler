@@ -13,7 +13,7 @@ module Que
         end
 
         def schedule=(schedule_config)
-          @schedule = from_yaml(schedule_config)
+          @schedule = schedule_config.nil? ? nil : from_yaml(schedule_config)
         end
 
         def from_file(location)
@@ -21,8 +21,6 @@ module Que
         end
 
         def from_yaml(config)
-          return unless config
-
           config_hash = YAML.safe_load(config)
           from_hash(config_hash)
         end

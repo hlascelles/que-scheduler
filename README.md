@@ -18,9 +18,9 @@ needs to be run, enqueueing those jobs, then enqueueing itself to check again la
     ```ruby
     gem 'que-scheduler'
     ```
-1. Specify a schedule in a yml file (see below). The default location that que-scheduler will 
-look for it is `config/que_schedule.yml`. They are essentially the same as resque-scheduler
-files, but with additional features.
+1. Specify a schedule in a yml file or programmatically (see below). The default location that 
+que-scheduler will look for it is `config/que_schedule.yml`. The format is essentially the same as
+resque-scheduler files, but with additional features.
 
 1. Add a migration to start the job scheduler and prepare the audit table. Note that this migration 
    will fail if Que is set to execute jobs synchronously, i.e. `Que::Job.run_synchronously = true`.
@@ -35,7 +35,11 @@ files, but with additional features.
     
 ## Schedule configuration
 
-The schedule file is a list of que job classes with arguments and a schedule frequency (in crontab 
+The schedule file should be placed here: `config/que_schedule.yml`. Alternatively if you
+wish to generate the configuration dynamically, you can set it directly with
+`Que::Scheduler.schedule = some_hash`.
+
+The file is a list of que job classes with arguments and a schedule frequency (in crontab 
 syntax). The format is similar to the resque-scheduler format, though priorities must be supplied as
 integers, and job classes must be migrated from Resque to Que. Cron syntax can be anything
 understood by [fugit](https://github.com/floraison/fugit#fugitcron).
@@ -278,3 +282,4 @@ This gem was inspired by the makers of the excellent [Que](https://github.com/ch
 * @bnauta
 * @papodaca
 * @krzyzak
+* @JackDanger
