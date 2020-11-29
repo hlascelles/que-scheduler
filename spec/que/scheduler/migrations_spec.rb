@@ -1,11 +1,10 @@
 require "spec_helper"
 
 RSpec.describe Que::Scheduler::Migrations do
-  def check_index_existence(expect)
-    indices = ActiveRecord::Base.connection.execute(
-      "SELECT * FROM pg_indexes WHERE tablename = 'que_scheduler_audit'"
-    ).to_a.map { |r| r.fetch("indexname") }
-    exist = indices.include?("index_que_scheduler_audit_on_scheduler_job_id")
+  def check_index_existence(index_name, expect)
+    indices = ActiveRecord::Base.connection.execute("SELECT * FROM pg_indexes")
+                                .to_a.map { |r| r.fetch("indexname") }
+    exist = indices.include?(index_name)
     expect(exist).to eq(expect)
   end
 
@@ -17,12 +16,21 @@ RSpec.describe Que::Scheduler::Migrations do
       ::Que::Scheduler::SchedulerJob.enqueue
       ::Que::Scheduler::StateChecks.check
 
+      expect(described_class.db_version).to eq(6)
+
+      migration_5_index = "index_que_scheduler_audit_on_scheduler_job_id"
+      migration_6_index = "que_scheduler_job_in_que_jobs_unique_index"
+
+      # Check 6 change down
+      check_index_existence(migration_6_index, true)
+      described_class.migrate!(version: 5)
+      check_index_existence(migration_6_index, false)
       expect(described_class.db_version).to eq(5)
 
       # Check 5 change down
-      check_index_existence(false)
+      check_index_existence(migration_5_index, false)
       described_class.migrate!(version: 4)
-      check_index_existence(true)
+      check_index_existence(migration_5_index, true)
       expect(described_class.db_version).to eq(4)
 
       # Check 4 change down
@@ -93,9 +101,14 @@ RSpec.describe Que::Scheduler::Migrations do
       expect(audit.first[:scheduler_job_id]).to eq(17)
 
       # Check 5 change up
-      check_index_existence(true)
+      check_index_existence(migration_5_index, true)
       described_class.migrate!(version: 5)
-      check_index_existence(false)
+      check_index_existence(migration_5_index, false)
+
+      # Check 6 change up
+      check_index_existence(migration_6_index, false)
+      described_class.migrate!(version: 6)
+      check_index_existence(migration_6_index, true)
 
       Que::Scheduler::StateChecks.check
     end

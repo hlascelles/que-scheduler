@@ -16,8 +16,8 @@ module Que
     class SchedulerJob < Que::Job
       SCHEDULER_FREQUENCY = 60
 
-      Que::Scheduler::VersionSupport.set_priority(self, 0)
-      Que::Scheduler::VersionSupport.apply_retry_semantics(self)
+      VersionSupport.set_priority(self, 0)
+      VersionSupport.apply_retry_semantics(self)
 
       def run(options = nil)
         Que::Scheduler::Db.transaction do
@@ -27,12 +27,13 @@ module Que
           logs = ["que-scheduler last ran at #{scheduler_job_args.last_run_time}."]
           result = EnqueueingCalculator.parse(Scheduler.schedule.values, scheduler_job_args)
           enqueued_jobs = enqueue_required_jobs(result, logs)
+          # Remove this job and schedule self again
+          destroy
           enqueue_self_again(
             scheduler_job_args, scheduler_job_args.as_time, result.job_dictionary, enqueued_jobs
           )
           # Only now we're sure nothing errored, log the results
           logs.each { |str| ::Que.log(event: "que-scheduler".to_sym, message: str) }
-          destroy
         end
       end
 
@@ -59,7 +60,7 @@ module Que
 
       def enqueue_self_again(scheduler_job_args, last_full_execution, job_dictionary, enqueued_jobs)
         # Log last run...
-        job_id = Que::Scheduler::VersionSupport.job_attributes(self).fetch(:job_id)
+        job_id = VersionSupport.job_attributes(self).fetch(:job_id)
         Audit.append(job_id, scheduler_job_args.as_time, enqueued_jobs)
 
         # And rerun...
@@ -72,7 +73,7 @@ module Que
         )
 
         # rubocop:disable Style/GuardClause This reads better as a conditional
-        unless Que::Scheduler::VersionSupport.job_attributes(enqueued_job).fetch(:job_id)
+        unless enqueued_job && VersionSupport.job_attributes(enqueued_job).fetch(:job_id)
           raise "SchedulerJob could not self-schedule. Has `.enqueue` been monkey patched?"
         end
         # rubocop:enable Style/GuardClause

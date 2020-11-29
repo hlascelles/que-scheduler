@@ -57,13 +57,9 @@ RSpec.describe Que::Scheduler::SchedulerJob do
       it "errors when the enqueue call does not enqueue the #{described_class} job" do
         job = described_class.enqueue
         expect(described_class).to receive(:enqueue).and_return(false)
-        expect_any_instance_of(::Que::Job).to receive(:handle_error).once.and_call_original
-        DbSupport.work_job(job)
-
-        # The job will have been re-enqueued, not by itself during normal operation, but by the
-        # standard que job error retry semantics.
-        hash = expect_one_itself_job
-        expect(hash.fetch(:error_count)).to eq(1)
+        expect {
+          job.run(nil)
+        }.to raise_error(/SchedulerJob could not self-schedule. Has `.enqueue` been monkey patched/)
       end
 
       def run_test(initial_job_args, to_be_scheduled)
