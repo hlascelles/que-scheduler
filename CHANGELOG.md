@@ -1,4 +1,4 @@
-## Unreleased
+## 4.0.2 (2020-11-29)
 
 - Add method to reenqueue scheduler in squashed migrations [#226](https://github.com/hlascelles/que-scheduler/pull/226)
 
