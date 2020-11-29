@@ -14,8 +14,6 @@ RSpec.describe Que::Scheduler::Db do
       expect(described_class.count_schedulers).to eq(0)
       ::Que::Scheduler::SchedulerJob.enqueue
       expect(described_class.count_schedulers).to eq(1)
-      ::Que::Scheduler::SchedulerJob.enqueue
-      expect(described_class.count_schedulers).to eq(2)
     end
   end
 

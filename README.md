@@ -28,7 +28,7 @@ resque-scheduler files, but with additional features.
     ```ruby
     class CreateQueSchedulerSchema < ActiveRecord::Migration
       def change
-        Que::Scheduler::Migrations.migrate!(version: 5)
+        Que::Scheduler::Migrations.migrate!(version: 6)
       end
     end
     ```
@@ -160,8 +160,11 @@ Additionally, there is the audit table `que_scheduler_audit_enqueued`. This logs
 the scheduler enqueues.
 
 When there is a major version (breaking) change, a migration should be run in. The version of the 
-migration proceeds at a faster rate than the version of the gem. To run in all the migrations required
-up to a number, just migrate to that number with one line, and it will perform all the intermediary steps. 
+latest migration proceeds at a faster rate than the version of the gem, eg if the gem is on version
+3 then the migrations may be on version 6). 
+
+To run in all the migrations required up to a number, just migrate to that number with one line, and
+it will perform all the intermediary steps. 
 
 ie, This will perform all migrations necessary up to the latest version, skipping any already 
 performed.
@@ -169,7 +172,7 @@ performed.
 ```ruby
 class CreateQueSchedulerSchema < ActiveRecord::Migration
   def change
-    Que::Scheduler::Migrations.migrate!(version: 5)
+    Que::Scheduler::Migrations.migrate!(version: 6)
   end
 end
 ```
@@ -183,6 +186,7 @@ The changes in past migrations were:
 |    3    | Added the audit table `que_scheduler_audit_enqueued`.                           |
 |    4    | Updated the the audit tables to use bigints                                     |
 |    5    | Dropped an unnecessary index                                                    |
+|    6    | Enforced single scheduler job at the trigger level                              |
 
 ## Built in optional job for audit clear down
 
@@ -214,8 +218,8 @@ in a coherent state with the rest of your database.
 ## Concurrent scheduler detection
 
 No matter how many tasks you have defined in your schedule, you will only ever need one que-scheduler
-job enqueued. que-scheduler knows this, and it will check before performing any operations that 
-there is only one of itself present.
+job enqueued. que-scheduler knows this, and there are DB constraints in place to ensure there is
+only ever exactly one scheduler job.
 
 It also follows que job design [best practices](https://github.com/chanks/que/blob/master/docs/writing_reliable_jobs.md),
 using ACID guarantees, to ensure that it will never run multiple times. If the scheduler crashes for any reason,
@@ -277,9 +281,9 @@ This gem was inspired by the makers of the excellent [Que](https://github.com/ch
 
 ## Contributors
 
+* @bnauta
+* @JackDanger
 * @jish
 * @joehorsnell
-* @bnauta
-* @papodaca
 * @krzyzak
-* @JackDanger
+* @papodaca

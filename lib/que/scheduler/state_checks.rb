@@ -8,7 +8,6 @@ module Que
       class << self
         def check
           assert_db_migrated
-          assert_one_scheduler_job
         end
 
         private
@@ -58,21 +57,6 @@ module Que
 
             It is also possible that you are running a migration with Que set up to execute jobs
             synchronously. This will fail as que-scheduler needs the above tables to work.
-          ERR
-        end
-
-        def assert_one_scheduler_job
-          schedulers = Que::Scheduler::Db.count_schedulers
-          return if schedulers == 1
-
-          raise(<<-ERR)
-            Only one #{Que::Scheduler::SchedulerJob.name} should be enqueued. #{schedulers} were found.
-
-            que-scheduler works by running a self-enqueueing version of itself that determines which
-            jobs should be enqueued based on the provided config. If two or more que-schedulers were
-            to run at once, then duplicate jobs would occur.
-
-            To resolve this problem, please remove any duplicate scheduler jobs from the que_jobs table.
           ERR
         end
       end
