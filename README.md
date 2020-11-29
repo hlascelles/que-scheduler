@@ -271,6 +271,10 @@ The scheduler will then continue to retry indefinitely.
 que-scheduler uses [semantic versioning](https://semver.org/), so major version changes will usually 
 require additional actions to be taken upgrading from one major version to another. 
 
+## Changelog
+
+A full changelog can be found here: [CHANGELOG.md](https://github.com/hlascelles/que-scheduler/blob/master/CHANGELOG.md)
+
 ## System requirements
 
 Your [postgres](https://www.postgresql.org/) database must be at least version 9.4.0.
