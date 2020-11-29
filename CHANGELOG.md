@@ -1,4 +1,4 @@
-## Unreleased
+## 4.0.1 (2020-11-29)
 
 - Move setting schedule hash directly to config block [#225](https://github.com/hlascelles/que-scheduler/pull/225)
 
