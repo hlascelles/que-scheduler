@@ -31,6 +31,7 @@ Gem::Specification.new do |spec|
 
   spec.add_development_dependency "activerecord", ">= 4.0"
   spec.add_development_dependency "appraisal"
+  spec.add_development_dependency "climate_control"
   spec.add_development_dependency "combustion"
   spec.add_development_dependency "coveralls"
   spec.add_development_dependency "database_cleaner"

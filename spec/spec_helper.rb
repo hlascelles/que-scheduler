@@ -31,10 +31,6 @@ Bundler.require :default, :development
 
 Dir["#{__dir__}/../spec/support/**/*.rb"].sort.each { |f| require f }
 
-Que::Scheduler.configure do |config|
-  config.schedule_location = "#{__dir__}/config/que_schedule.yml"
-end
-
 RSpec.configure do |config|
   config.example_status_persistence_file_path = ".rspec_status"
   config.disable_monkey_patching!
@@ -52,6 +48,17 @@ RSpec.configure do |config|
     qsae = Que::Scheduler::VersionSupport.execute("select * from que_scheduler_audit_enqueued")
     expect(qsae.count).to eq(0)
   end
+
+  config.before do
+    if Que::Scheduler::Schedule.instance_variable_defined?("@schedule")
+      Que::Scheduler::Schedule.remove_instance_variable("@schedule")
+    end
+    Que::Scheduler.apply_defaults
+    Que::Scheduler.configure do |scheduler_config|
+      scheduler_config.schedule_location = "#{__dir__}/config/que_schedule.yml"
+    end
+  end
+
   config.before(:suite) do
     DbSupport.setup_db
   end
