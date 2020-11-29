@@ -135,6 +135,16 @@ RSpec.describe Que::Scheduler::Migrations do
     end
   end
 
+  describe ".reenqueue_scheduler_if_missing" do
+    it "reenqueues if missing" do
+      expect(Que::Scheduler::Db.count_schedulers).to be_zero
+      described_class.reenqueue_scheduler_if_missing
+      expect(Que::Scheduler::Db.count_schedulers).to eq(1)
+      described_class.reenqueue_scheduler_if_missing
+      expect(Que::Scheduler::Db.count_schedulers).to eq(1)
+    end
+  end
+
   describe "DB health" do
     it "has no duplicate indices" do
       # From https://wiki.postgresql.org/wiki/Index_Maintenance

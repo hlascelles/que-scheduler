@@ -220,6 +220,15 @@ The changes in past migrations were:
 |    5    | Dropped an unnecessary index                                                    |
 |    6    | Enforced single scheduler job at the trigger level                              |
 
+The changes to the DB ([DDL](https://en.wikipedia.org/wiki/Data_definition_language)) are all 
+captured in the structure.sql so will be re-run in correctly if squashed - except for the actual 
+scheduling of the job itself (as that is [DML](https://en.wikipedia.org/wiki/Data_manipulation_language)).
+If you squash your migrations make sure this is added as the final line:
+
+```ruby
+Que::Scheduler::Migrations.reenqueue_scheduler_if_missing
+```
+
 ## HA Redundancy and DB restores
 
 Because of the way que-scheduler works, it requires no additional processes. It is, itself, a Que job.

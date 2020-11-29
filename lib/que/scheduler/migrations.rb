@@ -41,6 +41,11 @@ module Que
           result.any?
         end
 
+        # This method is only intended for use in squashed migrations
+        def reenqueue_scheduler_if_missing
+          Que::Scheduler::SchedulerJob.enqueue if Que::Scheduler::Db.count_schedulers.zero?
+        end
+
         private
 
         def migrate_up(current, version)
