@@ -36,8 +36,8 @@ resque-scheduler files, but with additional features.
 ## Schedule configuration
 
 The schedule file should be placed here: `config/que_schedule.yml`. Alternatively if you
-wish to generate the configuration dynamically, you can set it directly with
-`Que::Scheduler.schedule = some_hash`.
+wish to generate the configuration dynamically, you can set it directly using an initializer
+(see "Gem configuration" below).
 
 The file is a list of que job classes with arguments and a schedule frequency (in crontab 
 syntax). The format is similar to the resque-scheduler format, though priorities must be supplied as
@@ -135,19 +135,34 @@ A job can have a `schedule_type` assigned to it. Valid values are:
 
 ## Gem configuration
 
-You can configure some aspects of the gem with an initializer. The default is given below.
+You can configure some aspects of the gem with a config block (eg in a Rails initializer). 
+The default is given below. You can omit any configuration sections you are not intending to change.
+It is quite likely you won't have to create this config at all.
 
 ```ruby
 Que::Scheduler.configure do |config|
   # The location of the schedule yaml file.
-  config.schedule_location = ENV.fetch('QUE_SCHEDULER_CONFIG_LOCATION', 'config/que_schedule.yml')
+  config.schedule_location = ENV.fetch("QUE_SCHEDULER_CONFIG_LOCATION", "config/que_schedule.yml")
+
+  # The schedule as a hash. You can use this if you want to build the schedule yourself at runtime.
+  # This will override the above value if provided.
+  config.schedule = {
+    SpecifiedByHashTestJob: {
+      cron: "02 11 * * *"
+    }
+  }
   
-  # Specify a transaction block adapter. By default, que-scheduler uses the one supplied by que.
-  # However, if, for example you rely on listeners to ActiveRecord's exact `transaction` method, or 
+  # The transaction block adapter. By default, que-scheduler uses the one supplied by que.
+  # However if, for example, you rely on listeners to ActiveRecord's exact `transaction` method, or 
   # Sequel's DB.after_commit helper, then you can supply it here.
   config.transaction_adapter = ::Que.method(:transaction)
-end
 
+  # Which queue name the que-scheduler job should self-schedule on. Typically this is the default
+  # queue of que, which has a different name in Que 0.x ("") and 1.x ("default").
+  # It *must* be the "highest throughput" queue - do not work the scheduler on a "long 
+  # running jobs" queue. It is very unlikely you will want to change this. 
+  config.que_scheduler_queue = ENV.fetch("QUE_SCHEDULER_QUEUE", "" or "default")
+end
 ```
 
 ## Scheduler Audit
@@ -159,8 +174,25 @@ migration tasks.
 Additionally, there is the audit table `que_scheduler_audit_enqueued`. This logs every job that 
 the scheduler enqueues.
 
+que-scheduler comes with the `QueSchedulerAuditClearDownJob` job built in that you can optionally
+schedule to clear down audit rows if you don't need to retain them indefinitely. You should add this
+to your own scheduler config yaml.
+
+For example:
+
+```yaml
+# This will clear down the oldest que-scheduler audit rows. Since que-scheduler
+# runs approximately every minute, 129600 is 90 days.
+Que::Scheduler::Jobs::QueSchedulerAuditClearDownJob:
+  cron: "0 0 * * *"
+  args:
+    retain_row_count: 129600
+```
+
+## Required migrations
+
 When there is a major version (breaking) change, a migration should be run in. The version of the 
-latest migration proceeds at a faster rate than the version of the gem, eg if the gem is on version
+latest migration proceeds at a faster rate than the version of the gem. eg If the gem is on version
 3 then the migrations may be on version 6). 
 
 To run in all the migrations required up to a number, just migrate to that number with one line, and
@@ -187,23 +219,6 @@ The changes in past migrations were:
 |    4    | Updated the the audit tables to use bigints                                     |
 |    5    | Dropped an unnecessary index                                                    |
 |    6    | Enforced single scheduler job at the trigger level                              |
-
-## Built in optional job for audit clear down
-
-que-scheduler comes with the `QueSchedulerAuditClearDownJob` job built in that you can optionally
-schedule to clear down audit rows if you don't need to retain them indefinitely. You should add this
-to your own scheduler config yaml.
-
-For example:
-
-```yaml
-# This will clear down the oldest que-scheduler audit rows. Since que-scheduler
-# runs approximately every minute, 129600 is 90 days.
-Que::Scheduler::Jobs::QueSchedulerAuditClearDownJob:
-  cron: "0 0 * * *"
-  args:
-    retain_row_count: 129600
-```
 
 ## HA Redundancy and DB restores
 

@@ -1,6 +1,6 @@
 require "que/scheduler/version"
 require "que/scheduler/version_support"
-require "que/scheduler/config"
+require "que/scheduler/configuration"
 require "que/scheduler/scheduler_job"
 require "que/scheduler/db"
 require "que/scheduler/audit"

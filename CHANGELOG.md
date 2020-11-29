@@ -1,3 +1,7 @@
+## Unreleased
+
+- Move setting schedule hash directly to config block [#225](https://github.com/hlascelles/que-scheduler/pull/225)
+
 ## 4.0.0 (2020-11-29)
 
 - Enforce single scheduler job existence at the DB level with triggers and an index [#224](https://github.com/hlascelles/que-scheduler/pull/224)

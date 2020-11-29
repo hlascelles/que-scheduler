@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative "config"
+require_relative "configuration"
 
 module Que
   module Scheduler

@@ -1,6 +1,17 @@
 require "spec_helper"
 
 RSpec.describe Que::Scheduler::Schedule do
+  let(:new_config_yaml) {
+    '
+    SpecifiedByClassTestJob:
+      cron: "02 11 * * *"
+      args:
+        - First
+        - 1234
+        - some_hash: true
+    '
+  }
+
   describe ".schedule" do
     it "allows access via ::Que::Scheduler.schedule" do
       expect(described_class).to receive(:schedule)
@@ -8,35 +19,37 @@ RSpec.describe Que::Scheduler::Schedule do
     end
 
     it "loads the test schedule" do
-      entries = YAML.safe_load(IO.read("spec/config/que_schedule.yml")).keys
-      expect(entries.count).to be > 0
-      expect(Que::Scheduler.schedule.size).to eq(entries.count)
+      entries = YAML.safe_load(IO.read("spec/config/que_schedule.yml"))
+      expect(entries.keys.count).to be > 0
+      expect(Que::Scheduler.schedule.keys).to eq(entries.keys)
     end
-  end
 
-  describe ".schedule=" do
-    let(:new_config_hash) {
-      '
-      SpecifiedByClassTestJob:
-        cron: "02 11 * * *"
-        args:
-          - First
-          - 1234
-          - some_hash: true
-      '
-    }
+    it "loads the schedule from an ENV" do
+      Que::Scheduler.configure do |config|
+        config.schedule_location = "spec/config/que_schedule2.yml"
+      end
+      entries = YAML.safe_load(IO.read("spec/config/que_schedule2.yml"))
+      expect(Que::Scheduler.schedule.keys).to eq(entries.keys)
+    end
 
-    it "sets new schedule" do
-      default_schedule = Que::Scheduler.schedule
-
-      Que::Scheduler.schedule = new_config_hash
-      expect(Que::Scheduler.schedule.size).to eq(1)
+    it "loads the schedule from a hash" do
+      Que::Scheduler.configure do |config|
+        config.schedule = YAML.safe_load(new_config_yaml)
+      end
+      expect(Que::Scheduler.schedule.keys).to eq(YAML.safe_load(new_config_yaml).keys)
       job_config = Que::Scheduler.schedule["SpecifiedByClassTestJob"]
       expect(job_config[:name]).to eq("SpecifiedByClassTestJob")
       expect(job_config[:args_array]).to eq(["First", 1234, { "some_hash" => true }])
+    end
 
-      Que::Scheduler.schedule = nil
-      expect(Que::Scheduler.schedule).to eq(default_schedule)
+    it "errors if the schedule hash is not set and the file is not present" do
+      Que::Scheduler.configure do |config|
+        config.schedule_location = "spec/config/not_here.yml"
+        config.schedule = nil
+      end
+      expect {
+        Que::Scheduler.schedule
+      }.to raise_error(/No que-scheduler config set/)
     end
   end
 

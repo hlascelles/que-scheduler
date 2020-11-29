@@ -42,6 +42,7 @@ GEM
     ast (2.4.1)
     builder (3.2.4)
     byebug (11.1.3)
+    climate_control (0.2.0)
     coderay (1.1.3)
     colorize (0.8.1)
     combustion (1.3.0)
@@ -171,6 +172,7 @@ DEPENDENCIES
   activerecord (>= 4.0)
   activesupport (~> 5.0)
   appraisal
+  climate_control
   combustion
   coveralls
   database_cleaner

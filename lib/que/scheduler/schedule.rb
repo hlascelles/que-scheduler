@@ -1,19 +1,29 @@
+require_relative "configuration"
 require_relative "defined_job"
 
 module Que
   module Scheduler
     class Schedule
       class << self
+        # The main method for determining the schedule. It has to evaluate the schedule as late as
+        # possible (ie just as it is about to be used) as we cannot guarantee we are in a Rails
+        # app with initializers. In a future release this may change to "fast fail" in Rails by
+        # checking the config up front.
         def schedule
           @schedule ||=
             begin
-              location = Que::Scheduler.configuration.schedule_location
-              from_file(location)
+              configuration = Que::Scheduler.configuration
+              if !configuration.schedule.nil?
+                # If an explicit schedule as a hash has been defined, use that.
+                from_hash(configuration.schedule)
+              elsif File.exist?(configuration.schedule_location)
+                # If the schedule is defined as a file location, then load it and return it.
+                from_file(configuration.schedule_location)
+              else
+                raise "No que-scheduler config set, or file found " \
+                      "at #{configuration.schedule_location}"
+              end
             end
-        end
-
-        def schedule=(schedule_config)
-          @schedule = schedule_config.nil? ? nil : from_yaml(schedule_config)
         end
 
         def from_file(location)
@@ -68,10 +78,6 @@ module Que
     class << self
       def schedule
         Schedule.schedule
-      end
-
-      def schedule=(value)
-        Schedule.schedule = value
       end
     end
   end
