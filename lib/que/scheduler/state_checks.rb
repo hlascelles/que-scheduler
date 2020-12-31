@@ -19,7 +19,7 @@ module Que
           sync_err =
             if Que::Scheduler::VersionSupport.running_synchronously? && db_version.zero?
               code = Que::Scheduler::VersionSupport.running_synchronously_code?
-              <<-ERR_SYNC
+              <<~ERR_SYNC
                 You currently have Que to run in synchronous mode using
                 #{code}, so it is most likely this error
                 has happened during an initial migration. You should disable synchronous mode and

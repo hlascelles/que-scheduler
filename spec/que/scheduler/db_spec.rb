@@ -26,26 +26,11 @@ RSpec.describe Que::Scheduler::Db do
     end
   end
 
-  # We hvae users running both ActiveRecord and Sequel. We should not refer to either of them in
+  # We have users running both ActiveRecord and Sequel. We should not refer to either of them in
   # runtime code.
   describe "ORM usage" do
-    def check(str)
-      Dir.glob("lib/**/*").select { |file| File.file?(file) }.each do |file|
-        expect(File.open(file).grep(/#{str}/)).to be_empty unless file.end_with?("state_checks.rb")
-      end
-    end
-
-    it "ActiveRecord is not used explicitly" do
-      check("ActiveRecord")
-    end
-
-    it "Sequel is not used explicitly" do
-      check("Sequel")
-    end
-
-    # Check Que.transaction is not used, as the config transaction proc should be used instead
-    it "Que.transaction is not used explicitly" do
-      check("Que.transaction")
-    end
+    include_context "when checking we cannot use code", "ActiveRecord", "state_checks.rb"
+    include_context "when checking we cannot use code", "Sequel"
+    include_context "when checking we cannot use code", "Que.transaction"
   end
 end
