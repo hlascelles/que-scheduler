@@ -22,7 +22,8 @@ module Que
           else
             options = options.symbolize_keys
             {
-              last_run_time: Time.zone.parse(options.fetch(:last_run_time)),
+              last_run_time:
+                Que::Scheduler::TimeZone.time_zone.parse(options.fetch(:last_run_time)),
               job_dictionary: options.fetch(:job_dictionary),
             }
           end
