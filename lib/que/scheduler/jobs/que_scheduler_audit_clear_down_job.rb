@@ -8,7 +8,7 @@ module Que
       class QueSchedulerAuditClearDownJob < Que::Job
         class << self
           def build_sql(table_name)
-            <<-SQL
+            <<~SQL
               WITH deleted AS (
                 DELETE FROM #{table_name}
                 WHERE scheduler_job_id <= (

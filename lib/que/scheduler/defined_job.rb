@@ -89,7 +89,7 @@ module Que
            Que::Scheduler::ToEnqueue.active_job_sufficient_version? &&
            job_class < ::ActiveJob::Base &&
            Que::Scheduler::ToEnqueue.active_job_version < Gem::Version.create("6.0.3")
-          puts <<-ERR
+          puts <<~ERR
             WARNING from que-scheduler....
             Between versions 4.2.3 and 6.0.2 (inclusive) Rails did not support setting queue names
             on que jobs with ActiveJob, so que-scheduler cannot support it.
