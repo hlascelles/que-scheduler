@@ -1,6 +1,6 @@
-## Unreleased
+## 4.0.3 (2021-01-03)
 
-- Add time_zone configuration option to simplify running outside of Rails
+- Add time_zone configuration option to simplify running outside of Rails [#229](https://github.com/hlascelles/que-scheduler/pull/229)
 
 ## 4.0.2 (2020-11-29)
 
