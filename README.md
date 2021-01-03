@@ -162,6 +162,14 @@ Que::Scheduler.configure do |config|
   # It *must* be the "highest throughput" queue - do not work the scheduler on a "long 
   # running jobs" queue. It is very unlikely you will want to change this. 
   config.que_scheduler_queue = ENV.fetch("QUE_SCHEDULER_QUEUE", "" or "default")
+  
+  # If que-scheduler is being used with Rails, then it will inherit the time zone from that 
+  # framework, and you can leave the value as nil as shown below. However, if you are not using
+  # Rails, you may need to set the time zone here. If que-scheduler cannot determine the time zone
+  # it will yield an error prompting you for action.
+  # If you need to set a value, use the string representation:
+  # eg: config.time_zone = "Europe/London"
+  config.time_zone = nil
 end
 ```
 

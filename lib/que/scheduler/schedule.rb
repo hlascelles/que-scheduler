@@ -41,7 +41,8 @@ module Que
           end.to_h
         end
 
-        def hash_item_to_defined_job(name, defined_job_hash)
+        def hash_item_to_defined_job(name, defined_job_hash_in)
+          defined_job_hash = defined_job_hash_in.stringify_keys
           # Que stores arguments as a json array. If the args we have to provide are already an
           # array we can can simply pass them through. If it is a single non-nil value, then we make
           # an array with one item which is that value (this includes if it is a hash). It could

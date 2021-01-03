@@ -105,7 +105,13 @@ module Que
         scheduled_at =
           begin
             scheduled_at_float = data[:scheduled_at]
-            scheduled_at_float ? Time.zone.at(scheduled_at_float) : nil
+            # rubocop:disable Style/EmptyElse
+            if scheduled_at_float
+              Que::Scheduler::TimeZone.time_zone.at(scheduled_at_float)
+            else
+              nil
+            end
+            # rubocop:enable Style/EmptyElse
           end
 
         # Rails didn't support queues for ActiveJob for a while

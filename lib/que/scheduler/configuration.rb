@@ -8,6 +8,7 @@ module Que
       attr_accessor :schedule
       attr_accessor :transaction_adapter
       attr_accessor :que_scheduler_queue
+      attr_accessor :time_zone
     end
 
     class << self
@@ -26,6 +27,7 @@ module Que
           config.que_scheduler_queue =
             ENV.fetch("QUE_SCHEDULER_QUEUE", Que::Scheduler::VersionSupport.default_scheduler_queue)
           config.schedule = nil
+          config.time_zone = nil
         end
       end
     end
