@@ -28,7 +28,7 @@ module Que
         Que::Scheduler::VersionSupport.set_priority(self, 100)
 
         def run(options)
-          retain_row_count = options.fetch(:retain_row_count)
+          retain_row_count = options.fetch(:retain_row_count) { options.fetch("retain_row_count") }
           Que::Scheduler::Db.transaction do
             # This may delete zero or more than `retain_row_count` depending on if anything was
             # scheduled in each of the past schedule runs
