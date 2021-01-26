@@ -108,5 +108,5 @@ no_rails:
   <<: *ruby_2_6
   <<: *postgres_9_5
   script:
-  - cd spec/install_test_files/no_rails
+  - cd spec/integration/no_rails
   - ruby app.rb
