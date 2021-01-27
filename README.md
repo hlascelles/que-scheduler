@@ -309,7 +309,7 @@ A full changelog can be found here: [CHANGELOG.md](https://github.com/hlascelles
 
 ## System requirements
 
-Your [postgres](https://www.postgresql.org/) database must be at least version 9.4.0.
+Your [postgres](https://www.postgresql.org/) database must be at least version 9.5.0.
 
 ## Inspiration
 
