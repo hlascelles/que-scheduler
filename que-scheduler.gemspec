@@ -23,6 +23,7 @@ Gem::Specification.new do |spec|
 
   spec.files = Dir["{lib}/**/*"] + ["README.md"]
   spec.require_paths = ["lib"]
+  spec.required_ruby_version = ">= 2.5"
 
   spec.add_dependency "activesupport", ">= 4.0"
   spec.add_dependency "fugit", "~> 1.1", ">= 1.1.8" # 1.1.8 fixes "disallow zero months in cron"
@@ -41,7 +42,8 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rake"
   spec.add_development_dependency "reek"
   spec.add_development_dependency "rspec"
-  spec.add_development_dependency "rubocop", "0.84.0" # Hound version
+  spec.add_development_dependency "rubocop", "1.5.2" # Hound version
+  spec.add_development_dependency "rubocop-rake"
   spec.add_development_dependency "rubocop-rspec"
   spec.add_development_dependency "sqlite3", ">= 1.3"
   spec.add_development_dependency "timecop"

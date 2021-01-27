@@ -18,9 +18,11 @@ module Que
           Que::Scheduler::VersionSupport.execute(NOW_SQL).first.values.first
         end
 
+        # rubocop:disable Style/ExplicitBlockArgument
         def transaction
           Que::Scheduler.configuration.transaction_adapter.call { yield }
         end
+        # rubocop:enable Style/ExplicitBlockArgument
       end
     end
   end
