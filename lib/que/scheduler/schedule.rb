@@ -48,10 +48,7 @@ module Que
           # an array with one item which is that value (this includes if it is a hash). It could
           # also be a single nil value.
           args_array =
-            if !defined_job_hash.key?("args")
-              # No args were requested
-              []
-            else
+            if defined_job_hash.key?("args")
               args = defined_job_hash["args"]
               if args.is_a?(Array)
                 # An array of args was requested
@@ -61,6 +58,9 @@ module Que
                 # be enqueued as an array of 1 item
                 [args]
               end
+            else
+              # No args were requested
+              []
             end
 
           Que::Scheduler::DefinedJob.create(

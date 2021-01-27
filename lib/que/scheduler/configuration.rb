@@ -4,11 +4,8 @@ require_relative "version_support"
 module Que
   module Scheduler
     class Configuration
-      attr_accessor :schedule_location
-      attr_accessor :schedule
-      attr_accessor :transaction_adapter
-      attr_accessor :que_scheduler_queue
-      attr_accessor :time_zone
+      attr_accessor :schedule_location, :schedule, :transaction_adapter, :que_scheduler_queue,
+                    :time_zone
     end
 
     class << self

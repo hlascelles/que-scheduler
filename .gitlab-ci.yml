@@ -24,8 +24,8 @@ before_script:
 
 stages:
 - install
-- quality
 - test_postgres_9_5
+- quality
 
 .retries: &retries
   retry:
