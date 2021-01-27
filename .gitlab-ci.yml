@@ -1,6 +1,6 @@
 # To run this locally:
 # - Download the runner: https://docs.gitlab.com/runner/install/bleeding-edge.html#download-the-standalone-binaries
-# - gitlab-runner-linux-amd64 exec docker "ruby_2_6_postgres_9_4"
+# - gitlab-runner-linux-amd64 exec docker "ruby_2_6_postgres_9_5"
 
 variables:
   BUNDLE_PATH: vendor/bundle
@@ -25,7 +25,6 @@ before_script:
 stages:
 - install
 - quality
-- test_postgres_9_4
 - test_postgres_9_5
 
 .retries: &retries
@@ -50,11 +49,6 @@ stages:
   cache:
     key: ruby_2_6
     <<: *cache_paths
-
-.postgres_9_4: &postgres_9_4
-  stage: test_postgres_9_4
-  services:
-  - postgres:9.4.0
 
 .postgres_9_5: &postgres_9_5
   stage: test_postgres_9_5
@@ -83,16 +77,6 @@ quality:
   stage: quality
   script:
   - "./quality.sh"
-
-ruby_2_5_postgres_9_4:
-  <<: *test
-  <<: *ruby_2_5
-  <<: *postgres_9_4
-
-ruby_2_6_postgres_9_4:
-  <<: *test
-  <<: *ruby_2_6
-  <<: *postgres_9_4
 
 ruby_2_5_postgres_9_5:
   <<: *test
