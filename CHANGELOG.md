@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Handle multiple key types [#237](https://github.com/hlascelles/que-scheduler/pull/237)
 - Remove Postgres 9.4 support [#238](https://github.com/hlascelles/que-scheduler/pull/238)
 - Upgrade Rubocop to 1.x and remove Ruby 2.4 support [#239](https://github.com/hlascelles/que-scheduler/pull/239)
 

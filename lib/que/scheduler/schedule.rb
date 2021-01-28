@@ -37,7 +37,8 @@ module Que
 
         def from_hash(config_hash)
           config_hash.map do |name, defined_job_hash|
-            [name, hash_item_to_defined_job(name, defined_job_hash)]
+            name_str = name.to_s
+            [name_str, hash_item_to_defined_job(name_str, defined_job_hash)]
           end.to_h
         end
 
@@ -65,7 +66,7 @@ module Que
 
           Que::Scheduler::DefinedJob.create(
             name: name,
-            job_class: defined_job_hash["class"] || name,
+            job_class: defined_job_hash["class"]&.to_s || name,
             queue: defined_job_hash["queue"],
             args_array: args_array,
             priority: defined_job_hash["priority"],

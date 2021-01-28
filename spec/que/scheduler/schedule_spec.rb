@@ -42,6 +42,37 @@ RSpec.describe Que::Scheduler::Schedule do
       expect(job_config[:args_array]).to eq(["First", 1234, { "some_hash" => true }])
     end
 
+    it "loads the schedule with all key types" do
+      Que::Scheduler.configure do |config|
+        config.schedule = {
+          # Symbol
+          AsSymbolSpecifiedByClassTestJob: {
+            class: :SpecifiedByClassTestJob,
+            cron: "01 * * * *",
+          },
+          # String
+          "AsStringSpecifiedByClassTestJob" => {
+            class: "SpecifiedByClassTestJob",
+            cron: "02 * * * *",
+          },
+          # Class
+          SpecifiedByClassTestJob => {
+            cron: "03 * * * *",
+          },
+        }
+      end
+      expect(Que::Scheduler.schedule.keys).to eq(
+        %w[
+          AsSymbolSpecifiedByClassTestJob
+          AsStringSpecifiedByClassTestJob
+          SpecifiedByClassTestJob
+        ]
+      )
+      expect(Que::Scheduler.schedule.values.map(&:job_class)).to eq(
+        [SpecifiedByClassTestJob, SpecifiedByClassTestJob, SpecifiedByClassTestJob]
+      )
+    end
+
     it "errors if the schedule hash is not set and the file is not present" do
       Que::Scheduler.configure do |config|
         config.schedule_location = "spec/config/not_here.yml"
