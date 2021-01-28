@@ -1,6 +1,6 @@
 require:
 - rubocop-rspec
-- rubocop-rake
+# - rubocop-rake # Not supported by CodeClimate
 
 AllCops:
   TargetRubyVersion: 2.5

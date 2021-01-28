@@ -1,5 +1,5 @@
 shared_context "when job testing" do
-  if Que::Scheduler::ToEnqueue.active_job_sufficient_version?
+  if Que::Scheduler::ToEnqueue.active_job_loaded?
     let(:handles_queue_name) {
       Que::Scheduler::ToEnqueue.active_job_version_supports_queues?
     }

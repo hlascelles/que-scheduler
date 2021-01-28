@@ -2,7 +2,7 @@ PATH
   remote: ..
   specs:
     que-scheduler (4.0.3)
-      activesupport (>= 4.0)
+      activesupport (>= 5.0)
       fugit (~> 1.1, >= 1.1.8)
       hashie (>= 3, < 5)
       que (>= 0.12, <= 1.0.0.beta4)
@@ -148,8 +148,6 @@ GEM
       unicode-display_width (>= 1.4.0, < 2.0)
     rubocop-ast (1.4.1)
       parser (>= 2.7.1.5)
-    rubocop-rake (0.5.1)
-      rubocop
     rubocop-rspec (2.1.0)
       rubocop (~> 1.0)
       rubocop-ast (>= 1.1.0)
@@ -182,7 +180,7 @@ PLATFORMS
 
 DEPENDENCIES
   activejob (= 6.0.3)
-  activerecord (>= 4.0)
+  activerecord (>= 5.0)
   activesupport (~> 6.0.3)
   appraisal
   climate_control
@@ -198,7 +196,6 @@ DEPENDENCIES
   reek
   rspec
   rubocop (= 1.5.2)
-  rubocop-rake
   rubocop-rspec
   sqlite3 (>= 1.3)
   timecop
