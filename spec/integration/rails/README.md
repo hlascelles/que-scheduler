@@ -9,4 +9,4 @@ First start a postgres docker container with:
 
 Then run: 
 
-`RAILS_VERSION=4.2.11 QUE_VERSION=0.14 ./install_test.sh`
+`RAILS_VERSION=5.2.4.4 QUE_VERSION=0.14 ./install_test.sh`

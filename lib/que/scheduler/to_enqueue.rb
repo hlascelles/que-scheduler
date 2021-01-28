@@ -22,14 +22,12 @@ module Que
           type_from_job_class(job_class).present?
         end
 
-        def active_job_version
-          Gem.loaded_specs["activejob"]&.version
+        def active_job_loaded?
+          !!active_job_version
         end
 
-        def active_job_sufficient_version?
-          # ActiveJob 4.x does not support job_ids correctly
-          # https://github.com/rails/rails/pull/20056/files
-          active_job_version && active_job_version > Gem::Version.create("5")
+        def active_job_version
+          Gem.loaded_specs["activejob"]&.version
         end
 
         def active_job_version_supports_queues?
@@ -56,7 +54,7 @@ module Que
               hash = {
                 ::Que::Job => QueJobType,
               }
-              hash[::ActiveJob::Base] = ActiveJobType if ToEnqueue.active_job_sufficient_version?
+              hash[::ActiveJob::Base] = ActiveJobType if ToEnqueue.active_job_loaded?
               hash
             end
         end
