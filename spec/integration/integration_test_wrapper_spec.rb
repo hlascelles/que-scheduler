@@ -16,5 +16,11 @@ RSpec.describe "integration tests" do
       "QUE_VERSION=#{Que::Scheduler::VersionSupport.que_version} ruby simple_test.rb"
     )
   end
+
+  it "enqueues and runs the QueSchedulerAuditClearDownJob" do
+    run_integration_test(
+      "QUE_VERSION=#{Que::Scheduler::VersionSupport.que_version} ruby cleardown_job_test.rb"
+    )
+  end
 end
 # rubocop:enable RSpec/DescribeClass

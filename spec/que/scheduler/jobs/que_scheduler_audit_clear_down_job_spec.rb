@@ -47,5 +47,23 @@ RSpec.describe Que::Scheduler::Jobs::QueSchedulerAuditClearDownJob do
         described_class.run(retain_row_count: 2)
       }.not_to raise_error
     end
+
+    context "when handling both string and symbol run args (ie Que 0.x and 1.x)" do
+      def set_up_expects
+        allow(Que::Scheduler::VersionSupport).to receive(:execute).and_call_original
+        expect(Que::Scheduler::VersionSupport)
+          .to receive(:execute).with(described_class::DELETE_AUDIT_SQL, [1]).and_call_original
+      end
+
+      it "runs with a string" do
+        set_up_expects
+        described_class.run("retain_row_count" => 1)
+      end
+
+      it "runs with a symbol" do
+        set_up_expects
+        described_class.run(retain_row_count: 1)
+      end
+    end
   end
 end
