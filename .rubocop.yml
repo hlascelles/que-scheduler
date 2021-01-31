@@ -61,6 +61,8 @@ Style/HashTransformValues:
   Enabled: true
 Style/SlicingWithRange:
   Enabled: true
+Style/NumericLiterals:
+  Enabled: false
 Style/TrailingCommaInArguments:
   Enabled: false
 Style/TrailingCommaInArrayLiteral:

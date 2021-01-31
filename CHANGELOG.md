@@ -4,6 +4,7 @@
 - Remove Postgres 9.4 support [#238](https://github.com/hlascelles/que-scheduler/pull/238)
 - Upgrade Rubocop to 1.x and remove Ruby 2.4 support [#239](https://github.com/hlascelles/que-scheduler/pull/239)
 - Remove Rails 4 support [#240](https://github.com/hlascelles/que-scheduler/pull/240)
+- Add broad spectrum integration tests [#242](https://github.com/hlascelles/que-scheduler/pull/242)
 
 ## 4.0.3 (2021-01-03)
 
