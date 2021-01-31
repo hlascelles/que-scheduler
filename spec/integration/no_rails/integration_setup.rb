@@ -25,7 +25,6 @@ module IntegrationSetup
     def trigger_scheduler
       puts "Ruby version: #{RUBY_VERSION}"
       puts "Ruby 'now':   #{Time.zone}"
-      yesterday = Date.yesterday.to_s
 
       # We now want to run the scheduler job once where it loads the dictionary, then again when
       # it actually enqueues things.
@@ -34,13 +33,13 @@ module IntegrationSetup
       IntegrationSetup.run_a_job
 
       # Make it think it is "late"
-      Que::Scheduler::VersionSupport.execute("UPDATE que_jobs SET run_at = '#{yesterday}'")
-      args = Que::Scheduler::VersionSupport.execute("SELECT * FROM que_jobs").first[:args]
-      args.first["last_run_time"] = yesterday
-      Que::Scheduler::VersionSupport.execute("UPDATE que_jobs SET args = '#{args.to_json}'")
+      make_scheduler_last_run(Date.yesterday.to_s)
 
       # "Runs" the scheduler to enqueue something
       IntegrationSetup.run_a_job
+
+      # Make it think it is "too early" so we can focus on what it just enqueued
+      make_scheduler_last_run(Date.tomorrow.to_s)
     end
 
     def run_a_job
@@ -68,6 +67,25 @@ module IntegrationSetup
       require "active_record"
       require "pry-byebug"
       require_relative "../../support/sync_job_worker"
+    end
+
+    # This moves the last run of the scheduler to a set time. We must both move the que job
+    # last_run, and also the internal knowledge "last_run_time" which could be different
+    # if the job errors.
+    def make_scheduler_last_run(time)
+      Que::Scheduler::VersionSupport.execute(<<~SQL)
+        UPDATE que_jobs SET run_at = '#{time}'
+        WHERE job_class = 'Que::Scheduler::SchedulerJob'
+      SQL
+      args = Que::Scheduler::VersionSupport.execute(<<~SQL).first[:args]
+        SELECT * FROM que_jobs WHERE job_class = 'Que::Scheduler::SchedulerJob'
+      SQL
+      args.first["last_run_time"] = time
+      Que::Scheduler::VersionSupport.execute(<<~SQL)
+        UPDATE que_jobs
+        SET args = '#{args.to_json}'
+        WHERE job_class = 'Que::Scheduler::SchedulerJob'
+      SQL
     end
   end
 end
