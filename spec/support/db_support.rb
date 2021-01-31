@@ -74,13 +74,5 @@ module DbSupport
         row
       end
     end
-
-    def work_job(job)
-      if Que::Scheduler::VersionSupport.zero_major?
-        ::Que::Job.work
-      else
-        ::Que.run_job_middleware(job) { job.tap(&:_run) }
-      end
-    end
   end
 end

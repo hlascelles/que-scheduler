@@ -61,7 +61,11 @@ module Que
 
         def zero_major?
           # This is the only way to handle beta releases too
-          @zero_major ||= Gem.loaded_specs["que"].version.to_s.split(".").first.to_i.zero?
+          @zero_major ||= que_version.split(".").first.to_i.zero?
+        end
+
+        def que_version
+          @que_version ||= Gem.loaded_specs["que"].version.to_s
         end
 
         private

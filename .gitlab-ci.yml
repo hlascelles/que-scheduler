@@ -87,10 +87,3 @@ ruby_2_6_postgres_9_5:
   <<: *test
   <<: *ruby_2_6
   <<: *postgres_9_5
-
-no_rails:
-  <<: *ruby_2_6
-  <<: *postgres_9_5
-  script:
-  - cd spec/integration/no_rails
-  - ruby app.rb

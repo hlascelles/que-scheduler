@@ -63,8 +63,8 @@ RSpec.describe Que::Scheduler::SchedulerJob do
       end
 
       def run_test(initial_job_args, to_be_scheduled)
-        job = described_class.enqueue(initial_job_args)
-        DbSupport.work_job(job)
+        described_class.enqueue(initial_job_args)
+        SyncJobWorker.work_job
         expect_itself_enqueued
         all_enqueued = Que.job_stats.map do |j|
           j.symbolize_keys.slice(:job_class)
