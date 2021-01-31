@@ -1,4 +1,4 @@
-## Unreleased
+## 4.1.0 (2021-01-31)
 
 - Check for row count option using String and Symbols [#236](https://github.com/hlascelles/que-scheduler/pull/236)
 - Handle multiple key types [#237](https://github.com/hlascelles/que-scheduler/pull/237)
