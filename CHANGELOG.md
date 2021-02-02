@@ -1,3 +1,7 @@
+## Unreleased
+
+- Add tests for Ruby 2.7 and 3.0 [#246](https://github.com/hlascelles/que-scheduler/pull/246)
+
 ## 4.1.0 (2021-01-31)
 
 - Check for row count option using String and Symbols [#236](https://github.com/hlascelles/que-scheduler/pull/236)
