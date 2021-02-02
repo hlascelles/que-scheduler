@@ -50,6 +50,20 @@ stages:
     key: ruby_2_6
     <<: *cache_paths
 
+.ruby_2_7: &ruby_2_7
+  <<: *retries
+  image: ruby:2.7
+  cache:
+    key: ruby_2_7
+    <<: *cache_paths
+
+.ruby_3_0: &ruby_3_0
+  <<: *retries
+  image: ruby:3.0
+  cache:
+    key: ruby_3_0
+    <<: *cache_paths
+
 .postgres_9_5: &postgres_9_5
   stage: test_postgres_9_5
   services:
@@ -72,6 +86,14 @@ install_ruby_2_6:
   <<: *install
   <<: *ruby_2_6
 
+install_ruby_2_7:
+  <<: *install
+  <<: *ruby_2_7
+
+install_ruby_3_0:
+  <<: *install
+  <<: *ruby_3_0
+
 quality:
   <<: *ruby_2_5
   stage: quality
@@ -86,4 +108,14 @@ ruby_2_5_postgres_9_5:
 ruby_2_6_postgres_9_5:
   <<: *test
   <<: *ruby_2_6
+  <<: *postgres_9_5
+
+ruby_2_7_postgres_9_5:
+  <<: *test
+  <<: *ruby_2_7
+  <<: *postgres_9_5
+
+ruby_3_0_postgres_9_5:
+  <<: *test
+  <<: *ruby_3_0
   <<: *postgres_9_5
