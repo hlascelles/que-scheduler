@@ -37,7 +37,7 @@ GEM
       i18n (>= 0.7, < 2)
       minitest (~> 5.1)
       tzinfo (~> 1.1)
-    appraisal (2.3.0)
+    appraisal (2.4.0)
       bundler
       rake
       thor (>= 0.14.0)
@@ -89,7 +89,7 @@ GEM
       nokogiri (>= 1.5.9)
     method_source (1.0.0)
     mini_portile2 (2.5.0)
-    minitest (5.14.3)
+    minitest (5.14.4)
     nokogiri (1.11.1)
       mini_portile2 (~> 2.5.0)
       racc (~> 1.4)
@@ -103,7 +103,7 @@ GEM
     pry-byebug (3.9.0)
       byebug (~> 11.0)
       pry (~> 0.13.0)
-    psych (3.3.0)
+    psych (3.1.0)
     que (0.14.3)
     raabro (1.4.0)
     racc (1.5.2)
@@ -128,7 +128,7 @@ GEM
       parser (~> 3.0.0)
       psych (~> 3.1)
       rainbow (>= 2.0, < 4.0)
-    regexp_parser (2.0.3)
+    regexp_parser (2.1.1)
     rexml (3.2.4)
     rspec (3.10.0)
       rspec-core (~> 3.10.0)
@@ -195,6 +195,7 @@ DEPENDENCIES
   fasterer
   pg (~> 0.21)
   pry-byebug
+  psych (= 3.1.0)
   que (~> 0.14)
   que-scheduler!
   rake
@@ -207,4 +208,4 @@ DEPENDENCIES
   zonebie
 
 BUNDLED WITH
-   1.17.3
+   2.2.11
