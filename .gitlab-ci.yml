@@ -19,6 +19,7 @@ variables:
 
 before_script:
 - set -euo pipefail
+- gem install bundler:2.2.11
 - bundle check || bundle install
 - bundle exec appraisal install
 
