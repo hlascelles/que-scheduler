@@ -39,6 +39,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "fasterer"
   spec.add_development_dependency "pg", "~> 0.21"
   spec.add_development_dependency "pry-byebug"
+  spec.add_development_dependency "psych", "3.1.0"
   spec.add_development_dependency "rake"
   spec.add_development_dependency "reek"
   spec.add_development_dependency "rspec"
@@ -48,17 +49,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "timecop"
   spec.add_development_dependency "zonebie"
   # rubocop:enable Layout/HashAlignment
-
-  # This is only to be used when developing locally.
-  if ENV["MATCH_PSYCH_GEM_TO_RUBY_PSYCH"] = "true"
-    # Reek declares a loose dependency on psych. If we do not pin it it will be bundle updated
-    # to 3.3.0. When that happens the "bundled" version will mismatch the "built in ruby version"
-    # which can be found at: .rbenv/versions/2.7.2/lib/ruby/2.7.0/psych/versions.rb
-    # This will cause the error "TypeError: superclass mismatch for class Mark".
-    # So, here we force a pin to the psych that is "in the ruby".
-    require "psych" # "In ruby"
-    spec.add_development_dependency "psych", Psych::VERSION # Pin Reek's transitive dependency
-  end
 end
 
 
