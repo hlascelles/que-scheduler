@@ -20,6 +20,7 @@ variables:
 before_script:
 - set -euo pipefail
 - gem install bundler:2.2.11
+- gem update --system # Not needed for ruby 2.7.2? https://github.com/rubygems/rubygems/issues/3284#issuecomment-566013826
 - bundle check || bundle install
 - bundle exec appraisal install
 
