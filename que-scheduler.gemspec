@@ -29,6 +29,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency "fugit", "~> 1.1", ">= 1.1.8" # 1.1.8 fixes "disallow zero months in cron"
   spec.add_dependency "hashie", ">= 3", "< 5"
   spec.add_dependency "que", ">= 0.12", "<= 1.0.0.beta4"
+  spec.add_dependency "sorbet-runtime", "0.5.6111"
 
   spec.add_development_dependency "activerecord", ">= 5.0"
   spec.add_development_dependency "appraisal"
@@ -39,6 +40,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "fasterer"
   spec.add_development_dependency "pg", "~> 0.21"
   spec.add_development_dependency "pry-byebug"
+  spec.add_development_dependency "psych", "3.1.0"
   spec.add_development_dependency "rake"
   spec.add_development_dependency "reek"
   spec.add_development_dependency "rspec"
