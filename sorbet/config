@@ -4,8 +4,10 @@ lib
 --file
 sorbet/rbi/version_differences.rbi
 --file
+sorbet/rbi/gems/fugit@1.4.2.rbi
 sorbet/rbi/gems/hashie@4.1.0.rbi
 sorbet/rbi/gems/que@0.14.3.rbi
+sorbet/rbi/gems/raabro@1.4.0.rbi
 sorbet/rbi/gems/tzinfo@2.0.4.rbi
 --file
 sorbet/rbi/sorbet-typed/lib/activesupport/all/activesupport.rbi
