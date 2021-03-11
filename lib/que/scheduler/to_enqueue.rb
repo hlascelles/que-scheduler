@@ -1,4 +1,5 @@
 require "que"
+require "hashie"
 
 # This module uses polymorphic dispatch to centralise the differences between supporting Que::Job
 # and other job systems.
