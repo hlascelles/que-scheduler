@@ -1,11 +1,13 @@
 require "fugit"
+require "sorbet-runtime"
+require_relative "to_enqueue"
 
 module Que
   module Scheduler
     module EnqueueingCalculator
-      class Result < Hashie::Dash
-        property :missed_jobs, required: true
-        property :job_dictionary, required: true
+      class Result < T::Struct
+        const :missed_jobs, T::Array[Que::Scheduler::QueJobType]
+        const :job_dictionary, T::Array[String]
       end
 
       class << self
