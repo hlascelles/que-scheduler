@@ -6,7 +6,7 @@ PATH
       fugit (~> 1.1, >= 1.1.8)
       hashie (>= 3, < 5)
       que (>= 0.12, <= 1.0.0.beta4)
-      sorbet-runtime (= 0.5.6111)
+      sorbet-runtime (= 0.5.6322)
 
 GEM
   remote: https://rubygems.org/
@@ -211,7 +211,7 @@ GEM
       json (>= 1.8, < 3)
       simplecov-html (~> 0.10.0)
     simplecov-html (0.10.2)
-    sorbet-runtime (0.5.6111)
+    sorbet-runtime (0.5.6322)
     sprockets (4.0.2)
       concurrent-ruby (~> 1.0)
       rack (> 1, < 3)
