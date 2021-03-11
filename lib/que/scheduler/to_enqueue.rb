@@ -149,13 +149,13 @@ module Que
 
     # A value object returned after a job has been enqueued. This is necessary as Que (normal) and
     # ActiveJob return very different objects from the `enqueue` call.
-    class EnqueuedJobType < Hashie::Dash
-      property :args
-      property :queue
-      property :priority
-      property :run_at, required: true
-      property :job_class, required: true
-      property :job_id, required: true
+    class EnqueuedJobType < T::Struct
+      const :args, T.any(Hash, Array)
+      const :queue, String
+      const :priority, Integer
+      const :run_at, Time
+      const :job_class, String # TODO make this T.class_of(::Que::Job) or ActiveJob?
+      const :job_id, Integer
     end
   end
 end
