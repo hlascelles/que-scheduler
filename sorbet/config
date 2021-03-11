@@ -4,6 +4,7 @@ lib
 --file
 sorbet/rbi/version_differences.rbi
 --file
+sorbet/rbi/gems/hashie@4.1.0.rbi
 sorbet/rbi/gems/que@0.14.3.rbi
 sorbet/rbi/gems/tzinfo@2.0.4.rbi
 --file
