@@ -1,17 +1,11 @@
 require "que"
-require "hashie"
+require "sorbet-runtime"
 
 # This module uses polymorphic dispatch to centralise the differences between supporting Que::Job
 # and other job systems.
 module Que
   module Scheduler
-    class ToEnqueue < Hashie::Dash
-      property :args, required: true, default: []
-      property :queue
-      property :priority
-      property :run_at, required: true
-      property :job_class, required: true
-
+    class ToEnqueue
       class << self
         def create(options)
           type_from_job_class(options.fetch(:job_class)).new(
@@ -63,9 +57,20 @@ module Que
     end
 
     # For jobs of type Que::Job
-    class QueJobType < ToEnqueue
+    class QueJobType < T::Struct
+      const :args, T.any(Hash, Array), default: []
+      const :queue, T.nilable(String)
+      const :priority, T.nilable(Integer)
+      const :run_at, Time
+      const :job_class, T.class_of(::Que::Job)
+      const :creator, Time
+
       def enqueue
-        job_settings = to_h.slice(:queue, :priority, :run_at).compact
+        job_settings = {
+          queue: queue,
+          priority: priority,
+          run_at: run_at,
+        }.compact
         job =
           if args.is_a?(Hash)
             job_class.enqueue(**args.merge(job_settings))
@@ -85,7 +90,14 @@ module Que
     end
 
     # For jobs of type ActiveJob
-    class ActiveJobType < ToEnqueue
+    class ActiveJobType < T::Struct
+      const :args, T.any(Hash, Array), default: []
+      const :queue, T.nilable(String)
+      const :priority, T.nilable(Integer)
+      const :run_at, Time
+      const :job_class, T.class_of(ActiveJob)
+      const :creator, Time
+
       def enqueue
         job = enqueue_active_job
 
