@@ -46,6 +46,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rspec"
   spec.add_development_dependency "rubocop", "1.5.2" # Hound version
   spec.add_development_dependency "rubocop-rspec"
+  spec.add_development_dependency "sorbet", "0.5.6111"
   spec.add_development_dependency "sqlite3", ">= 1.3"
   spec.add_development_dependency "timecop"
   spec.add_development_dependency "zonebie"
