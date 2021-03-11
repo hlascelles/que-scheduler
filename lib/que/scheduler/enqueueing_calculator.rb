@@ -6,7 +6,7 @@ module Que
   module Scheduler
     module EnqueueingCalculator
       class Result < T::Struct
-        const :missed_jobs, T::Array[Que::Scheduler::QueJobType]
+        const :missed_jobs, T::Array[Que::Scheduler::ToEnqueue::QueJobType] # TODO: Also ACtiveJobType
         const :job_dictionary, T::Array[String]
       end
 

@@ -7,6 +7,7 @@ PATH
       hashie (>= 3, < 5)
       que (>= 0.12, <= 1.0.0.beta4)
       sorbet-runtime (= 0.5.6322)
+      sorbet-struct-comparable (= 1.0.0)
 
 GEM
   remote: https://rubygems.org/
@@ -173,6 +174,8 @@ GEM
       sorbet-static (= 0.5.6322)
     sorbet-runtime (0.5.6322)
     sorbet-static (0.5.6322-x86_64-linux)
+    sorbet-struct-comparable (1.0.0)
+      sorbet-runtime (>= 0.5)
     spoom (1.0.9)
       colorize
       sorbet (~> 0.5.5)

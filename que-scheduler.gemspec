@@ -31,6 +31,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency "hashie", ">= 3", "< 5"
   spec.add_dependency "que", ">= 0.12", "<= 1.0.0.beta4"
   spec.add_dependency "sorbet-runtime", sorbet_version
+  spec.add_dependency "sorbet-struct-comparable", "1.0.0"
 
   spec.add_development_dependency "activerecord", ">= 5.0"
   spec.add_development_dependency "appraisal"

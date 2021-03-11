@@ -8,3 +8,7 @@ end
 
 # ActiveJob isn't always included in some tests (and by default), so define it here
 class ::ActiveJob::Base; end
+
+class ActiveSupport::TimeZone
+  def initialize(time); end
+end
