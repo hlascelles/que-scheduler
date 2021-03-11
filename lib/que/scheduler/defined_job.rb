@@ -14,7 +14,7 @@ module Que
 
       property :name
       property :job_class, transform_with: ->(v) { Object.const_get(v) }
-      property :cron, transform_with: ->(v) { Fugit::Cron.parse(v) }
+      property :cron, transform_with: ->(v) { ::Fugit::Cron.parse(v) }
       property :queue
       property :priority
       property :args_array

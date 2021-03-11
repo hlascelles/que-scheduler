@@ -1,5 +1,3 @@
 --typed=true
 --dir
 lib
---dir
-sorbet/rbi/gems
