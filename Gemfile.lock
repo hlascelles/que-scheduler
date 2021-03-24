@@ -70,7 +70,7 @@ GEM
     fasterer (0.9.0)
       colorize (~> 0.7)
       ruby_parser (>= 3.14.1)
-    fugit (1.4.2)
+    fugit (1.4.3)
       et-orbi (~> 1.1, >= 1.1.8)
       raabro (~> 1.4)
     hashie (4.1.0)
