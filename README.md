@@ -107,7 +107,7 @@ DailyBatchReport:
   cron: "0 3 * * *"
   # This job will be run every day at 03:00 as normal.
   # However, the "schedule_type: every_event" setting below will ensure that if workers are offline
-  # for any amount of time then the bcaklog will always be enqueued on recovery.
+  # for any amount of time then the backlog will always be enqueued on recovery.
   # See "Schedule types" below for more information.
   schedule_type: every_event
 ```
