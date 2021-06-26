@@ -205,6 +205,10 @@ RSpec.describe Que::Scheduler::SchedulerJob do
 
   def expect_job_args_to_equal(args, to_equal)
     args_sym = JSON.parse(args.to_json, symbolize_names: true)
+    # Remove the ActiveJob noise
+    if args_sym.is_a?(Array) && args_sym[0].is_a?(Hash)
+      args_sym[0] = args_sym[0].except(:_aj_ruby2_keywords)
+    end
     expect(args_sym).to eq(to_equal)
   end
 end
