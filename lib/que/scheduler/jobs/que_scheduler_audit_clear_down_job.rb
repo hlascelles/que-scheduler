@@ -36,7 +36,7 @@ module Que
             # This will delete all but `retain_row_count` oldest rows
             count = Que::Scheduler::VersionSupport.execute(DELETE_AUDIT_SQL, [retain_row_count])
             log = "#{self.class} cleared down #{count.first.fetch(:count)} rows"
-            ::Que.log(event: "que-scheduler".to_sym, message: log)
+            ::Que.log(event: :"que-scheduler", message: log)
           end
         end
       end
