@@ -33,7 +33,7 @@ module Que
             scheduler_job_args, scheduler_job_args.as_time, result.job_dictionary, enqueued_jobs
           )
           # Only now we're sure nothing errored, log the results
-          logs.each { |str| ::Que.log(event: "que-scheduler".to_sym, message: str) }
+          logs.each { |str| ::Que.log(event: :"que-scheduler", message: str) }
         end
       end
 
@@ -50,11 +50,11 @@ module Que
       def check_enqueued_job(to_enqueue, enqueued_job, logs)
         logs << if enqueued_job.present?
                   "que-scheduler enqueueing #{enqueued_job.job_class} " \
-                              "#{enqueued_job.job_id} with args: #{enqueued_job.args}"
+                    "#{enqueued_job.job_id} with args: #{enqueued_job.args}"
                 else
                   # This can happen if a middleware nixes the enqueue call
                   "que-scheduler called enqueue on #{to_enqueue.job_class} " \
-                              "but it reported no job was scheduled. Has `enqueue` been overridden?"
+                    "but it reported no job was scheduled. Has `enqueue` been overridden?"
                 end
       end
 
