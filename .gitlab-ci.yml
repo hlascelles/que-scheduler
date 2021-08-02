@@ -38,13 +38,6 @@ stages:
     - unknown_failure
     - api_failure
 
-.ruby_2_5: &ruby_2_5
-  <<: *retries
-  image: ruby:2.5
-  cache:
-    key: ruby_2_5
-    <<: *cache_paths
-
 .ruby_2_6: &ruby_2_6
   <<: *retries
   image: ruby:2.6
@@ -73,10 +66,6 @@ stages:
   script:
   - echo "Gems installed..."
 
-install_ruby_2_5:
-  <<: *install
-  <<: *ruby_2_5
-
 install_ruby_2_6:
   <<: *install
   <<: *ruby_2_6
@@ -86,15 +75,10 @@ install_ruby_2_7:
   <<: *ruby_2_7
 
 quality:
-  <<: *ruby_2_5
+  <<: *ruby_2_6
   stage: quality
   script:
   - "./quality.sh"
-
-ruby_2_5_postgres_9_5:
-  <<: *test
-  <<: *ruby_2_5
-  <<: *postgres_9_5
 
 ruby_2_6_postgres_9_5:
   <<: *test
