@@ -1,3 +1,4 @@
+# rubocop:disable Gemspec/RequiredRubyVersion 2.5 may work, but is unsupported
 lib = File.expand_path("lib", __dir__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require "que/scheduler/version"
@@ -23,7 +24,6 @@ Gem::Specification.new do |spec|
 
   spec.files = Dir["{lib}/**/*"] + ["README.md"]
   spec.require_paths = ["lib"]
-  spec.required_ruby_version = ">= 2.5"
 
   spec.add_dependency "activesupport", ">= 5.0"
   spec.add_dependency "fugit", "~> 1.1", ">= 1.1.8" # 1.1.8 fixes "disallow zero months in cron"
@@ -49,3 +49,4 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "zonebie"
   # rubocop:enable Layout/HashAlignment
 end
+# rubocop:enable Gemspec/RequiredRubyVersion

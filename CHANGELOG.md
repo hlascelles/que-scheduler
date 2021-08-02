@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Remove support for Ruby 2.5 [#281](https://github.com/hlascelles/que-scheduler/pull/281)
 - Add tests for Ruby 2.7 [#272](https://github.com/hlascelles/que-scheduler/pull/272)
 
 ## 4.1.0 (2021-01-31)
