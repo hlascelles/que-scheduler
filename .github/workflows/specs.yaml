@@ -1,0 +1,36 @@
+name: Specs
+on: [pull_request]
+jobs:
+  appraisal:
+    name: appraisal
+    runs-on: ubuntu-latest
+    strategy:
+       fail-fast: false
+       matrix:
+         os: [ubuntu]
+         ruby: [2.6, 2.7]
+    services:
+      postgres:
+        image: postgres:9.5
+        env:
+          POSTGRES_DB: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_USER: postgres
+        ports:
+          - 5432:5432
+        # Set health checks to wait until postgres has started
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - name: Check out code.
+        uses: actions/checkout@v1
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby }}
+      - run: bundle check || bundle install
+      - run: bundle exec appraisal install
+      - name: appraisal
+        run: bundle exec appraisal rspec

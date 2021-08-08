@@ -10,7 +10,7 @@ module DbSupport
         adapter: "postgresql",
         database: testing_db,
         username: "postgres",
-        password: ENV.fetch("DB_PASSWORD"),
+        password: ENV.fetch("DB_PASSWORD", "postgres"),
         host: ENV.fetch("DB_HOST", "127.0.0.1"),
         port: ENV.fetch("DB_PORT", 5432),
         reconnect: true,

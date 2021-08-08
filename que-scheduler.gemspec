@@ -34,11 +34,12 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "appraisal"
   spec.add_development_dependency "climate_control"
   spec.add_development_dependency "combustion"
-  spec.add_development_dependency "coveralls"
+  spec.add_development_dependency "coveralls_reborn"
   spec.add_development_dependency "database_cleaner"
   spec.add_development_dependency "fasterer"
   spec.add_development_dependency "pg", "~> 0.21"
   spec.add_development_dependency "pry-byebug"
+  spec.add_development_dependency "psych", "3.1.0" # Default version in dev ruby
   spec.add_development_dependency "rake"
   spec.add_development_dependency "reek"
   spec.add_development_dependency "rspec"
