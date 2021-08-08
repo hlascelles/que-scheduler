@@ -9,7 +9,7 @@ module IntegrationSetup
         database: "integration_test_db",
         username: "postgres",
         password: "postgres",
-        host: ENV["CI"] ? "postgres" : "127.0.0.1",
+        host: "127.0.0.1",
         port: ENV["CI"] ? 5432 : 5430,
         reconnect: true,
       }.stringify_keys

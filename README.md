@@ -2,7 +2,6 @@ que-scheduler
 ================
 
 [![Gem Version](https://badge.fury.io/rb/que-scheduler.svg)](https://badge.fury.io/rb/que-scheduler)
-[![Build status](https://gitlab.com/hlascelles/que-scheduler/badges/master/pipeline.svg)](https://gitlab.com/hlascelles/que-scheduler/pipelines)
 [![Coverage Status](https://coveralls.io/repos/github/hlascelles/que-scheduler/badge.svg?branch=master)](https://coveralls.io/github/hlascelles/que-scheduler?branch=master)
 [![Code Climate Maintainability](https://api.codeclimate.com/v1/badges/710d2fc5202f95d76e8a/maintainability)](https://codeclimate.com/github/hlascelles/que-scheduler/maintainability)
 
