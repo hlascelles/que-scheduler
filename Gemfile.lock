@@ -114,7 +114,7 @@ GEM
       rake (>= 0.13)
       thor (~> 1.0)
     rainbow (3.0.0)
-    rake (13.0.3)
+    rake (13.0.6)
     reek (6.0.5)
       kwalify (~> 0.7.0)
       parser (~> 3.0.0)
