@@ -39,7 +39,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "fasterer"
   spec.add_development_dependency "pg", "~> 0.21"
   spec.add_development_dependency "pry-byebug"
-  spec.add_development_dependency "psych", "3.1.0" # Default version in dev ruby
+  spec.add_development_dependency "psych", "3.3.2" # Default version in dev ruby
   spec.add_development_dependency "rake"
   spec.add_development_dependency "reek"
   spec.add_development_dependency "rspec"
