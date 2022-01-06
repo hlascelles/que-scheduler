@@ -5,7 +5,7 @@ PATH
       activesupport (>= 5.0)
       fugit (~> 1.1, >= 1.1.8)
       hashie (>= 3, < 5)
-      que (>= 0.12, <= 1.0.0.beta4)
+      que (>= 0.12, <= 1.0.0.beta5)
 
 GEM
   remote: https://rubygems.org/
@@ -101,7 +101,7 @@ GEM
       byebug (~> 11.0)
       pry (~> 0.13.0)
     psych (3.1.0)
-    que (1.0.0.beta4)
+    que (1.0.0.beta5)
     raabro (1.4.0)
     racc (1.5.2)
     rack (2.2.3)
@@ -195,7 +195,7 @@ DEPENDENCIES
   pg (~> 0.21)
   pry-byebug
   psych (= 3.1.0)
-  que (= 1.0.0.beta4)
+  que (= 1.0.0.beta5)
   que-scheduler!
   rake
   reek

@@ -3,7 +3,7 @@
 source "https://rubygems.org"
 
 gem "activesupport", "~> 5.0"
-gem "que", "1.0.0.beta4"
+gem "que", "1.0.0.beta5"
 gem "activejob", "~> 5.0"
 
 gemspec path: "../"
