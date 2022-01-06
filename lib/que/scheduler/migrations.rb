@@ -59,7 +59,7 @@ module Que
         end
 
         def execute_step(number, direction)
-          sql = IO.read("#{__dir__}/migrations/#{number}/#{direction}.sql")
+          sql = File.read("#{__dir__}/migrations/#{number}/#{direction}.sql")
           Que::Scheduler::VersionSupport.execute(sql)
           return unless audit_table_exists?
 

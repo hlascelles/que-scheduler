@@ -27,7 +27,7 @@ module Que
         end
 
         def from_file(location)
-          from_yaml(IO.read(location))
+          from_yaml(File.read(location))
         end
 
         def from_yaml(config)
@@ -36,10 +36,10 @@ module Que
         end
 
         def from_hash(config_hash)
-          config_hash.map do |name, defined_job_hash|
+          config_hash.to_h do |name, defined_job_hash|
             name_str = name.to_s
             [name_str, hash_item_to_defined_job(name_str, defined_job_hash)]
-          end.to_h
+          end
         end
 
         def hash_item_to_defined_job(name, defined_job_hash_in)

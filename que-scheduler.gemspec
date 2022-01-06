@@ -1,4 +1,3 @@
-# rubocop:disable Gemspec/RequiredRubyVersion 2.5 may work, but is unsupported
 lib = File.expand_path("lib", __dir__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require "que/scheduler/version"
@@ -20,6 +19,7 @@ Gem::Specification.new do |spec|
     "changelog_uri"     => "https://github.com/hlascelles/que-scheduler/blob/master/CHANGELOG.md",
     "source_code_uri"   => "https://github.com/hlascelles/que-scheduler/",
     "bug_tracker_uri"   => "https://github.com/hlascelles/que-scheduler/issues",
+    "rubygems_mfa_required" => "true",
   }
 
   spec.files = Dir["{lib}/**/*"] + ["README.md"]
@@ -30,7 +30,8 @@ Gem::Specification.new do |spec|
   spec.add_dependency "hashie", ">= 3", "< 6"
   spec.add_dependency "que", ">= 0.12", "<= 1.0.0.beta5"
 
-  spec.add_development_dependency "activerecord", ">= 5.0"
+  # Keep Rails below 7 for now, as we want to support ruby 2.6 in tests
+  spec.add_development_dependency "activerecord", ">= 5.0", "< 7.0"
   spec.add_development_dependency "appraisal"
   spec.add_development_dependency "climate_control"
   spec.add_development_dependency "combustion"
@@ -50,4 +51,3 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "zonebie"
   # rubocop:enable Layout/HashAlignment
 end
-# rubocop:enable Gemspec/RequiredRubyVersion
