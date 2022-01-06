@@ -19,7 +19,6 @@ Gem::Specification.new do |spec|
     "changelog_uri"     => "https://github.com/hlascelles/que-scheduler/blob/master/CHANGELOG.md",
     "source_code_uri"   => "https://github.com/hlascelles/que-scheduler/",
     "bug_tracker_uri"   => "https://github.com/hlascelles/que-scheduler/issues",
-    "rubygems_mfa_required" => "true",
   }
 
   spec.files = Dir["{lib}/**/*"] + ["README.md"]
