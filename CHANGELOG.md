@@ -1,9 +1,10 @@
-## Unreleased
+## 4.2.0 (2022-01-06)
 
 - Move to Github actions [#283](https://github.com/hlascelles/que-scheduler/pull/283)
 - Remove support for Ruby 2.5 [#281](https://github.com/hlascelles/que-scheduler/pull/281)
 - Add tests for Ruby 2.7 [#272](https://github.com/hlascelles/que-scheduler/pull/272)
-
+- Add support for que 1.0.0.beta5 [#303](https://github.com/hlascelles/que-scheduler/pull/303)
+  
 ## 4.1.0 (2021-01-31)
 
 - Check for row count option using String and Symbols [#236](https://github.com/hlascelles/que-scheduler/pull/236)
