@@ -28,7 +28,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency "activesupport", ">= 5.0"
   spec.add_dependency "fugit", "~> 1.1", ">= 1.1.8" # 1.1.8 fixes "disallow zero months in cron"
   spec.add_dependency "hashie", ">= 3", "< 6"
-  spec.add_dependency "que", ">= 0.12", "<= 1.0.0.beta5"
+  spec.add_dependency "que", ">= 0.12", "<= 2.0.0"
 
   # Keep Rails below 7 for now, as we want to support ruby 2.6 in tests
   spec.add_development_dependency "activerecord", ">= 5.0", "< 7.0"

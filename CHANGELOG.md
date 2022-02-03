@@ -1,3 +1,7 @@
+## 4.2.1 (2022-02-02)
+
+- Add support for que 1.0.0 [#308](https://github.com/hlascelles/que-scheduler/pull/308)
+
 ## 4.2.0 (2022-01-06)
 
 - Move to Github actions [#283](https://github.com/hlascelles/que-scheduler/pull/283)
