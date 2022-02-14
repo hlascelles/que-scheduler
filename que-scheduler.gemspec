@@ -31,7 +31,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency "que", ">= 0.12", "<= 2.0.0"
 
   # Keep Rails below 7 for now, as we want to support ruby 2.6 in tests
-  spec.add_development_dependency "activerecord", ">= 5.0", "< 7.0"
+  spec.add_development_dependency "activerecord", ">= 5.0", "< 8.0"
   spec.add_development_dependency "appraisal"
   spec.add_development_dependency "climate_control"
   spec.add_development_dependency "combustion"
