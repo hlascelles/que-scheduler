@@ -86,7 +86,7 @@ module Que
         # queue name is only supported for a subrange of ActiveJob versions. Print this out as a
         # warning.
         if queue &&
-           Que::Scheduler::ToEnqueue.active_job_loaded? &&
+           Que::Scheduler::ToEnqueue.active_job_defined? &&
            job_class < ::ActiveJob::Base &&
            Que::Scheduler::ToEnqueue.active_job_version < Gem::Version.create("6.0.3")
           puts <<~ERR
