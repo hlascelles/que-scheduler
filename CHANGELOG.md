@@ -1,3 +1,7 @@
+## Unreleased
+
+- Ensure migration error message is reported correctly under new versions of Que [#316](https://github.com/hlascelles/que-scheduler/pull/316)
+
 ## 4.2.1 (2022-02-02)
 
 - Add support for que 1.0.0 [#308](https://github.com/hlascelles/que-scheduler/pull/308)
