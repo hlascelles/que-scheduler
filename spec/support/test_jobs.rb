@@ -13,7 +13,7 @@ ALL_TEST_JOB_NAMES = %w[
 
 ALL_TEST_JOB_NAMES.each do |name|
   clazz =
-    if Que::Scheduler::ToEnqueue.active_job_loaded?
+    if Que::Scheduler::ToEnqueue.active_job_defined?
 
       Class.new(::ActiveJob::Base) do
         self.queue_adapter = :que

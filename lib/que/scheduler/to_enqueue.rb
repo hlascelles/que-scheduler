@@ -22,8 +22,8 @@ module Que
           type_from_job_class(job_class).present?
         end
 
-        def active_job_loaded?
-          !!active_job_version
+        def active_job_defined?
+          Object.const_defined?("ActiveJob")
         end
 
         def active_job_version
@@ -54,7 +54,7 @@ module Que
               hash = {
                 ::Que::Job => QueJobType,
               }
-              hash[::ActiveJob::Base] = ActiveJobType if ToEnqueue.active_job_loaded?
+              hash[::ActiveJob::Base] = ActiveJobType if ToEnqueue.active_job_defined?
               hash
             end
         end
