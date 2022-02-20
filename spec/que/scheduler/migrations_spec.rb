@@ -145,6 +145,16 @@ RSpec.describe Que::Scheduler::Migrations do
     end
   end
 
+  describe "6 up" do
+    it "errors correctly if the scheduler job is deleted" do
+      ::Que::Scheduler::SchedulerJob.enqueue
+      Que::Scheduler::VersionSupport.execute("DELETE FROM que_jobs")
+      expect {
+        Que::Scheduler::VersionSupport.execute("COMMIT")
+      }.to raise_error(/Deletion of que_scheduler job prevented/)
+    end
+  end
+
   describe "DB health" do
     it "has no duplicate indices" do
       # From https://wiki.postgresql.org/wiki/Index_Maintenance
