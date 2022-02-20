@@ -1,5 +1,11 @@
 require "bundler/setup"
 
+if RUBY_VERSION.start_with?("3") && Gem.loaded_specs["activesupport"].version.to_s.start_with?("5")
+  puts "Rails 5 does not work with Ruby 3"
+  # Allow the CI to continue the ruby test matrix
+  exit ENV["CI"] == "true" ? 0 : 1
+end
+
 require "pry-byebug"
 require "coveralls"
 Coveralls.wear!

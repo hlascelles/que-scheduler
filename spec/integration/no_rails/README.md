@@ -9,4 +9,4 @@ First start a postgres docker container with:
 
 Then run: 
 
-`ruby app.rb`
+`ruby simple_test.rb`

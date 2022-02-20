@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Add support for Ruby 3.0 [#317](https://github.com/hlascelles/que-scheduler/pull/317)
 - Ensure migration error message is reported correctly under new versions of Que [#316](https://github.com/hlascelles/que-scheduler/pull/316)
 - Check ActiveJob is defined [#315](https://github.com/hlascelles/que-scheduler/pull/315)
 
