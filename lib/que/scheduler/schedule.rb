@@ -39,7 +39,6 @@ module Que
           config_hash
             .map { |name, defined_job_hash|  hash_item_to_defined_job(name.to_s, defined_job_hash) }
             .index_by(&:name)
-          end
         end
 
         def hash_item_to_defined_job(name, defined_job_hash_in)
