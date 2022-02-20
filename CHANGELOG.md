@@ -1,6 +1,7 @@
 ## Unreleased
 
 - Ensure migration error message is reported correctly under new versions of Que [#316](https://github.com/hlascelles/que-scheduler/pull/316)
+- Check ActiveJob is defined [#315](https://github.com/hlascelles/que-scheduler/pull/315)
 
 ## 4.2.1 (2022-02-02)
 
