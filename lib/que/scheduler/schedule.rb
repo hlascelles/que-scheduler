@@ -36,9 +36,9 @@ module Que
         end
 
         def from_hash(config_hash)
-          config_hash.to_h do |name, defined_job_hash|
-            name_str = name.to_s
-            [name_str, hash_item_to_defined_job(name_str, defined_job_hash)]
+          config_hash
+            .map { |name, defined_job_hash|  hash_item_to_defined_job(name.to_s, defined_job_hash) }
+            .index_by(&:name)
           end
         end
 
