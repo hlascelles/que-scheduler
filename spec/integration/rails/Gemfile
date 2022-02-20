@@ -5,5 +5,5 @@ gem "bootsnap"
 gem "listen"
 gem "pg", "< 1.0"
 gem "que", ENV.fetch("QUE_VERSION")
-gem "que-scheduler", "3.2.7"
+gem "que-scheduler", path: "../../../../"
 gem "rails", ENV.fetch("RAILS_VERSION")

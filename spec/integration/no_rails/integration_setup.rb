@@ -57,7 +57,7 @@ module IntegrationSetup
         source "https://rubygems.org"
         gem "que", ENV.fetch("QUE_VERSION") { ENV["CI"] ? "MISSING IN CI!" : "0.14.3" }
         gem "que-scheduler", path: "../../../"
-        gem "activerecord", "~> 5.2"
+        gem "activerecord", ENV.fetch("ACTIVE_RECORD_VERSION")
         gem "pg"
         gem "pry-byebug"
       end
