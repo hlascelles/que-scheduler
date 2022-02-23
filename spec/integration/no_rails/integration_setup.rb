@@ -2,6 +2,7 @@ module IntegrationSetup
   class << self
     def setup_db
       inline_bundler_setup
+      apply_patches
 
       # Migrations
       db_config = {
@@ -86,6 +87,22 @@ module IntegrationSetup
         SET args = '#{args.to_json}'
         WHERE job_class = 'Que::Scheduler::SchedulerJob'
       SQL
+    end
+
+    def apply_patches
+      # Check if we need the patch to support Que 0.x / Rails 6
+      return unless Que::Scheduler::VersionSupport.zero_major? &&
+                    Gem.loaded_specs["activesupport"].version.to_s.start_with?("6")
+
+      puts "Que 0.x with rails 6 needs a patch to work"
+      # https://github.com/que-rb/que/issues/247
+      Que::Adapters::Base::CAST_PROCS[1184] = lambda do |value|
+        case value
+        when Time then value
+        when String then Time.parse(value)
+        else raise "Unexpected time class: #{value.class} (#{value.inspect})"
+        end
+      end
     end
   end
 end
