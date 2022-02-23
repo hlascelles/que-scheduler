@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    que-scheduler (4.2.1)
+    que-scheduler (4.2.2)
       activesupport (>= 5.0)
       fugit (~> 1.1, >= 1.1.8)
       hashie (>= 3, < 6)
@@ -96,7 +96,7 @@ GEM
       byebug (~> 11.0)
       pry (~> 0.13.0)
     psych (3.1.0)
-    que (1.1.0)
+    que (1.2.0)
     raabro (1.4.0)
     racc (1.6.0)
     rack (2.2.3)
