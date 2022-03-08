@@ -162,7 +162,7 @@ GEM
     term-ansicolor (1.7.1)
       tins (~> 1.0)
     thor (1.2.1)
-    timecop (0.9.4)
+    timecop (0.9.5)
     tins (1.31.0)
       sync
     tzinfo (2.0.4)
