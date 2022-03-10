@@ -33,7 +33,7 @@ module Que
             scheduler_job_args, scheduler_job_args.as_time, result.job_dictionary, enqueued_jobs
           )
           # Only now we're sure nothing errored, log the results
-          logs.each { |str| ::Que.log(event: :"que-scheduler", message: str) }
+          logs.each { |str| ::Que.log(level: :debug, event: :"que-scheduler", message: str) }
         end
       end
 
