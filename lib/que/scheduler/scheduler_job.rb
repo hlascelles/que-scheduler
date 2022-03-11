@@ -66,10 +66,12 @@ module Que
         # And rerun...
         next_run_at = scheduler_job_args.as_time.beginning_of_minute + SCHEDULER_FREQUENCY
         enqueued_job = SchedulerJob.enqueue(
-          queue: Que::Scheduler.configuration.que_scheduler_queue,
-          last_run_time: last_full_execution.iso8601,
-          job_dictionary: job_dictionary,
-          run_at: next_run_at
+          job_options: {
+            queue: Que::Scheduler.configuration.que_scheduler_queue,
+            last_run_time: last_full_execution.iso8601,
+            job_dictionary: job_dictionary,
+            run_at: next_run_at,
+          }
         )
 
         # rubocop:disable Style/GuardClause This reads better as a conditional
