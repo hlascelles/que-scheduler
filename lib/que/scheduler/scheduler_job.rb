@@ -68,10 +68,10 @@ module Que
         enqueued_job = SchedulerJob.enqueue(
           job_options: {
             queue: Que::Scheduler.configuration.que_scheduler_queue,
-            last_run_time: last_full_execution.iso8601,
-            job_dictionary: job_dictionary,
             run_at: next_run_at,
-          }
+          },
+          last_run_time: last_full_execution.iso8601,
+          job_dictionary: job_dictionary,
         )
 
         # rubocop:disable Style/GuardClause This reads better as a conditional
