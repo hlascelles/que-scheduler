@@ -310,15 +310,14 @@ A full changelog can be found here: [CHANGELOG.md](https://github.com/hlascelles
 
 Your [postgres](https://www.postgresql.org/) database must be at least version 9.5.0.
 
-Ruby 2.6 and 2.7 are supported. Ruby 2.5 currently still works but is unsupported.
+The latest version of que-scheduler supports Ruby 2.7, though this is largely to allow
+the gem to work with que 2.x. Recent que-scheduler versions (up to 4.2.2) work with Ruby 2.5.
 
-Ruby 3.x (and this que 2.x) are not yet supported. Once the main que PR (https://github.com/que-rb/que/pull/319)
-has been merged and released, support will be added in this gem. 
+Ruby 3.x support (and thus que 2.x support) is currently in beta. 
 
 Using que 0.x with Rails 6 needs a patch to support it. 
 See the patch and how to use it here: https://github.com/que-rb/que/issues/247#issuecomment-595258236
 If that patch is included then que-scheduler will work. This setup is tested, but is not supported.
-
 
 ## Inspiration
 

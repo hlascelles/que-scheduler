@@ -25,12 +25,14 @@ Gem::Specification.new do |spec|
   spec.files = Dir["{lib}/**/*"] + ["README.md"]
   spec.require_paths = ["lib"]
 
+  # Que v2.x requires 2.7 and above
+  spec.required_ruby_version = ">= 2.7"
+
   spec.add_dependency "activesupport", ">= 5.0"
   spec.add_dependency "fugit", "~> 1.1", ">= 1.1.8" # 1.1.8 fixes "disallow zero months in cron"
   spec.add_dependency "hashie", ">= 3", "< 6"
-  spec.add_dependency "que", ">= 0.12", "<= 2.0.0"
+  spec.add_dependency "que", ">= 0.14", "<= 2.0.0"
 
-  # Keep Rails below 7 for now, as we want to support ruby 2.6 in tests
   spec.add_development_dependency "activerecord", ">= 5.0", "< 7.0"
   spec.add_development_dependency "appraisal"
   spec.add_development_dependency "climate_control"
