@@ -1,6 +1,10 @@
+## Unreleased
+
+- Remove Ruby 2.5, Ruby 2.6 and Que 0.12.x support [#334](https://github.com/hlascelles/que-scheduler/pull/334)
+
 ## 4.2.2 (2022-02-23)
 
-- Add 2.5 functionality and more tests [#320](https://github.com/hlascelles/que-scheduler/pull/320)
+- Add Ruby 2.5 functionality and more tests [#320](https://github.com/hlascelles/que-scheduler/pull/320)
 - Add support for Ruby 3.0 [#317](https://github.com/hlascelles/que-scheduler/pull/317)
 - Ensure migration error message is reported correctly under new versions of Que [#316](https://github.com/hlascelles/que-scheduler/pull/316)
 - Check ActiveJob is defined [#315](https://github.com/hlascelles/que-scheduler/pull/315)

@@ -110,13 +110,13 @@ RSpec.describe Que::Scheduler::VersionSupport do
       end
 
       it "returns the value" do
-        expect(described_class.running_synchronously?).to eq(true)
+        expect(described_class.running_synchronously?).to be(true)
       end
     end
 
     context "when false" do
       it "returns the value" do
-        expect(described_class.running_synchronously?).to eq(false)
+        expect(described_class.running_synchronously?).to be(false)
       end
     end
   end
