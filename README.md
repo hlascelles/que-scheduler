@@ -27,7 +27,7 @@ resque-scheduler files, but with additional features.
     ```ruby
     class CreateQueSchedulerSchema < ActiveRecord::Migration
       def change
-        Que::Scheduler::Migrations.migrate!(version: 6)
+        Que::Scheduler::Migrations.migrate!(version: 7)
       end
     end
     ```
@@ -211,7 +211,7 @@ performed.
 ```ruby
 class CreateQueSchedulerSchema < ActiveRecord::Migration
   def change
-    Que::Scheduler::Migrations.migrate!(version: 6)
+    Que::Scheduler::Migrations.migrate!(version: 7)
   end
 end
 ```
