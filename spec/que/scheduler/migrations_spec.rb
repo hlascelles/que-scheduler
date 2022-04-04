@@ -16,6 +16,10 @@ RSpec.describe Que::Scheduler::Migrations do
       ::Que::Scheduler::SchedulerJob.enqueue
       ::Que::Scheduler::StateChecks.check
 
+      expect(described_class.db_version).to eq(7)
+
+      # Check 7 change down
+      described_class.migrate!(version: 6)
       expect(described_class.db_version).to eq(6)
 
       migration_5_index = "index_que_scheduler_audit_on_scheduler_job_id"
@@ -109,6 +113,10 @@ RSpec.describe Que::Scheduler::Migrations do
       check_index_existence(migration_6_index, false)
       described_class.migrate!(version: 6)
       check_index_existence(migration_6_index, true)
+
+      # Check 7 change up
+      described_class.migrate!(version: 7)
+      expect(described_class.db_version).to eq(7)
 
       Que::Scheduler::StateChecks.check
     end

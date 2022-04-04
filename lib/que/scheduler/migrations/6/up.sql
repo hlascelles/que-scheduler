@@ -13,7 +13,7 @@ DECLARE
 BEGIN
     IF OLD.job_class = 'Que::Scheduler::SchedulerJob' THEN
         IF NOT que_scheduler_check_job_exists() THEN
-            raise exception 'Deletion of que_scheduler job prevented. Deleting the que_scheduler job is almost certainly a mistake.';
+            raise exception 'Deletion of que_scheduler job % prevented. Deleting the que_scheduler job is almost certainly a mistake.', OLD.job_id;
         END IF;
     END IF;
     RETURN OLD;
