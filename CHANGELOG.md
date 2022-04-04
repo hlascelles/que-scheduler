@@ -1,4 +1,4 @@
-## Unreleased
+## 4.3.0 (2022-04-04)
 
 - Formalise que_scheduler_check_job_exists function change [#334](https://github.com/hlascelles/que-scheduler/pull/335)
 - Remove Ruby 2.5, Ruby 2.6 and Que 0.12.x support [#334](https://github.com/hlascelles/que-scheduler/pull/334)
