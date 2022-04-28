@@ -1,3 +1,7 @@
+## 4.3.1 (2022-04-28)
+
+- Que 2.0 beta support and remove warning log lines in Que 1.4 [#332](https://github.com/hlascelles/que-scheduler/pull/332)
+
 ## 4.3.0 (2022-04-04)
 
 - Formalise que_scheduler_check_job_exists function change [#334](https://github.com/hlascelles/que-scheduler/pull/335)
