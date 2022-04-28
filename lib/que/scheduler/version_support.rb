@@ -47,6 +47,25 @@ module Que
           normalise_array_of_hashes(Que.execute(str, args))
         end
 
+        # rubocop:disable Style/IfInsideElse
+        def enqueue_a_job(clazz, job_options = {}, job_args = [])
+          if supports_job_options_keyword?
+            # More recent versions have separated the way job arguments and options are passed in
+            if job_args.is_a?(Hash)
+              clazz.enqueue(job_args, job_options: job_options)
+            else
+              clazz.enqueue(*job_args, job_options: job_options)
+            end
+          else
+            if job_args.is_a?(Hash)
+              clazz.enqueue(**job_args.merge(job_options))
+            else
+              clazz.enqueue(*job_args, **job_options)
+            end
+          end
+        end
+
+        # rubocop:enable Style/IfInsideElse
         def default_scheduler_queue
           zero_major? ? "" : Que::DEFAULT_QUEUE
         end
@@ -64,11 +83,24 @@ module Que
           @zero_major ||= que_version.split(".").first.to_i.zero?
         end
 
+        def one_major?
+          # This is the only way to handle beta releases too
+          @one_major ||= que_version.split(".").first.to_i == 1
+        end
+
         def que_version
-          @que_version ||= Gem.loaded_specs["que"].version.to_s
+          @que_version ||= que_version_object.to_s
         end
 
         private
+
+        def supports_job_options_keyword?
+          @supports_job_options_keyword ||= que_version_object >= Gem::Version.new("1.2.0")
+        end
+
+        def que_version_object
+          @que_version_object ||= Gem.loaded_specs["que"].version
+        end
 
         def normalise_array_of_hashes(array)
           array.map { |row| row.to_h.transform_keys(&:to_sym) }

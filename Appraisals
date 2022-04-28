@@ -60,3 +60,8 @@ appraise "activesupport-6-with-queue-names-que-1-x-activejob" do
   gem "que", "1.4.0"
   gem "activejob", "~> 6.0.3"
 end
+
+appraise "activesupport-6-que-2-x" do
+  gem "activesupport", "~> 6.0.3"
+  gem "que", "2.0.0.beta1"
+end

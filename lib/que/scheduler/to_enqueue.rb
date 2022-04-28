@@ -65,12 +65,11 @@ module Que
     class QueJobType < ToEnqueue
       def enqueue
         job_settings = to_h.slice(:queue, :priority, :run_at).compact
-        job =
-          if args.is_a?(Hash)
-            job_class.enqueue(**args.merge(job_settings))
-          else
-            job_class.enqueue(*args, **job_settings)
-          end
+        job = Que::Scheduler::VersionSupport.enqueue_a_job(
+          job_class,
+          job_settings,
+          args
+        )
 
         return nil if job.nil? || !job # nil in Rails < 6.1, false after.
 
