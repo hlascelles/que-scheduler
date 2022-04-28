@@ -1,8 +1,7 @@
 name: Reviewdog
 on: [pull_request]
 jobs:
-  rubocop:
-    name: runner / rubocop
+  quality:
     runs-on: ubuntu-latest
     steps:
       - name: Check out code
@@ -10,44 +9,8 @@ jobs:
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: 3.0.0
-      - name: rubocop
-        uses: reviewdog/action-rubocop@v1
-        with:
-          rubocop_version: gemfile
-          rubocop_extensions: rubocop-rails:gemfile rubocop-rspec:gemfile
-          github_token: ${{ secrets.github_token }}
-          reporter: github-pr-review # Default is github-pr-check
-          fail_on_error: true
-          level: warning
-
-  reek:
-    name: runner / reek
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out code
-        uses: actions/checkout@v1
-      - uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: 3.0.0
-      - name: reek
-        uses: reviewdog/action-reek@v1
-        with:
-          reek_version: gemfile
-          github_token: ${{ secrets.github_token }}
-          reporter: github-pr-review # Default is github-pr-check
-          fail_on_error: true
-
-  fasterer:
-    name: runner / fasterer
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out code
-        uses: actions/checkout@v1
-      - name: fasterer
-        uses: vk26/action-fasterer@v1
-        with:
-          github_token: ${{ secrets.github_token }}
-          reporter: github-pr-review # Default is github-pr-check
+      - run: bundle check || bundle install
+      - run: ./quality.sh
 
   shellcheck:
     name: runner / shellcheck
