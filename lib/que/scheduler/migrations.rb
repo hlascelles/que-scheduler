@@ -43,13 +43,17 @@ module Que
 
         # This method is only intended for use in squashed migrations
         def reenqueue_scheduler_if_missing
-          Que::Scheduler::SchedulerJob.enqueue if Que::Scheduler::Db.count_schedulers.zero?
+          return unless Que::Scheduler::Db.count_schedulers.zero?
+
+          Que::Scheduler::VersionSupport.enqueue_a_job(Que::Scheduler::SchedulerJob)
         end
 
         private
 
         def migrate_up(current, version)
-          Que::Scheduler::SchedulerJob.enqueue if current.zero? # Version 1 does not use SQL
+          if current.zero? # Version 1 does not use SQL
+            Que::Scheduler::VersionSupport.enqueue_a_job(Que::Scheduler::SchedulerJob)
+          end
           execute_step((current += 1), :up) until current == version
         end
 

@@ -2,10 +2,9 @@ version: "2"
 
 # https://docs.codeclimate.com/docs/advanced-configuration
 checks:
+  # This is (broadly) covered by Rubocop's Cyclomatic Complexity
   method-complexity:
-    enabled: true
-    config:
-      threshold: 8
+    enabled: false
 
 plugins:
   rubocop:
