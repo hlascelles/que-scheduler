@@ -33,7 +33,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency "hashie", ">= 3", "< 6"
   spec.add_dependency "que", ">= 0.14", "<= 2.0.0"
 
-  spec.add_development_dependency "activerecord", ">= 5.0", "< 7.0"
+  spec.add_development_dependency "activerecord", ">= 5.0", "< 8.0"
   spec.add_development_dependency "appraisal"
   spec.add_development_dependency "climate_control"
   spec.add_development_dependency "combustion"
