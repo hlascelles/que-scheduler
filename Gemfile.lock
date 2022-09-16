@@ -68,7 +68,7 @@ GEM
     fasterer (0.10.0)
       colorize (~> 0.7)
       ruby_parser (>= 3.19.1)
-    fugit (1.5.3)
+    fugit (1.7.0)
       et-orbi (~> 1, >= 1.2.7)
       raabro (~> 1.4)
     hashie (5.0.0)
@@ -165,7 +165,7 @@ GEM
     timecop (0.9.5)
     tins (1.31.1)
       sync
-    tzinfo (2.0.4)
+    tzinfo (2.0.5)
       concurrent-ruby (~> 1.0)
     unicode-display_width (2.1.0)
     zeitwerk (2.6.0)
