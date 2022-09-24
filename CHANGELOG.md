@@ -1,4 +1,4 @@
-## Unreleased
+## 4.4.0 (2022-09-24)
 
 - Que 2.x support [#363](https://github.com/hlascelles/que-scheduler/pull/363)
 
