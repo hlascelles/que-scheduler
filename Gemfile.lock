@@ -5,7 +5,7 @@ PATH
       activesupport (>= 5.0)
       fugit (~> 1.1, >= 1.1.8)
       hashie (>= 3, < 6)
-      que (>= 0.14, <= 2.0.0)
+      que (>= 0.14, < 3.0.0)
 
 GEM
   remote: https://rubygems.org/
@@ -74,8 +74,9 @@ GEM
     hashie (5.0.0)
     i18n (1.12.0)
       concurrent-ruby (~> 1.0)
+    json (2.6.2)
     kwalify (0.7.2)
-    loofah (2.18.0)
+    loofah (2.19.0)
       crass (~> 1.0.2)
       nokogiri (>= 1.5.9)
     method_source (1.0.0)
@@ -85,7 +86,7 @@ GEM
       mini_portile2 (~> 2.8.0)
       racc (~> 1.4)
     parallel (1.22.1)
-    parser (3.1.2.0)
+    parser (3.1.2.1)
       ast (~> 2.4.1)
     pg (0.21.0)
     pry (0.14.1)
@@ -95,7 +96,7 @@ GEM
       byebug (~> 11.0)
       pry (>= 0.13, < 0.15)
     psych (3.1.0)
-    que (1.4.0)
+    que (2.2.0)
     raabro (1.4.0)
     racc (1.6.0)
     rack (2.2.4)
@@ -119,7 +120,7 @@ GEM
       kwalify (~> 0.7.0)
       parser (~> 3.1.0)
       rainbow (>= 2.0, < 4.0)
-    regexp_parser (2.4.0)
+    regexp_parser (2.5.0)
     rexml (3.2.5)
     rspec (3.11.0)
       rspec-core (~> 3.11.0)
@@ -127,26 +128,27 @@ GEM
       rspec-mocks (~> 3.11.0)
     rspec-core (3.11.0)
       rspec-support (~> 3.11.0)
-    rspec-expectations (3.11.0)
+    rspec-expectations (3.11.1)
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.11.0)
     rspec-mocks (3.11.1)
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.11.0)
-    rspec-support (3.11.0)
-    rubocop (1.28.2)
+    rspec-support (3.11.1)
+    rubocop (1.36.0)
+      json (~> 2.3)
       parallel (~> 1.10)
-      parser (>= 3.1.0.0)
+      parser (>= 3.1.2.1)
       rainbow (>= 2.2.2, < 4.0)
       regexp_parser (>= 1.8, < 3.0)
-      rexml
-      rubocop-ast (>= 1.17.0, < 2.0)
+      rexml (>= 3.2.5, < 4.0)
+      rubocop-ast (>= 1.20.1, < 2.0)
       ruby-progressbar (~> 1.7)
       unicode-display_width (>= 1.4.0, < 3.0)
-    rubocop-ast (1.18.0)
+    rubocop-ast (1.21.0)
       parser (>= 3.1.1.0)
-    rubocop-rspec (2.11.1)
-      rubocop (~> 1.19)
+    rubocop-rspec (2.13.1)
+      rubocop (~> 1.33)
     ruby-progressbar (1.11.0)
     ruby_parser (3.19.1)
       sexp_processor (~> 4.16)
@@ -168,7 +170,7 @@ GEM
       sync
     tzinfo (2.0.5)
       concurrent-ruby (~> 1.0)
-    unicode-display_width (2.1.0)
+    unicode-display_width (2.3.0)
     zeitwerk (2.6.0)
     zonebie (0.6.1)
 
@@ -183,7 +185,7 @@ DEPENDENCIES
   coveralls_reborn
   database_cleaner
   fasterer
-  pg (~> 0.21)
+  pg
   pry-byebug
   psych (= 3.1.0)
   que-scheduler!

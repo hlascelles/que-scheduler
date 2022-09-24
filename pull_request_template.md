@@ -21,7 +21,7 @@ You should be able to run the full test suite locally.
 In one terminal, run a postgres docker container:
 
 ```bash
-docker run -p 5430:5432 postgres:9.5.0
+docker run -p 5430:5432 postgres:9.6.0
 ```
 
 In another, run the full test suite (takes about 30 seconds)

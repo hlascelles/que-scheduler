@@ -5,5 +5,6 @@ source "https://rubygems.org"
 gem "activesupport", "~> 5.0"
 gem "que", "~> 0.14"
 gem "activejob", "~> 5.0"
+gem "pg", "~> 0.21"
 
 gemspec path: "../"

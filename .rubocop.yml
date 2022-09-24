@@ -50,6 +50,8 @@ RSpec/MessageSpies:
   Enabled: false
 RSpec/MultipleExpectations:
   Max: 5
+RSpec/NoExpectationExample:
+  Enabled: false
 RSpec/StubbedMock:
   Enabled: false
 Style/BlockDelimiters:

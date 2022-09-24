@@ -5,7 +5,7 @@ non-Rails app install works without errors, including an initial migration.
 
 First start a postgres docker container with:
 
-`docker run -p 5430:5432 postgres:9.5.0`
+`docker run -p 5430:5432 postgres:9.6.0`
 
 Then run: 
 
