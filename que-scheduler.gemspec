@@ -31,7 +31,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency "activesupport", ">= 5.0"
   spec.add_dependency "fugit", "~> 1.1", ">= 1.1.8" # 1.1.8 fixes "disallow zero months in cron"
   spec.add_dependency "hashie", ">= 3", "< 6"
-  spec.add_dependency "que", ">= 0.14", "<= 2.0.0"
+  spec.add_dependency "que", ">= 0.14", "< 3.0.0"
 
   spec.add_development_dependency "activerecord", ">= 5.0", "< 8.0"
   spec.add_development_dependency "appraisal"
@@ -40,7 +40,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "coveralls_reborn"
   spec.add_development_dependency "database_cleaner"
   spec.add_development_dependency "fasterer"
-  spec.add_development_dependency "pg", "~> 0.21"
+  spec.add_development_dependency "pg"
   spec.add_development_dependency "pry-byebug"
   spec.add_development_dependency "psych", "3.1.0" # Default version in dev ruby
   spec.add_development_dependency "rake"

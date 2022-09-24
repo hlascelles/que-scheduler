@@ -11,7 +11,7 @@ jobs:
          ruby: [2.7, 3.0, 3.1]
     services:
       postgres:
-        image: postgres:9.5
+        image: postgres:9.6
         env:
           POSTGRES_DB: postgres
           POSTGRES_PASSWORD: postgres
