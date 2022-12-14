@@ -37,7 +37,9 @@ if RUBY_VERSION.start_with?("3") && Gem.loaded_specs["activesupport"].version.to
   # rubocop:disable Style/SymbolProc
   RSpec.configure do |config|
     config.around(:each) do |example|
+      # rubocop:disable RSpec/PendingWithoutReason Rails 5 does not work with Ruby 3
       example.skip
+      # rubocop:enable RSpec/PendingWithoutReason
     end
   end
   # rubocop:enable Style/SymbolProc
