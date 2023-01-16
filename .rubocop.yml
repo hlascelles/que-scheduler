@@ -68,6 +68,8 @@ Style/SlicingWithRange:
   Enabled: true
 Style/NumericLiterals:
   Enabled: false
+Style/RedundantConstantBase:
+  Enabled: false # We refer to ::Que a lot
 Style/TrailingCommaInArguments:
   Enabled: false
 Style/TrailingCommaInArrayLiteral:
