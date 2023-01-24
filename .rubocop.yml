@@ -44,6 +44,8 @@ RSpec/AnyInstance:
   Enabled: false
 RSpec/ExampleLength:
   Max: 50
+RSpec/ExpectInHook:
+  Enabled: false
 RSpec/HookArgument:
   Enabled: false
 RSpec/MessageSpies:

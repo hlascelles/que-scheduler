@@ -63,9 +63,7 @@ RSpec.configure do |config|
   end
 
   config.before do
-    if Que::Scheduler::Schedule.instance_variable_defined?("@schedule")
-      Que::Scheduler::Schedule.remove_instance_variable("@schedule")
-    end
+    Dememoize.remove_instance_variable_if_defined(Que::Scheduler::Schedule, "@schedule")
     Que::Scheduler.apply_defaults
     Que::Scheduler.configure do |scheduler_config|
       scheduler_config.schedule_location = "#{__dir__}/config/que_schedule.yml"

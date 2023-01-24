@@ -120,4 +120,40 @@ RSpec.describe Que::Scheduler::VersionSupport do
       end
     end
   end
+
+  describe "major checks" do
+    before(:each) do
+      Dememoize.remove_instance_variable_if_defined(described_class, "@zero_major")
+      Dememoize.remove_instance_variable_if_defined(described_class, "@one_major")
+      Dememoize.remove_instance_variable_if_defined(described_class, "@que_version")
+    end
+
+    context "when not one" do
+      before do
+        expect(described_class).to receive(:que_version).and_return("0.14.0")
+      end
+
+      it "returns the right value for zero_major?" do
+        expect(described_class.zero_major?).to be(true)
+      end
+
+      it "returns the right value for one_major?" do
+        expect(described_class.one_major?).to be(false)
+      end
+    end
+
+    context "when one" do
+      before do
+        expect(described_class).to receive(:que_version).and_return("1.0.0")
+      end
+
+      it "returns the right value for zero_major?" do
+        expect(described_class.zero_major?).to be(false)
+      end
+
+      it "returns the right value for one_major?" do
+        expect(described_class.one_major?).to be(true)
+      end
+    end
+  end
 end

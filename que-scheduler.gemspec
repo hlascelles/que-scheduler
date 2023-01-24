@@ -33,12 +33,14 @@ Gem::Specification.new do |spec|
   spec.add_dependency "hashie", ">= 3", "< 6"
   spec.add_dependency "que", ">= 0.14", "< 3.0.0"
 
+  # rubocop:disable Gemspec/DevelopmentDependencies
   spec.add_development_dependency "activerecord", ">= 5.0", "< 8.0"
   spec.add_development_dependency "appraisal"
   spec.add_development_dependency "climate_control"
   spec.add_development_dependency "combustion"
   spec.add_development_dependency "coveralls_reborn"
   spec.add_development_dependency "database_cleaner"
+  spec.add_development_dependency "dememoize"
   spec.add_development_dependency "fasterer"
   spec.add_development_dependency "pg"
   spec.add_development_dependency "pry-byebug"
@@ -51,5 +53,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "sqlite3", ">= 1.3"
   spec.add_development_dependency "timecop"
   spec.add_development_dependency "zonebie"
+  # rubocop:enable Gemspec/DevelopmentDependencies
   # rubocop:enable Layout/HashAlignment
 end
