@@ -179,7 +179,7 @@ RSpec.describe Que::Scheduler::SchedulerJob do
     # The scheduler job must run at the highest priority, as it must serve the highest common
     # denominator of all schedulable jobs.
     it "runs the scheduler at highest priority" do
-      expect(described_class.instance_variable_get("@priority")).to eq(0)
+      expect(described_class.instance_variable_get(:@priority)).to eq(0)
     end
   end
 

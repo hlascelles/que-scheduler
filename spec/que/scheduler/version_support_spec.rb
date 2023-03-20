@@ -10,7 +10,7 @@ RSpec.describe Que::Scheduler::VersionSupport do
 
     it "sets the priority" do
       if described_class.zero_major?
-        expect(test_class.instance_variable_get("@priority")).to eq(3)
+        expect(test_class.instance_variable_get(:@priority)).to eq(3)
       else
         expect(test_class.priority).to eq(3)
       end
@@ -26,7 +26,7 @@ RSpec.describe Que::Scheduler::VersionSupport do
 
     it "sets the retries" do
       if described_class.zero_major?
-        expect(test_class.instance_variable_get("@retry_interval"))
+        expect(test_class.instance_variable_get(:@retry_interval))
           .to be(described_class::RETRY_PROC)
       else
         expect(test_class.retry_interval).to be(described_class::RETRY_PROC)

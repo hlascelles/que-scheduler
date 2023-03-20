@@ -38,11 +38,11 @@ module Que
       end
 
       def enqueue_required_jobs(calculator_result, logs)
-        calculator_result.missed_jobs.map do |to_enqueue|
+        calculator_result.missed_jobs.filter_map do |to_enqueue|
           to_enqueue.enqueue.tap do |enqueued_job|
             check_enqueued_job(to_enqueue, enqueued_job, logs)
           end
-        end.compact
+        end
       end
 
       private
