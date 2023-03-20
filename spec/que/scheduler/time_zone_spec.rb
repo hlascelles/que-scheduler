@@ -4,7 +4,7 @@ RSpec.describe Que::Scheduler::TimeZone do
   include_context "when checking we cannot use code", "Time.zone", "time_zone.rb"
 
   before(:each) do
-    described_class.instance_variable_set("@time_zone", nil)
+    described_class.instance_variable_set(:@time_zone, nil)
   end
 
   describe ".time_zone" do

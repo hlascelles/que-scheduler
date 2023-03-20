@@ -23,7 +23,7 @@ module Que
         end
 
         def active_job_defined?
-          Object.const_defined?("ActiveJob")
+          Object.const_defined?(:ActiveJob)
         end
 
         def active_job_version

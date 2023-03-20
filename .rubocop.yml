@@ -1,4 +1,5 @@
 require:
+- rubocop-performance
 - rubocop-rspec
 # - rubocop-rake # Not supported by CodeClimate
 

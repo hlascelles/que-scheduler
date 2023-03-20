@@ -15,7 +15,7 @@ module Que
         # the top of all jobs it enqueues.
         def set_priority(context, priority)
           if zero_major?
-            context.instance_variable_set("@priority", priority)
+            context.instance_variable_set(:@priority, priority)
           else
             context.priority = priority
           end
@@ -24,7 +24,7 @@ module Que
         # Ensure the job runs at least once an hour when it is backing off due to errors
         def apply_retry_semantics(context)
           if zero_major?
-            context.instance_variable_set("@retry_interval", RETRY_PROC)
+            context.instance_variable_set(:@retry_interval, RETRY_PROC)
           else
             context.maximum_retry_count = 1 << 128 # Heat death of universe
             context.retry_interval = RETRY_PROC
