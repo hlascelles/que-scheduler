@@ -97,7 +97,7 @@ GEM
       byebug (~> 11.0)
       pry (>= 0.13, < 0.15)
     psych (3.1.0)
-    que (2.2.0)
+    que (2.2.1)
     raabro (1.4.0)
     racc (1.6.2)
     rack (2.2.6.4)
