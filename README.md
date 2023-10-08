@@ -40,7 +40,8 @@ wish to generate the configuration dynamically, you can set it directly using an
 
 The file is a list of que job classes with arguments and a schedule frequency (in crontab 
 syntax). The format is similar to the resque-scheduler format, though priorities must be supplied as
-integers, and job classes must be migrated from Resque to Que. Cron syntax can be anything
+integers, and job classes must be migrated from Resque to Que.
+ActiveJob classes configured to use `:que` adapter are also supported. Cron syntax can be anything
 understood by [fugit](https://github.com/floraison/fugit#fugitcron).
 
 It has one additional feature, `schedule_type: every_event`. This is set on a job that must be run for every 
