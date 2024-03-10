@@ -25,9 +25,9 @@ resque-scheduler files, but with additional features.
    will fail if Que is set to execute jobs synchronously, i.e. `Que::Job.run_synchronously = true`.
 
     ```ruby
-    class CreateQueSchedulerSchema < ActiveRecord::Migration
+    class CreateQueSchedulerSchema < ActiveRecord::Migration[6.0]
       def change
-        Que::Scheduler::Migrations.migrate!(version: 7)
+        Que::Scheduler::Migrations.migrate!(version: 8)
       end
     end
     ```
@@ -210,23 +210,25 @@ ie, This will perform all migrations necessary up to the latest version, skippin
 performed.
 
 ```ruby
-class CreateQueSchedulerSchema < ActiveRecord::Migration
+class CreateQueSchedulerSchema < ActiveRecord::Migration[6.0]
   def change
-    Que::Scheduler::Migrations.migrate!(version: 7)
+    Que::Scheduler::Migrations.migrate!(version: 8)
   end
 end
 ```
 
 The changes in past migrations were: 
 
-| Version | Changes                                                                         |
-|:-------:|---------------------------------------------------------------------------------|
-|    1    | Enqueued the main Que::Scheduler. This is the job that performs the scheduling. |
-|    2    | Added the audit table `que_scheduler_audit`.                                    |
-|    3    | Added the audit table `que_scheduler_audit_enqueued`.                           |
-|    4    | Updated the the audit tables to use bigints                                     |
-|    5    | Dropped an unnecessary index                                                    |
-|    6    | Enforced single scheduler job at the trigger level                              |
+| Version | Changes                                                                             |
+|:-------:|-------------------------------------------------------------------------------------|
+|    1    | Enqueued the main Que::Scheduler. This is the job that performs the scheduling.     |
+|    2    | Added the audit table `que_scheduler_audit`.                                        |
+|    3    | Added the audit table `que_scheduler_audit_enqueued`.                               |
+|    4    | Updated the the audit tables to use bigints                                         |
+|    5    | Dropped an unnecessary index                                                        |
+|    6    | Enforced single scheduler job at the trigger level                                  |
+|    7    | Prevent accidental deletion of scheduler job                                        |
+|    8    | Add primary key to audit. Note, this can be a slow migration if you have many rows! |
 
 The changes to the DB ([DDL](https://en.wikipedia.org/wiki/Data_definition_language)) are all 
 captured in the structure.sql so will be re-run in correctly if squashed - except for the actual 

@@ -35,6 +35,7 @@ RSpec.describe Que::Scheduler::Audit do
         expect(db_jobs).to eq(
           [
             {
+              id: 1,
               scheduler_job_id: scheduler_job_id,
               job_class: "HalfHourlyTestJob",
               queue: handles_queue_name ? "something1" : nil,
@@ -44,6 +45,7 @@ RSpec.describe Que::Scheduler::Audit do
               run_at: jobs_set_to_run_at,
             },
             {
+              id: 2,
               scheduler_job_id: scheduler_job_id,
               job_class: "HalfHourlyTestJob",
               queue: handles_queue_name ? Que::Scheduler.configuration.que_scheduler_queue : nil,
@@ -53,6 +55,7 @@ RSpec.describe Que::Scheduler::Audit do
               run_at: jobs_set_to_run_at,
             },
             {
+              id: 3,
               scheduler_job_id: scheduler_job_id,
               job_class: "DailyTestJob",
               queue: handles_queue_name ? "something3" : nil,
