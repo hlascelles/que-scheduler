@@ -8,7 +8,7 @@ module Que
         SELECT description FROM pg_class
         LEFT JOIN pg_description ON pg_description.objoid = pg_class.oid
         WHERE relname = '#{AUDIT_TABLE_NAME}'
-      )
+      ).freeze
       MAX_VERSION = Dir.glob("#{__dir__}/migrations/*").map { |d| File.basename(d) }.map(&:to_i).max
 
       class << self
@@ -48,21 +48,19 @@ module Que
           Que::Scheduler::VersionSupport.enqueue_a_job(Que::Scheduler::SchedulerJob)
         end
 
-        private
-
-        def migrate_up(current, version)
+        private def migrate_up(current, version)
           if current.zero? # Version 1 does not use SQL
             Que::Scheduler::VersionSupport.enqueue_a_job(Que::Scheduler::SchedulerJob)
           end
           execute_step((current += 1), :up) until current == version
         end
 
-        def migrate_down(current, version)
+        private def migrate_down(current, version)
           current += 1
           execute_step((current -= 1), :down) until current == version + 1
         end
 
-        def execute_step(number, direction)
+        private def execute_step(number, direction)
           sql = File.read("#{__dir__}/migrations/#{number}/#{direction}.sql")
           Que::Scheduler::VersionSupport.execute(sql)
           return unless audit_table_exists?

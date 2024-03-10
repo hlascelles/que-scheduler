@@ -54,10 +54,8 @@ module Que
         validate_job_class_related(options)
       end
 
-      private
-
       # rubocop:disable Style/GuardClause This reads better as a conditional
-      def validate_fields_types(options)
+      private def validate_fields_types(options)
         unless queue.nil? || queue.is_a?(String)
           err_field(:queue, options, "queue must be a string")
         end
@@ -70,14 +68,14 @@ module Que
       end
       # rubocop:enable Style/GuardClause
 
-      def validate_fields_presence(options)
+      private def validate_fields_presence(options)
         err_field(:name, options, "name must be present") if name.nil?
         err_field(:job_class, options, "job_class must be present") if job_class.nil?
         # An invalid cron is nil
         err_field(:cron, options, "cron must be present") if cron.nil?
       end
 
-      def validate_job_class_related(options)
+      private def validate_job_class_related(options)
         # Only support known job engines
         unless Que::Scheduler::ToEnqueue.valid_job_class?(job_class)
           err_field(:job_class, options, "Job #{job_class} was not a supported job type")
@@ -104,14 +102,14 @@ module Que
         end
       end
 
-      def err_field(field, options, reason = "")
+      private def err_field(field, options, reason = "")
         schedule = Que::Scheduler.configuration.schedule_location
         value = options[field]
         raise "Invalid #{field} '#{value}' for '#{name}' in que-scheduler schedule #{schedule}.\n" \
               "#{reason}"
       end
 
-      def generate_to_enqueue_list(missed_times)
+      private def generate_to_enqueue_list(missed_times)
         return [] if missed_times.empty?
 
         options = to_h.slice(:args, :queue, :priority, :job_class).compact

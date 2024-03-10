@@ -228,7 +228,7 @@ DEPENDENCIES
   database_cleaner
   dememoize
   fasterer
-  pg
+  pg (>= 1.0)
   pry-byebug
   psych (= 3.1.0)
   que-scheduler!

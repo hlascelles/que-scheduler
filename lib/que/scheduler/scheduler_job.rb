@@ -45,9 +45,7 @@ module Que
         end
       end
 
-      private
-
-      def check_enqueued_job(to_enqueue, enqueued_job, logs)
+      private def check_enqueued_job(to_enqueue, enqueued_job, logs)
         logs << if enqueued_job.present?
                   "que-scheduler enqueueing #{enqueued_job.job_class} " \
                     "#{enqueued_job.job_id} with args: #{enqueued_job.args}"
@@ -58,7 +56,8 @@ module Que
                 end
       end
 
-      def enqueue_self_again(scheduler_job_args, last_full_execution, job_dictionary, enqueued_jobs)
+      private def enqueue_self_again(scheduler_job_args, last_full_execution, job_dictionary,
+                                     enqueued_jobs)
         # Log last run...
         job_id = VersionSupport.job_attributes(self).fetch(:job_id)
         Audit.append(job_id, scheduler_job_args.as_time, enqueued_jobs)

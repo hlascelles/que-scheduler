@@ -1,5 +1,6 @@
 require "bundler/setup"
 
+require_relative "integration/no_rails/integration_setup"
 require "pry-byebug"
 require "coveralls"
 Coveralls.wear!
@@ -29,20 +30,9 @@ end
 
 Bundler.require :default, :development
 
-Dir["#{__dir__}/../spec/support/**/*.rb"].sort.each { |f| require f }
+Dir["#{__dir__}/../spec/support/**/*.rb"].each { |f| require f }
 
-if RUBY_VERSION.start_with?("3") && Gem.loaded_specs["activesupport"].version.to_s.start_with?("5")
-  puts "Rails 5 does not work with Ruby 3"
-  # Allow the CI to continue the ruby test matrix
-  # rubocop:disable Style/SymbolProc
-  RSpec.configure do |config|
-    config.around(:each) do |example|
-      example.skip
-    end
-  end
-  # rubocop:enable Style/SymbolProc
-  return
-end
+IntegrationSetup.apply_patches
 
 RSpec.configure do |config|
   config.example_status_persistence_file_path = ".rspec_status"

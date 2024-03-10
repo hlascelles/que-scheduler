@@ -4,7 +4,7 @@ require:
 # - rubocop-rake # Not supported by CodeClimate
 
 AllCops:
-  TargetRubyVersion: 2.7
+  TargetRubyVersion: 3.0
   DisplayCopNames: true
   NewCops: enable
   SuggestExtensions: false
@@ -57,6 +57,9 @@ RSpec/NoExpectationExample:
   Enabled: false
 RSpec/StubbedMock:
   Enabled: false
+Style/AccessModifierDeclarations:
+  Enabled: true
+  EnforcedStyle: inline
 Style/BlockDelimiters:
   Enabled: false
 Style/ExponentialNotation:
