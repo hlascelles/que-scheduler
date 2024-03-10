@@ -39,16 +39,14 @@ module Que
             Gem::Version.create("6.0.3")
         end
 
-        private
-
-        def type_from_job_class(job_class)
+        private def type_from_job_class(job_class)
           types.each do |type, implementation|
             return implementation if job_class < type
           end
           nil
         end
 
-        def types
+        private def types
           @types ||=
             begin
               hash = {

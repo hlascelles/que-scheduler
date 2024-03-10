@@ -10,9 +10,7 @@ module Que
           assert_db_migrated
         end
 
-        private
-
-        def assert_db_migrated
+        private def assert_db_migrated
           db_version = Que::Scheduler::Migrations.db_version
           return if db_version == Que::Scheduler::Migrations::MAX_VERSION
 

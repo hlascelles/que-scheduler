@@ -92,17 +92,15 @@ module Que
           @que_version ||= que_version_object.to_s
         end
 
-        private
-
-        def supports_job_options_keyword?
+        private def supports_job_options_keyword?
           @supports_job_options_keyword ||= que_version_object >= Gem::Version.new("1.2.0")
         end
 
-        def que_version_object
+        private def que_version_object
           @que_version_object ||= Gem.loaded_specs["que"].version
         end
 
-        def normalise_array_of_hashes(array)
+        private def normalise_array_of_hashes(array)
           array.map { |row| row.to_h.transform_keys(&:to_sym) }
         end
       end

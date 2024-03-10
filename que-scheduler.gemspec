@@ -25,8 +25,7 @@ Gem::Specification.new do |spec|
   spec.files = Dir["{lib}/**/*"] + ["README.md"]
   spec.require_paths = ["lib"]
 
-  # Que v2.x requires 2.7 and above
-  spec.required_ruby_version = ">= 2.7"
+  spec.required_ruby_version = ">= 3.0"
 
   spec.add_dependency "activesupport", ">= 5.0"
   spec.add_dependency "fugit", "~> 1.1", ">= 1.1.8" # 1.1.8 fixes "disallow zero months in cron"
@@ -42,7 +41,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "database_cleaner"
   spec.add_development_dependency "dememoize"
   spec.add_development_dependency "fasterer"
-  spec.add_development_dependency "pg"
+  spec.add_development_dependency "pg", ">= 1.0"
   spec.add_development_dependency "pry-byebug"
   spec.add_development_dependency "psych", "3.1.0" # Default version in dev ruby
   spec.add_development_dependency "rake"

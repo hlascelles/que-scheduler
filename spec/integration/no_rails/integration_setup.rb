@@ -49,9 +49,23 @@ module IntegrationSetup
       puts result.inspect
     end
 
-    private
+    def apply_patches
+      # Check if we need the patch to support Que 0.x / Rails 6
+      return unless Que::Scheduler::VersionSupport.zero_major? &&
+                    Gem.loaded_specs["activesupport"].version.to_s.start_with?("6")
 
-    def inline_bundler_setup
+      puts "Que 0.x with rails 6 needs a patch to work"
+      # https://github.com/que-rb/que/issues/247
+      Que::Adapters::Base::CAST_PROCS[1184] = lambda do |value|
+        case value
+        when Time then value
+        when String then Time.parse(value)
+        else raise "Unexpected time class: #{value.class} (#{value.inspect})"
+        end
+      end
+    end
+
+    private def inline_bundler_setup
       require "bundler/inline"
 
       gemfile do
@@ -73,7 +87,7 @@ module IntegrationSetup
     # This moves the last run of the scheduler to a set time. We must both move the que job
     # last_run, and also the internal knowledge "last_run_time" which could be different
     # if the job errors.
-    def make_scheduler_last_run(time)
+    private def make_scheduler_last_run(time)
       Que::Scheduler::VersionSupport.execute(<<~SQL)
         UPDATE que_jobs SET run_at = '#{time}'
         WHERE job_class = 'Que::Scheduler::SchedulerJob'
@@ -87,22 +101,6 @@ module IntegrationSetup
         SET args = '#{args.to_json}'
         WHERE job_class = 'Que::Scheduler::SchedulerJob'
       SQL
-    end
-
-    def apply_patches
-      # Check if we need the patch to support Que 0.x / Rails 6
-      return unless Que::Scheduler::VersionSupport.zero_major? &&
-                    Gem.loaded_specs["activesupport"].version.to_s.start_with?("6")
-
-      puts "Que 0.x with rails 6 needs a patch to work"
-      # https://github.com/que-rb/que/issues/247
-      Que::Adapters::Base::CAST_PROCS[1184] = lambda do |value|
-        case value
-        when Time then value
-        when String then Time.parse(value)
-        else raise "Unexpected time class: #{value.class} (#{value.inspect})"
-        end
-      end
     end
   end
 end

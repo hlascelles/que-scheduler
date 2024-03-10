@@ -11,7 +11,7 @@ module Que
         INSERT INTO #{TABLE_NAME} (scheduler_job_id, executed_at)
         VALUES ($1::bigint, $2::timestamptz)
         RETURNING *
-      }
+      }.freeze
       INSERT_AUDIT_ENQUEUED = %{
         INSERT INTO #{ENQUEUED_TABLE_NAME}
         (scheduler_job_id, job_class, queue, priority, args, job_id, run_at)
@@ -20,7 +20,7 @@ module Que
           $4::integer, $5::jsonb, $6::bigint, $7::timestamptz
         )
         RETURNING *
-      }
+      }.freeze
 
       class << self
         def append(scheduler_job_id, executed_at, enqueued_jobs)
