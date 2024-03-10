@@ -1,3 +1,7 @@
+## Unreleased
+
+- Add primary key to audit table [#456](https://github.com/hlascelles/que-scheduler/pull/456)
+
 ## 4.6.0 (2024-03-10)
 
 - Add tests for ruby 3.2 and 3.3 and remove ruby 2.7 and AR 5 [#453](https://github.com/hlascelles/que-scheduler/pull/453)

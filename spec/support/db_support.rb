@@ -74,5 +74,13 @@ module DbSupport
         row
       end
     end
+
+    def primary_key_exists?(table_name)
+      result = Que::Scheduler::VersionSupport.execute(<<~SQL)
+        SELECT * FROM information_schema.table_constraints
+        WHERE table_name = '#{table_name}' AND constraint_type = 'PRIMARY KEY';
+      SQL
+      result.count.positive?
+    end
   end
 end

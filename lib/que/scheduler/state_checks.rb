@@ -47,7 +47,7 @@ module Que
             To bring the db version up to the current one required, add a migration like this. It
             is cumulative, so one line is sufficient to perform all necessary steps.
 
-            class UpdateQueSchedulerSchema < ActiveRecord::Migration
+            class UpdateQueSchedulerSchema < ActiveRecord::Migration[6.0]
               def change
                 Que::Scheduler::Migrations.migrate!(version: #{Que::Scheduler::Migrations::MAX_VERSION})
               end

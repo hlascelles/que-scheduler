@@ -16,6 +16,14 @@ RSpec.describe Que::Scheduler::Migrations do
       ::Que::Scheduler::SchedulerJob.enqueue
       ::Que::Scheduler::StateChecks.check
 
+      expect(described_class.db_version).to eq(8)
+
+      # Check 8 change down
+      # Drops the PRIMARY KEY constraint on que_scheduler_audit_enqueued
+      expect(DbSupport.primary_key_exists?("que_scheduler_audit_enqueued")).to be true
+      described_class.migrate!(version: 7)
+      expect(DbSupport.primary_key_exists?("que_scheduler_audit_enqueued")).to be false
+
       expect(described_class.db_version).to eq(7)
 
       # Check 7 change down
@@ -118,6 +126,12 @@ RSpec.describe Que::Scheduler::Migrations do
       described_class.migrate!(version: 7)
       expect(described_class.db_version).to eq(7)
 
+      # Check 8 change up
+      expect(DbSupport.primary_key_exists?("que_scheduler_audit_enqueued")).to be false
+      described_class.migrate!(version: 8)
+      expect(DbSupport.primary_key_exists?("que_scheduler_audit_enqueued")).to be true
+      expect(described_class.db_version).to eq(8)
+
       Que::Scheduler::StateChecks.check
     end
     # rubocop:enable RSpec/MultipleExpectations
@@ -178,6 +192,27 @@ RSpec.describe Que::Scheduler::Migrations do
         ORDER BY SUM(pg_relation_size(idx)) DESC;
       SQL
       expect(result.count).to eq(0)
+    end
+
+    it "checks all tables have a primary key (needed for eg Blue / Green logical replication)" do
+      no_pk_tables = ActiveRecord::Base.connection.execute(<<~SQL).to_a
+        SELECT pgc.relname as "table", pgns.nspname as "namespace"
+        FROM pg_class pgc
+        JOIN pg_namespace pgns ON pgns.oid = pgc.relnamespace
+        WHERE pgc.relkind = 'r'
+        AND pgns.nspname NOT IN ('pg_catalog', 'information_schema')
+        AND pgc.oid NOT IN
+          (
+            SELECT pgc.oid
+            FROM pg_class pgc
+            JOIN pg_index pgi ON pgi.indrelid = pgc.oid
+            JOIN pg_namespace pgns ON pgns.oid = pgc.relnamespace
+            WHERE pgi.indisprimary = true
+            AND pgc.relkind = 'r'
+          );
+      SQL
+
+      expect(no_pk_tables).to be_empty, "Tables with no primary key: #{no_pk_tables}"
     end
   end
 end
