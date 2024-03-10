@@ -27,7 +27,7 @@ Gem::Specification.new do |spec|
 
   spec.required_ruby_version = ">= 3.0"
 
-  spec.add_dependency "activesupport", ">= 5.0"
+  spec.add_dependency "activesupport", ">= 6.0"
   spec.add_dependency "fugit", "~> 1.1", ">= 1.1.8" # 1.1.8 fixes "disallow zero months in cron"
   spec.add_dependency "hashie", ">= 3", "< 6"
   spec.add_dependency "que", ">= 0.14", "< 3.0.0"
