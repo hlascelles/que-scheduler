@@ -1,6 +1,6 @@
-## Unreleased
+## 5.0.0  (2024-03-10)
 
-- Add primary key to audit table [#456](https://github.com/hlascelles/que-scheduler/pull/456)
+- Add primary key to audit enqueued table [#456](https://github.com/hlascelles/que-scheduler/pull/456)
 
 ## 4.6.0 (2024-03-10)
 
