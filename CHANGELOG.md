@@ -1,6 +1,8 @@
 ## 5.0.0  (2024-03-10)
 
-- Add primary key to audit enqueued table [#456](https://github.com/hlascelles/que-scheduler/pull/456)
+- Add primary key to audit enqueued table [#456](https://github.com/hlascelles/que-scheduler/pull/456). Note, this requires a migration version "8"
+  to be run which will lock and rewrite the `que_scheduler_audit_enqueued` table. Check how large
+  your table is before running this migration.
 
 ## 4.6.0 (2024-03-10)
 
