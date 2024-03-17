@@ -13,7 +13,7 @@ RSpec.describe Que::Scheduler::StateChecks do
     it "detects when multiple scheduler jobs are enqueued" do
       Que::Scheduler::SchedulerJob.enqueue # First one is OK
       expect { Que::Scheduler::SchedulerJob.enqueue }.to raise_error(
-        /#{Regexp.quote("Key (job_class)=(Que::Scheduler::SchedulerJob) already exists")}/
+        /#{Regexp.quote('Key (job_class)=(Que::Scheduler::SchedulerJob) already exists')}/
       )
     end
   end

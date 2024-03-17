@@ -10,6 +10,7 @@ module Que
           assert_db_migrated
         end
 
+        # rubocop:disable Metrics/MethodLength
         private def assert_db_migrated
           db_version = Que::Scheduler::Migrations.db_version
           return if db_version == Que::Scheduler::Migrations::MAX_VERSION
@@ -57,6 +58,7 @@ module Que
             synchronously. This will fail as que-scheduler needs the above tables to work.
           ERR
         end
+        # rubocop:enable Metrics/MethodLength
       end
     end
   end

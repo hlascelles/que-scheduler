@@ -82,6 +82,10 @@ Style/TrailingCommaInArrayLiteral:
   EnforcedStyleForMultiline: comma
 Style/TrailingCommaInHashLiteral:
   EnforcedStyleForMultiline: comma
+Style/YAMLFileRead:
+  # This was causing spec failures on ruby 3
+  # https://github.com/hlascelles/que-scheduler/actions/runs/8316798910/job/22756743042?pr=466
+  Enabled: false
 Style/Documentation:
   Enabled: false
 Style/FrozenStringLiteralComment:
