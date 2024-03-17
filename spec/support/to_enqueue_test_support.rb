@@ -12,7 +12,7 @@ shared_context "when job testing" do
       # ActiveJob args are held in a wrapper which we must mine down to.
       first_args = job_row[:args].first
       # Depending on Que version it may be by symbol or string.
-      first_arguments = (first_args["arguments"] || first_args[:arguments])
+      first_arguments = first_args["arguments"] || first_args[:arguments]
       first_arguments.each do |arg|
         if arg.is_a?(Hash)
           arg.delete("_aj_symbol_keys")
