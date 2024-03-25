@@ -144,7 +144,7 @@ GEM
       zeitwerk (~> 2.6)
     rainbow (3.1.1)
     rake (13.1.0)
-    rdoc (6.3.3)
+    rdoc (6.3.4.1)
     reek (6.1.4)
       kwalify (~> 0.7.0)
       parser (~> 3.2.0)
