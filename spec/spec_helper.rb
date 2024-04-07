@@ -16,6 +16,7 @@ if ENV["CI"].present?
   puts "TZ appears to be #{tz_identifier}"
   ENV["ZONEBIE_TZ"] = tz_identifier
 end
+require "active_support" # https://github.com/rails/rails/issues/49495#issuecomment-1748812627
 require "zonebie/rspec"
 
 # Enforce load order here due to https://github.com/que-rb/que/issues/284
@@ -25,7 +26,11 @@ if Gem.loaded_specs["rails"]
 end
 if Gem.loaded_specs["activejob"]
   require "active_job"
-  require "active_job/queue_adapters/que_adapter"
+  # This adapter was removed in later versions of Rails, so we only attempt to load it. It is also
+  # supplied in the que gem itself.
+  # https://github.com/rails/rails/pull/46005
+  # https://github.com/que-rb/que/blob/master/lib/que/active_job/extensions.rb#L113
+  require "active_job/queue_adapters/que_adapter" if ActiveJob.gem_version < Gem::Version.new("7.1")
 end
 
 Bundler.require :default, :development

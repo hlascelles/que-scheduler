@@ -96,18 +96,7 @@ module Que
         # be used when the job is worked.
         data = JSON.parse(job.to_json, symbolize_names: true)
 
-        # ActiveJob scheduled_at is returned as a float, where we want a Time for consistency
-        scheduled_at =
-          begin
-            scheduled_at_float = data[:scheduled_at]
-            # rubocop:disable Style/EmptyElse
-            if scheduled_at_float
-              Que::Scheduler::TimeZone.time_zone.at(scheduled_at_float)
-            else
-              nil
-            end
-            # rubocop:enable Style/EmptyElse
-          end
+        scheduled_at = self.class.extract_scheduled_at(data[:scheduled_at])
 
         # Rails didn't support queues for ActiveJob for a while
         used_queue = data[:queue_name] if ToEnqueue.active_job_version_supports_queues?
@@ -140,6 +129,22 @@ module Que
           job_class_set.perform_later(**args)
         else
           job_class_set.perform_later(*args)
+        end
+      end
+
+      class << self
+        # ActiveJob scheduled_at is returned as a float, or a string post Rails 7.1,
+        # and we want a Time for consistency
+        def extract_scheduled_at(scheduled_at)
+          # rubocop:disable Style/EmptyElse
+          if scheduled_at.is_a?(Float)
+            Que::Scheduler::TimeZone.time_zone.at(scheduled_at)
+          elsif scheduled_at.is_a?(String)
+            Que::Scheduler::TimeZone.time_zone.parse(scheduled_at)
+          else
+            nil
+          end
+          # rubocop:enable Style/EmptyElse
         end
       end
     end
