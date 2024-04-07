@@ -1,3 +1,7 @@
+## 5.1.0  (2024-04-07)
+
+- Explicit Rails 7.0 and 7.1 support [#474](https://github.com/hlascelles/que-scheduler/pull/474)
+
 ## 5.0.0  (2024-03-10)
 
 - Add primary key to audit enqueued table [#456](https://github.com/hlascelles/que-scheduler/pull/456). Note, this requires a migration version "8"
