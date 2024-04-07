@@ -14,7 +14,7 @@ module SyncJobWorker
         ).first
         klass = Que.constantize(job.fetch(:job_class))
         instance = klass.new(job)
-        outcome = ::Que.run_job_middleware(job) { instance.tap(&:_run) }
+        outcome = ::Que.run_job_middleware(instance) { instance.tap(&:_run) }
 
         job_after = Que::Scheduler::VersionSupport.execute(
           "SELECT * FROM que_jobs WHERE id = #{job.fetch(:id)}"
