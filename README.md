@@ -1,7 +1,7 @@
 que-scheduler
 ================
 
-[![Gem Version](https://img.shields.io/gem/v/que-scheduler?color=green)](https://img.shields.io/gem/v/que-scheduler?color=green)
+[![Gem Version](https://img.shields.io/gem/v/que-scheduler?color=green)](https://rubygems.org/gems/que-scheduler)
 [![specs workflow](https://github.com/hlascelles/que-scheduler/actions/workflows/specs.yml/badge.svg)](https://github.com/hlascelles/que-scheduler/actions)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![Coverage Status](https://coveralls.io/repos/github/hlascelles/que-scheduler/badge.svg?branch=master)](https://coveralls.io/github/hlascelles/que-scheduler?branch=master)
