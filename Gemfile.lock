@@ -71,7 +71,7 @@ GEM
       activerecord (>= 5.a)
       database_cleaner-core (~> 2.0.0)
     database_cleaner-core (2.0.1)
-    dememoize (0.1.0)
+    dememoize (0.1.1)
     diff-lcs (1.5.1)
     docile (1.4.0)
     drb (2.2.1)
