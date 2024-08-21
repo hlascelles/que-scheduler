@@ -1,9 +1,9 @@
 PATH
   remote: .
   specs:
-    que-scheduler (5.1.0)
+    que-scheduler (5.1.1)
       activesupport (>= 6.0)
-      fugit (~> 1.1, >= 1.1.8)
+      fugit (~> 1.1, >= 1.11.1)
       hashie (>= 3, < 6)
       que (>= 0.14, < 3.0.0)
 
@@ -267,4 +267,4 @@ DEPENDENCIES
   zonebie
 
 BUNDLED WITH
-   2.4.4
+   2.5.14

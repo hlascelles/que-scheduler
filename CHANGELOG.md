@@ -1,3 +1,7 @@
+## 5.1.1  (2024-08-21)
+
+- Update fugit requirement to prevent https://github.com/floraison/fugit/issues/104 [#506](https://github.com/hlascelles/que-scheduler/pull/506)
+
 ## 5.1.0  (2024-04-07)
 
 - Explicit Rails 7.0 and 7.1 support [#474](https://github.com/hlascelles/que-scheduler/pull/474)

@@ -1,9 +1,9 @@
 PATH
   remote: ..
   specs:
-    que-scheduler (5.1.0)
+    que-scheduler (5.1.1)
       activesupport (>= 6.0)
-      fugit (~> 1.1, >= 1.1.8)
+      fugit (~> 1.1, >= 1.11.1)
       hashie (>= 3, < 6)
       que (>= 0.14, < 3.0.0)
 
@@ -110,8 +110,8 @@ GEM
       tzinfo
     fasterer (0.11.0)
       ruby_parser (>= 3.19.1)
-    fugit (1.10.1)
-      et-orbi (~> 1, >= 1.2.7)
+    fugit (1.11.1)
+      et-orbi (~> 1, >= 1.2.11)
       raabro (~> 1.4)
     globalid (1.2.1)
       activesupport (>= 6.1)
@@ -279,4 +279,4 @@ DEPENDENCIES
   zonebie
 
 BUNDLED WITH
-   2.4.4
+   2.5.14
