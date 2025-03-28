@@ -25,7 +25,7 @@ Gem::Specification.new do |spec|
   spec.files = Dir["{lib}/**/*"] + ["README.md"]
   spec.require_paths = ["lib"]
 
-  spec.required_ruby_version = ">= 3.0"
+  spec.required_ruby_version = ">= 3.1"
 
   spec.add_dependency "activesupport", ">= 6.0"
   spec.add_dependency "fugit", "~> 1.1", ">= 1.11.1" # 1.11.1 prevents https://github.com/floraison/fugit/issues/104

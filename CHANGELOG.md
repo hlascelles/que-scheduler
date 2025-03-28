@@ -1,3 +1,7 @@
+## UNRELEASED
+
+- Dependency updates and quality improvements [#534](https://github.com/hlascelles/que-scheduler/pull/534)
+
 ## 5.1.1  (2024-08-21)
 
 - Update fugit requirement to prevent https://github.com/floraison/fugit/issues/104 [#506](https://github.com/hlascelles/que-scheduler/pull/506)

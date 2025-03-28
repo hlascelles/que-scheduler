@@ -76,7 +76,7 @@ module Que
           }
         )
 
-        # rubocop:disable Style/GuardClause This reads better as a conditional
+        # rubocop:disable Style/GuardClause -- This reads better as a conditional
         unless enqueued_job && VersionSupport.job_attributes(enqueued_job).fetch(:job_id)
           raise "SchedulerJob could not self-schedule. Has `.enqueue` been monkey patched?"
         end
