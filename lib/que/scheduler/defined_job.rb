@@ -54,7 +54,7 @@ module Que
         validate_job_class_related(options)
       end
 
-      # rubocop:disable Style/GuardClause This reads better as a conditional
+      # rubocop:disable Style/GuardClause -- This reads better as a conditional
       private def validate_fields_types(options)
         unless queue.nil? || queue.is_a?(String)
           err_field(:queue, options, "queue must be a string")

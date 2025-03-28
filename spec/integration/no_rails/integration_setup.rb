@@ -1,3 +1,5 @@
+require "logger" # https://stackoverflow.com/a/79379493/1267203
+
 module IntegrationSetup
   class << self
     def setup_db

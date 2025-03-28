@@ -58,7 +58,7 @@ module Que
             end
           else
             if job_args.is_a?(Hash)
-              clazz.enqueue(**job_args.merge(job_options))
+              clazz.enqueue(**job_args.merge(job_options)) # rubocop:disable Style/KeywordArgumentsMerging
             else
               clazz.enqueue(*job_args, **job_options)
             end
