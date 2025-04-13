@@ -39,6 +39,7 @@ GEM
       rake
       thor (>= 0.14.0)
     ast (2.4.2)
+    base64 (0.2.0)
     bigdecimal (3.1.9)
     builder (3.3.0)
     byebug (11.1.3)
@@ -114,6 +115,7 @@ GEM
     method_source (1.1.0)
     mini_portile2 (2.8.8)
     minitest (5.25.5)
+    mutex_m (0.3.0)
     nokogiri (1.18.4)
       mini_portile2 (~> 2.8.2)
       racc (~> 1.4)
@@ -228,12 +230,14 @@ DEPENDENCIES
   activerecord (>= 5.0, < 8.0)
   activesupport (~> 6.0.3)
   appraisal
+  base64
   climate_control
   combustion
   coveralls_reborn
   database_cleaner
   dememoize
   fasterer
+  mutex_m
   pg (~> 1.4)
   pry-byebug
   psych (= 3.1.0)

@@ -134,6 +134,7 @@ GEM
     method_source (1.1.0)
     mini_portile2 (2.8.8)
     minitest (5.25.5)
+    mutex_m (0.3.0)
     nokogiri (1.18.4)
       mini_portile2 (~> 2.8.2)
       racc (~> 1.4)
@@ -262,12 +263,14 @@ PLATFORMS
 DEPENDENCIES
   activerecord (>= 5.0, < 8.0)
   appraisal
+  base64
   climate_control
   combustion
   coveralls_reborn
   database_cleaner
   dememoize
   fasterer
+  mutex_m
   pg (>= 1.0)
   pry-byebug
   psych (= 3.1.0)

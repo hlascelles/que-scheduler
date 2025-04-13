@@ -35,12 +35,16 @@ Gem::Specification.new do |spec|
   # rubocop:disable Gemspec/DevelopmentDependencies
   spec.add_development_dependency "activerecord", ">= 5.0", "< 8.0"
   spec.add_development_dependency "appraisal"
+  # Ruby 3.4 needs this gem for specs, otherwise we see "cannot load such file -- base64"
+  spec.add_development_dependency "base64"
   spec.add_development_dependency "climate_control"
   spec.add_development_dependency "combustion"
   spec.add_development_dependency "coveralls_reborn"
   spec.add_development_dependency "database_cleaner"
   spec.add_development_dependency "dememoize"
   spec.add_development_dependency "fasterer"
+  # Ruby 3.4 needs this gem for specs, otherwise we see "cannot load such file -- mutex_m"
+  spec.add_development_dependency "mutex_m"
   spec.add_development_dependency "pg", ">= 1.0"
   spec.add_development_dependency "pry-byebug"
   spec.add_development_dependency "psych", "3.1.0" # Default version in dev ruby
