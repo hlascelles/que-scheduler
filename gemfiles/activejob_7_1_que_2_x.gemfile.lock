@@ -266,12 +266,14 @@ DEPENDENCIES
   activerecord (>= 5.0, < 8.0)
   activesupport (~> 7.1.0)
   appraisal
+  base64
   climate_control
   combustion
   coveralls_reborn
   database_cleaner
   dememoize
   fasterer
+  mutex_m
   pg (~> 1.4)
   pry-byebug
   psych (= 3.1.0)

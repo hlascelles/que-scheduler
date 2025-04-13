@@ -7,3 +7,5 @@ gem "pg", "> 1.0"
 gem "que", ENV.fetch("QUE_VERSION")
 gem "que-scheduler", path: "../../../../"
 gem "rails", ENV.fetch("RAILS_VERSION")
+# Ruby 3.4 needs this gem for specs, otherwise we see "cannot load such file -- mutex_m"
+gem "mutex_m"
