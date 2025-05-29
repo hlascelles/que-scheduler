@@ -5,13 +5,14 @@ IntegrationSetup.setup_db
 # que-scheduler setup
 # Test Jobs
 class TestNoRailsJob < ::Que::Job
-  cattr_accessor :test_job_ran_result
+  cattr_accessor :test_job_ran_result # rubocop:disable ThreadSafety/ClassAndModuleAttributes
 
   # :reek:UtilityFunction
   def run(args)
     TestNoRailsJob.test_job_ran_result = args
   end
 end
+
 Que::Scheduler.configure do |config|
   config.schedule = {
     TestNoRailsJob: {

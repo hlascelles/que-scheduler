@@ -1,0 +1,15 @@
+AllCops:
+  TargetRubyVersion: 3.1
+  Exclude:
+  - 'lib/que-scheduler.rb' # Fails "Naming/FileName" but is right for catching old require style
+
+Style/RedundantConstantBase:
+  Enabled: false # We refer to ::Que a lot
+
+MagicNumbers/NoArgument:
+  Enabled: false
+MagicNumbers/NoAssignment:
+  Enabled: false
+
+ThreadSafety/ClassInstanceVariable:
+  Enabled: false # We use class instance variables in many places safely

@@ -10,8 +10,8 @@ RSpec.describe "integration tests" do
     end
     env += "RAILS_VERSION=#{loaded_specs['rails'].version} " if loaded_specs.key?("rails")
 
-    Bundler.with_clean_env do
-      Dir.chdir("spec/integration/#{dir}") do
+    Bundler.with_unbundled_env do
+      Dir.chdir("spec/integration/#{dir}") do # rubocop:disable ThreadSafety/DirChdir
         run = "#{env} #{cmd}"
         puts "Running: #{run}"
         result = system(run)

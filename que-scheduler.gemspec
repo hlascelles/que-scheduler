@@ -32,7 +32,6 @@ Gem::Specification.new do |spec|
   spec.add_dependency "hashie", ">= 3", "< 6"
   spec.add_dependency "que", ">= 0.14", "< 3.0.0"
 
-  # rubocop:disable Gemspec/DevelopmentDependencies
   spec.add_development_dependency "activerecord", ">= 5.0", "< 8.0"
   spec.add_development_dependency "appraisal"
   # Ruby 3.4 needs this gem for specs, otherwise we see "cannot load such file -- base64"
@@ -53,10 +52,10 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rspec"
   spec.add_development_dependency "rubocop"
   spec.add_development_dependency "rubocop-performance"
-  spec.add_development_dependency "rubocop-rspec"
+  spec.add_development_dependency "rubocop-rake", "> 0.7.0" # as plugin
+  spec.add_development_dependency "rubocop-rspec", "> 3.5.0" # as plugin
   spec.add_development_dependency "sqlite3", ">= 1.3"
   spec.add_development_dependency "timecop"
   spec.add_development_dependency "zonebie"
-  # rubocop:enable Gemspec/DevelopmentDependencies
   # rubocop:enable Layout/HashAlignment
 end

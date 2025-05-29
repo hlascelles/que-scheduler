@@ -2,9 +2,24 @@
 
 source "https://rubygems.org"
 
-gem "activesupport", "~> 7.1.0"
-gem "que", "~> 2.0"
 gem "activejob", "~> 7.1.0"
+gem "activesupport", "~> 7.1.0"
 gem "pg", "~> 1.4"
+gem "que", "~> 2.0"
+
+group :development, :test do
+  gem "fasterer"
+  gem "pry-byebug"
+  gem "rake"
+  gem "reek"
+  gem "rspec"
+  gem "rubocop"
+  gem "rubocop-magic_numbers"
+  gem "rubocop-performance"
+  gem "rubocop-rails"
+  gem "rubocop-rake", "> 0.7.0"
+  gem "rubocop-rspec", "> 3.5.0"
+  gem "rubocop-thread_safety"
+end
 
 gemspec path: "../"

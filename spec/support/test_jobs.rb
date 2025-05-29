@@ -15,7 +15,7 @@ ALL_TEST_JOB_NAMES.each do |name|
   clazz =
     if Que::Scheduler::ToEnqueue.active_job_defined?
 
-      Class.new(::ActiveJob::Base) do
+      Class.new(::ActiveJob::Base) do # rubocop:disable Rails/ApplicationJob
         self.queue_adapter = :que
 
         def run; end
