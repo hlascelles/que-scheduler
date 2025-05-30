@@ -5,7 +5,7 @@ PATH
       activesupport (>= 6.0)
       fugit (~> 1.1, >= 1.11.1)
       hashie (>= 3, < 6)
-      que (>= 0.14, < 3.0.0)
+      que (>= 2.0, < 3.0)
 
 GEM
   remote: https://rubygems.org/
