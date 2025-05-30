@@ -81,13 +81,6 @@ RSpec.describe Que::Scheduler::VersionSupport do
     end
   end
 
-  describe ".default_scheduler_queue" do
-    it "returns the queue name" do
-      expected = described_class.zero_major? ? "" : "default"
-      expect(described_class.default_scheduler_queue).to eq(expected)
-    end
-  end
-
   describe ".running_synchronously?" do
     context "when true" do
       before do

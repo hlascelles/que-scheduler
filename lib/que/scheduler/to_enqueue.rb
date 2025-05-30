@@ -121,7 +121,7 @@ module Que
         job_settings = {
           priority: priority,
           wait_until: run_at,
-          queue: queue || Que::Scheduler::VersionSupport.default_scheduler_queue,
+          queue: queue || Que::DEFAULT_QUEUE,
         }.compact
 
         job_class_set = job_class.set(**job_settings)

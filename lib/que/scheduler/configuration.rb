@@ -24,7 +24,7 @@ module Que
             ENV.fetch("QUE_SCHEDULER_CONFIG_LOCATION", "config/que_schedule.yml")
           config.transaction_adapter = ::Que.method(:transaction)
           config.que_scheduler_queue =
-            ENV.fetch("QUE_SCHEDULER_QUEUE", Que::Scheduler::VersionSupport.default_scheduler_queue)
+            ENV.fetch("QUE_SCHEDULER_QUEUE", Que::DEFAULT_QUEUE)
           config.schedule = nil
           config.time_zone = nil
         end

@@ -17,7 +17,7 @@ RSpec.describe Que::Scheduler::Configuration do
     it "defaults the queue name to the que default" do
       Que::Scheduler.apply_defaults
       expect(Que::Scheduler.configuration.que_scheduler_queue)
-        .to eq(Que::Scheduler::VersionSupport.default_scheduler_queue)
+        .to eq(Que::DEFAULT_QUEUE)
     end
 
     it "reads the queue name from the QUE_SCHEDULER_QUEUE ENV" do
@@ -42,7 +42,7 @@ RSpec.describe Que::Scheduler::Configuration do
     it "sets the que_scheduler_queue to the default" do
       Que::Scheduler.apply_defaults
       expect(Que::Scheduler.configuration.que_scheduler_queue)
-        .to eq(Que::Scheduler::VersionSupport.default_scheduler_queue)
+        .to eq(Que::DEFAULT_QUEUE)
     end
 
     it "sets the transaction_adapter to the default" do
