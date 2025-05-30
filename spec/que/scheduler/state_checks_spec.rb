@@ -25,7 +25,7 @@ RSpec.describe Que::Scheduler::StateChecks do
     ].each do |k|
       it "detects when running in synchronous mode #{k}" do
         expect(Que::Scheduler::Migrations).to receive(:db_version).and_return(0)
-        expect(Que::Scheduler::VersionSupport).to receive(:running_synchronously?).and_return(k)
+        Que.run_synchronously = k
         expect { described_class.send(:assert_db_migrated) }.to raise_error do |err|
           expect(err.message.include?("synchronous mode")).to eq k
         end

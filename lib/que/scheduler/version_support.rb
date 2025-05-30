@@ -55,13 +55,13 @@ module Que
           end
         end
 
-        def running_synchronously?
-          zero_major? ? (Que.mode == :sync) : Que.run_synchronously
-        end
-
-        def running_synchronously_code?
-          zero_major? ? "Que.mode == :sync" : "Que.run_synchronously = true"
-        end
+        # def running_synchronously?
+        #   zero_major? ? (Que.mode == :sync) : Que.run_synchronously
+        # end
+        #
+        # def running_synchronously_code?
+        #   zero_major? ? "Que.mode == :sync" : "Que.run_synchronously = true"
+        # end
 
         def zero_major?
           # This is the only way to handle beta releases too
