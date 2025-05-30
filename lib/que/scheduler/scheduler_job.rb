@@ -16,7 +16,7 @@ module Que
     class SchedulerJob < Que::Job
       SCHEDULER_FREQUENCY = 60
 
-      VersionSupport.set_priority(self, 0)
+      self.priority = 0 # Highest
       self.maximum_retry_count = 1 << 128 # Heat death of universe
       self.retry_interval = Que::Scheduler::VersionSupport::RETRY_PROC
 

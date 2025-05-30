@@ -11,16 +11,6 @@ module Que
       }
 
       class << self
-        # Ensure que-scheduler runs at the highest priority. This is because its priority is a
-        # the top of all jobs it enqueues.
-        def set_priority(context, priority)
-          if zero_major?
-            context.instance_variable_set(:@priority, priority)
-          else
-            context.priority = priority
-          end
-        end
-
         def job_attributes(enqueued_job)
           if zero_major?
             enqueued_job.attrs.to_h.transform_keys(&:to_sym)
@@ -54,14 +44,6 @@ module Que
             end
           end
         end
-
-        # def running_synchronously?
-        #   zero_major? ? (Que.mode == :sync) : Que.run_synchronously
-        # end
-        #
-        # def running_synchronously_code?
-        #   zero_major? ? "Que.mode == :sync" : "Que.run_synchronously = true"
-        # end
 
         def zero_major?
           # This is the only way to handle beta releases too

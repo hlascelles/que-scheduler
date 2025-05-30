@@ -1,22 +1,6 @@
 require "spec_helper"
 
 RSpec.describe Que::Scheduler::VersionSupport do
-  describe ".set_priority" do
-    let(:test_class) do
-      Class.new(Que::Scheduler::SchedulerJob) do
-        Que::Scheduler::VersionSupport.set_priority(self, 3)
-      end
-    end
-
-    it "sets the priority" do
-      if described_class.zero_major?
-        expect(test_class.instance_variable_get(:@priority)).to eq(3)
-      else
-        expect(test_class.priority).to eq(3)
-      end
-    end
-  end
-
   describe ".apply_retry_semantics" do
     let(:test_class) do
       Que::Scheduler::SchedulerJob
@@ -78,36 +62,6 @@ RSpec.describe Que::Scheduler::VersionSupport do
       end
       expect(attrs.fetch(:job_id)).to be_a(Integer)
       expect(attrs.fetch(:run_at)).to be_a(Time)
-    end
-  end
-
-  describe ".running_synchronously?" do
-    context "when true" do
-      before do
-        if described_class.zero_major?
-          Que.mode = :sync
-        else
-          Que.run_synchronously = true
-        end
-      end
-
-      after do
-        if described_class.zero_major?
-          Que.mode = :off
-        else
-          Que.run_synchronously = false
-        end
-      end
-
-      it "returns the value" do
-        expect(described_class.running_synchronously?).to be(true)
-      end
-    end
-
-    context "when false" do
-      it "returns the value" do
-        expect(described_class.running_synchronously?).to be(false)
-      end
     end
   end
 

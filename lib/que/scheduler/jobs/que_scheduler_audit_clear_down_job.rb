@@ -25,7 +25,7 @@ module Que
         DELETE_AUDIT_SQL = build_sql("que_scheduler_audit").freeze
 
         # Very low priority
-        Que::Scheduler::VersionSupport.set_priority(self, 100)
+        self.priority = 100
 
         def run(options)
           retain_row_count = options.symbolize_keys.fetch(:retain_row_count)
