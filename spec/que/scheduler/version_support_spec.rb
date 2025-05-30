@@ -30,29 +30,18 @@ RSpec.describe Que::Scheduler::VersionSupport do
       job = Que::Scheduler::SchedulerJob.enqueue
 
       expected =
-        if described_class.zero_major?
-          hash_including(
-            args: [],
-            error_count: 0,
-            job_class: "Que::Scheduler::SchedulerJob",
-            last_error: nil,
-            priority: 0,
-            queue: ""
-          )
-        else
-          hash_including(
-            args: [],
-            data: {},
-            error_count: 0,
-            expired_at: nil,
-            finished_at: nil,
-            job_class: "Que::Scheduler::SchedulerJob",
-            last_error_backtrace: nil,
-            last_error_message: nil,
-            priority: 0,
-            queue: "default"
-          )
-        end
+        hash_including(
+          args: [],
+          data: {},
+          error_count: 0,
+          expired_at: nil,
+          finished_at: nil,
+          job_class: "Que::Scheduler::SchedulerJob",
+          last_error_backtrace: nil,
+          last_error_message: nil,
+          priority: 0,
+          queue: "default"
+        )
       attrs = described_class.job_attributes(job)
       expect(attrs).to match(expected)
       # Keys changed from strings to symbols with que 1.0

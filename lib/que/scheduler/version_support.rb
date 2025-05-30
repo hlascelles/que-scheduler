@@ -12,12 +12,8 @@ module Que
 
       class << self
         def job_attributes(enqueued_job)
-          if zero_major?
-            enqueued_job.attrs.to_h.transform_keys(&:to_sym)
-          else
-            enqueued_job.que_attrs.to_h.transform_keys(&:to_sym).tap do |hash|
-              hash[:job_id] = hash.delete(:id)
-            end
+          enqueued_job.que_attrs.to_h.transform_keys(&:to_sym).tap do |hash|
+            hash[:job_id] = hash.delete(:id)
           end
         end
 
