@@ -2,8 +2,6 @@
 detectors:
   Attribute:
     enabled: true
-    exclude:
-    - Que::Scheduler
   BooleanParameter:
     enabled: false
     exclude: []

@@ -3,13 +3,15 @@ require_relative "version_support"
 
 module Que
   module Scheduler
+    # :reek:Attribute
     class Configuration
       attr_accessor :schedule_location, :schedule, :transaction_adapter, :que_scheduler_queue,
                     :time_zone
     end
 
     class << self
-      attr_accessor :configuration
+      # :reek:Attribute
+      attr_accessor :configuration # rubocop:disable ThreadSafety/ClassAndModuleAttributes
 
       def configure
         self.configuration ||= Configuration.new

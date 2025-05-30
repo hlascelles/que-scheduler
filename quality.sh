@@ -1,7 +1,8 @@
 #! /usr/bin/env bash
 set -euo pipefail
 
-cd $(dirname $0)
+cd "${0%/*}"
+bundle check || bundle install
 echo "Running fasterer..."
 bundle exec fasterer
 echo "Running rubocop..."

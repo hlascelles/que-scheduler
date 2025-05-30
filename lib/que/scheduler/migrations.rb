@@ -52,12 +52,12 @@ module Que
           if current.zero? # Version 1 does not use SQL
             Que::Scheduler::VersionSupport.enqueue_a_job(Que::Scheduler::SchedulerJob)
           end
-          execute_step((current += 1), :up) until current == version
+          execute_step(current += 1, :up) until current == version
         end
 
         private def migrate_down(current, version)
           current += 1
-          execute_step((current -= 1), :down) until current == version + 1
+          execute_step(current -= 1, :down) until current == version + 1
         end
 
         private def execute_step(number, direction)

@@ -19,7 +19,7 @@ RSpec.describe Que::Scheduler::Schedule do
     end
 
     it "loads the test schedule" do
-      entries = YAML.safe_load(File.read("spec/config/que_schedule.yml"))
+      entries = YAML.load_file("spec/config/que_schedule.yml")
       expect(entries.keys.count).to be > 0
       expect(Que::Scheduler.schedule.keys).to eq(entries.keys)
     end
@@ -28,7 +28,7 @@ RSpec.describe Que::Scheduler::Schedule do
       Que::Scheduler.configure do |config|
         config.schedule_location = "spec/config/que_schedule2.yml"
       end
-      entries = YAML.safe_load(File.read("spec/config/que_schedule2.yml"))
+      entries = YAML.load_file("spec/config/que_schedule2.yml")
       expect(Que::Scheduler.schedule.keys).to eq(entries.keys)
     end
 

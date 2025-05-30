@@ -13,7 +13,7 @@ RSpec.describe Que::Scheduler::SchedulerJobArgs do
   end
 
   describe "should parse current args" do
-    let(:last_time) { Time.zone.now - 45.minutes }
+    let(:last_time) { 45.minutes.ago }
     let(:dictionary) { %w[HalfHourlyTestJob OldRemovedJob] }
 
     def attempt_parse(options)

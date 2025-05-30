@@ -29,7 +29,7 @@ RSpec.describe Que::Scheduler::EnqueueingCalculator do
   end
 
   it "enqueues if the run time is exactly the cron time" do
-    run_test("2017-10-08T16:59:59", 1.seconds, [{ job_class: HalfHourlyTestJob }])
+    run_test("2017-10-08T16:59:59", 1.second, [{ job_class: HalfHourlyTestJob }])
   end
 
   it "enqueues if a job has been defined in a different timezone" do
@@ -54,7 +54,7 @@ RSpec.describe Que::Scheduler::EnqueueingCalculator do
   # This is testing that the fugit cron "next_time" doesn't return the current time if it matches.
   # It truly is the "next" time.
   it "does not enqueue if the previous run time was exactly the cron time" do
-    run_test("2017-10-08T16:00:00", 1.seconds, [])
+    run_test("2017-10-08T16:00:00", 1.second, [])
   end
 
   it "enqueues jobs with array args" do
