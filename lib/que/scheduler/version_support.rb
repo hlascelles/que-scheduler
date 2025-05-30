@@ -22,14 +22,14 @@ module Que
         end
 
         # Ensure the job runs at least once an hour when it is backing off due to errors
-        def apply_retry_semantics(context)
-          if zero_major?
-            context.instance_variable_set(:@retry_interval, RETRY_PROC)
-          else
-            context.maximum_retry_count = 1 << 128 # Heat death of universe
-            context.retry_interval = RETRY_PROC
-          end
-        end
+        # def apply_retry_semantics(context)
+        #   if zero_major?
+        #     context.instance_variable_set(:@retry_interval, RETRY_PROC)
+        #   else
+        #     context.maximum_retry_count = 1 << 128 # Heat death of universe
+        #     context.retry_interval = RETRY_PROC
+        #   end
+        # end
 
         def job_attributes(enqueued_job)
           if zero_major?

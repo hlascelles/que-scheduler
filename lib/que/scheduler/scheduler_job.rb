@@ -17,7 +17,8 @@ module Que
       SCHEDULER_FREQUENCY = 60
 
       VersionSupport.set_priority(self, 0)
-      VersionSupport.apply_retry_semantics(self)
+      self.maximum_retry_count = 1 << 128 # Heat death of universe
+      self.retry_interval = Que::Scheduler::VersionSupport::RETRY_PROC
 
       def run(options = nil)
         Que::Scheduler::Db.transaction do

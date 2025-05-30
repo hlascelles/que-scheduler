@@ -19,19 +19,16 @@ RSpec.describe Que::Scheduler::VersionSupport do
 
   describe ".apply_retry_semantics" do
     let(:test_class) do
-      Class.new(Que::Scheduler::SchedulerJob) do
-        Que::Scheduler::VersionSupport.apply_retry_semantics(self)
-      end
+      Que::Scheduler::SchedulerJob
     end
 
     it "sets the retries" do
-      if described_class.zero_major?
-        expect(test_class.instance_variable_get(:@retry_interval))
-          .to be(described_class::RETRY_PROC)
-      else
-        expect(test_class.retry_interval).to be(described_class::RETRY_PROC)
-        expect(test_class.maximum_retry_count).to be > 10_000_000
-      end
+      # Directly check the inlined logic
+      expect(test_class.maximum_retry_count).to be > 10_000_000
+      expect(test_class.retry_interval).to be_a(Proc)
+      expect(test_class.retry_interval.call(6)).to eq(1299)
+      expect(test_class.retry_interval.call(8)).to eq(3600)
+      expect(test_class.maximum_retry_count).to be > 10_000_000
     end
   end
 
