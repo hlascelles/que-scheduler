@@ -37,8 +37,6 @@ Bundler.require :default, :development
 
 Dir["#{__dir__}/../spec/support/**/*.rb"].each { |f| require f }
 
-IntegrationSetup.apply_patches
-
 RSpec.configure do |config|
   config.example_status_persistence_file_path = ".rspec_status"
   config.disable_monkey_patching!
@@ -51,9 +49,9 @@ RSpec.configure do |config|
   end
   config.before do
     ::Que.clear!
-    qsa = Que::Scheduler::VersionSupport.execute("select * from que_scheduler_audit")
+    qsa = Que::Scheduler::DbSupport.execute("select * from que_scheduler_audit")
     expect(qsa.count).to eq(0)
-    qsae = Que::Scheduler::VersionSupport.execute("select * from que_scheduler_audit_enqueued")
+    qsae = Que::Scheduler::DbSupport.execute("select * from que_scheduler_audit_enqueued")
     expect(qsae.count).to eq(0)
   end
 

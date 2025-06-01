@@ -25,16 +25,16 @@ module Que
         DELETE_AUDIT_SQL = build_sql("que_scheduler_audit").freeze
 
         # Very low priority
-        Que::Scheduler::VersionSupport.set_priority(self, 100)
+        self.priority = 100
 
         def run(options)
           retain_row_count = options.symbolize_keys.fetch(:retain_row_count)
           Que::Scheduler::Db.transaction do
             # This may delete zero or more than `retain_row_count` depending on if anything was
             # scheduled in each of the past schedule runs
-            Que::Scheduler::VersionSupport.execute(DELETE_AUDIT_ENQUEUED_SQL, [retain_row_count])
+            Que::Scheduler::DbSupport.execute(DELETE_AUDIT_ENQUEUED_SQL, [retain_row_count])
             # This will delete all but `retain_row_count` oldest rows
-            count = Que::Scheduler::VersionSupport.execute(DELETE_AUDIT_SQL, [retain_row_count])
+            count = Que::Scheduler::DbSupport.execute(DELETE_AUDIT_SQL, [retain_row_count])
             log = "#{self.class} cleared down #{count.first.fetch(:count)} rows"
             ::Que.log(event: :"que-scheduler", message: log)
           end

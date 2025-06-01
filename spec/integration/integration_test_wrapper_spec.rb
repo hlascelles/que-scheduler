@@ -3,7 +3,7 @@ require "spec_helper"
 # rubocop:disable RSpec/DescribeClass
 RSpec.describe "integration tests" do
   def run_integration_test(dir, cmd)
-    env = "QUE_VERSION=#{Que::Scheduler::VersionSupport.que_version} "
+    env = "QUE_VERSION=#{Que::Scheduler::DbSupport.que_version} "
     loaded_specs = Gem.loaded_specs
     if loaded_specs.key?("activerecord")
       env += "ACTIVE_RECORD_VERSION=#{loaded_specs['activerecord'].version} "

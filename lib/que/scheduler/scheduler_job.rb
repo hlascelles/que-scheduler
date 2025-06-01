@@ -7,7 +7,7 @@ require_relative "enqueueing_calculator"
 require_relative "scheduler_job_args"
 require_relative "state_checks"
 require_relative "to_enqueue"
-require_relative "version_support"
+require_relative "db_support"
 
 # The main job that runs every minute, determining what needs to be enqueued, enqueues the required
 # jobs, then re-enqueues itself.
@@ -15,9 +15,14 @@ module Que
   module Scheduler
     class SchedulerJob < Que::Job
       SCHEDULER_FREQUENCY = 60
+      RETRY_PROC = proc { |count|
+        # Maximum one hour, otherwise use the default backoff
+        count > 7 ? (60 * 60) : ((count**4) + 3)
+      }
 
-      VersionSupport.set_priority(self, 0)
-      VersionSupport.apply_retry_semantics(self)
+      self.priority = 0 # Highest
+      self.maximum_retry_count = 1 << 128 # Heat death of universe
+      self.retry_interval = RETRY_PROC
 
       def run(options = nil)
         Que::Scheduler::Db.transaction do
@@ -59,12 +64,12 @@ module Que
       private def enqueue_self_again(scheduler_job_args, last_full_execution, job_dictionary,
                                      enqueued_jobs)
         # Log last run...
-        job_id = VersionSupport.job_attributes(self).fetch(:job_id)
+        job_id = DbSupport.job_attributes(self).fetch(:job_id)
         Audit.append(job_id, scheduler_job_args.as_time, enqueued_jobs)
 
         # And rerun...
         next_run_at = scheduler_job_args.as_time.beginning_of_minute + SCHEDULER_FREQUENCY
-        enqueued_job = Que::Scheduler::VersionSupport.enqueue_a_job(
+        enqueued_job = Que::Scheduler::DbSupport.enqueue_a_job(
           SchedulerJob,
           {
             queue: Que::Scheduler.configuration.que_scheduler_queue,
@@ -77,7 +82,7 @@ module Que
         )
 
         # rubocop:disable Style/GuardClause -- This reads better as a conditional
-        unless enqueued_job && VersionSupport.job_attributes(enqueued_job).fetch(:job_id)
+        unless enqueued_job && DbSupport.job_attributes(enqueued_job).fetch(:job_id)
           raise "SchedulerJob could not self-schedule. Has `.enqueue` been monkey patched?"
         end
         # rubocop:enable Style/GuardClause

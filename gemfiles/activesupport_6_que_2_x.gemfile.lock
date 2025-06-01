@@ -5,7 +5,7 @@ PATH
       activesupport (>= 6.0)
       fugit (~> 1.1, >= 1.11.1)
       hashie (>= 3, < 6)
-      que (>= 0.14, < 3.0.0)
+      que (>= 2.0, < 3.0)
 
 GEM
   remote: https://rubygems.org/
@@ -39,8 +39,8 @@ GEM
       rake
       thor (>= 0.14.0)
     ast (2.4.3)
-    base64 (0.2.0)
-    bigdecimal (3.2.0)
+    base64 (0.3.0)
+    bigdecimal (3.2.1)
     builder (3.3.0)
     byebug (12.0.0)
     climate_control (1.2.0)
@@ -115,7 +115,21 @@ GEM
     method_source (1.1.0)
     minitest (5.25.5)
     mutex_m (0.3.0)
+    nokogiri (1.18.8-aarch64-linux-gnu)
+      racc (~> 1.4)
+    nokogiri (1.18.8-aarch64-linux-musl)
+      racc (~> 1.4)
+    nokogiri (1.18.8-arm-linux-gnu)
+      racc (~> 1.4)
+    nokogiri (1.18.8-arm-linux-musl)
+      racc (~> 1.4)
+    nokogiri (1.18.8-arm64-darwin)
+      racc (~> 1.4)
+    nokogiri (1.18.8-x86_64-darwin)
+      racc (~> 1.4)
     nokogiri (1.18.8-x86_64-linux-gnu)
+      racc (~> 1.4)
+    nokogiri (1.18.8-x86_64-linux-musl)
       racc (~> 1.4)
     parallel (1.27.0)
     parser (3.3.8.0)
@@ -150,7 +164,7 @@ GEM
       rake (>= 0.8.7)
       thor (>= 0.20.3, < 2.0)
     rainbow (3.1.1)
-    rake (13.2.1)
+    rake (13.3.0)
     reek (6.5.0)
       dry-schema (~> 1.13)
       logger (~> 1.6)
@@ -219,7 +233,14 @@ GEM
       simplecov_json_formatter (~> 0.1)
     simplecov-html (0.13.1)
     simplecov_json_formatter (0.1.4)
+    sqlite3 (2.6.0-aarch64-linux-gnu)
+    sqlite3 (2.6.0-aarch64-linux-musl)
+    sqlite3 (2.6.0-arm-linux-gnu)
+    sqlite3 (2.6.0-arm-linux-musl)
+    sqlite3 (2.6.0-arm64-darwin)
+    sqlite3 (2.6.0-x86_64-darwin)
     sqlite3 (2.6.0-x86_64-linux-gnu)
+    sqlite3 (2.6.0-x86_64-linux-musl)
     sync (0.5.0)
     term-ansicolor (1.11.2)
       tins (~> 1.0)
@@ -238,7 +259,14 @@ GEM
     zonebie (0.6.1)
 
 PLATFORMS
-  x86_64-linux
+  aarch64-linux-gnu
+  aarch64-linux-musl
+  arm-linux-gnu
+  arm-linux-musl
+  arm64-darwin
+  x86_64-darwin
+  x86_64-linux-gnu
+  x86_64-linux-musl
 
 DEPENDENCIES
   activerecord (>= 5.0, < 8.0)

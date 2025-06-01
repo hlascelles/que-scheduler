@@ -82,7 +82,7 @@ RSpec.describe Que::Scheduler::Migrations do
 
       # Check 3 change up
       # Add a row to check conversion from schema 2 to schema 3
-      Que::Scheduler::VersionSupport.execute(<<-SQL)
+      Que::Scheduler::DbSupport.execute(<<-SQL)
         INSERT INTO que_scheduler_audit
         VALUES (17, '2017-01-01', '2017-01-02', '[{"args": [1, 2], "job_class": "DailyTestJob"}]');
       SQL
@@ -91,12 +91,12 @@ RSpec.describe Que::Scheduler::Migrations do
       expect(DbSupport.enqueued_table_exists?).to be true
       expect(DbSupport.scheduler_job_id_type).to eq("integer")
       # Check the row came through correctly
-      audit = Que::Scheduler::VersionSupport.execute("SELECT * FROM que_scheduler_audit")
+      audit = Que::Scheduler::DbSupport.execute("SELECT * FROM que_scheduler_audit")
       expect(audit.count).to eq(1)
       expect(audit.first[:scheduler_job_id]).to eq(17)
       expect(audit.first[:executed_at].to_s).to start_with("2017-01-01 00:00:00")
       # .. with the associated enqueued row
-      audit = Que::Scheduler::VersionSupport.execute("SELECT * FROM que_scheduler_audit_enqueued")
+      audit = Que::Scheduler::DbSupport.execute("SELECT * FROM que_scheduler_audit_enqueued")
       DbSupport.convert_args_column(audit)
       expect(audit.count).to eq(1)
       expect(audit.first[:scheduler_job_id]).to eq(17)
@@ -107,9 +107,9 @@ RSpec.describe Que::Scheduler::Migrations do
       described_class.migrate!(version: 4)
       expect(described_class.db_version).to eq(4)
       expect(DbSupport.scheduler_job_id_type).to eq("bigint")
-      audit = Que::Scheduler::VersionSupport.execute("SELECT * FROM que_scheduler_audit")
+      audit = Que::Scheduler::DbSupport.execute("SELECT * FROM que_scheduler_audit")
       expect(audit.first[:scheduler_job_id]).to eq(17)
-      audit = Que::Scheduler::VersionSupport.execute("SELECT * FROM que_scheduler_audit_enqueued")
+      audit = Que::Scheduler::DbSupport.execute("SELECT * FROM que_scheduler_audit_enqueued")
       expect(audit.first[:scheduler_job_id]).to eq(17)
 
       # Check 5 change up
@@ -138,13 +138,13 @@ RSpec.describe Que::Scheduler::Migrations do
     # rubocop:enable RSpec/ExampleLength
 
     it "returns the right migration number if the job has been deliberately deleted" do
-      Que::Scheduler::VersionSupport.execute("DELETE FROM que_jobs")
+      Que::Scheduler::DbSupport.execute("DELETE FROM que_jobs")
       expect(Que::Scheduler::Db.count_schedulers).to eq(0)
       expect(described_class.audit_table_exists?).to be true
       expect(described_class.db_version).to eq(described_class::MAX_VERSION)
     end
 
-    # When que-testing is present, calls to Que::Scheduler::VersionSupport.execute do nothing and
+    # When que-testing is present, calls to Que::Scheduler::DbSupport.execute do nothing and
     # return an empty array.
     # Thus, trying to migrate a test database will always fail. It is safer to do nothing and not
     # create the que-scheduler tables. This follows the logic of que, which does not create its
@@ -170,9 +170,9 @@ RSpec.describe Que::Scheduler::Migrations do
   describe "6 up" do
     it "errors correctly if the scheduler job is deleted" do
       ::Que::Scheduler::SchedulerJob.enqueue
-      Que::Scheduler::VersionSupport.execute("DELETE FROM que_jobs")
+      Que::Scheduler::DbSupport.execute("DELETE FROM que_jobs")
       expect {
-        Que::Scheduler::VersionSupport.execute("COMMIT")
+        Que::Scheduler::DbSupport.execute("COMMIT")
       }.to raise_error(/Deletion of que_scheduler job prevented/)
     end
   end
@@ -180,7 +180,7 @@ RSpec.describe Que::Scheduler::Migrations do
   describe "DB health" do
     it "has no duplicate indices" do
       # From https://wiki.postgresql.org/wiki/Index_Maintenance
-      result = Que::Scheduler::VersionSupport.execute(<<-SQL)
+      result = Que::Scheduler::DbSupport.execute(<<-SQL)
         SELECT pg_size_pretty(SUM(pg_relation_size(idx))::BIGINT) AS SIZE,
                (array_agg(idx))[1] AS idx1, (array_agg(idx))[2] AS idx2,
                (array_agg(idx))[3] AS idx3, (array_agg(idx))[4] AS idx4

@@ -28,14 +28,14 @@ module Que
 
         def db_version
           if audit_table_exists?
-            return Que::Scheduler::VersionSupport.execute(TABLE_COMMENT).first[:description].to_i
+            return Que::Scheduler::DbSupport.execute(TABLE_COMMENT).first[:description].to_i
           end
 
           Que::Scheduler::Db.count_schedulers.zero? ? 0 : 1
         end
 
         def audit_table_exists?
-          result = Que::Scheduler::VersionSupport.execute(<<-SQL)
+          result = Que::Scheduler::DbSupport.execute(<<-SQL)
             SELECT * FROM information_schema.tables WHERE table_name = '#{AUDIT_TABLE_NAME}';
           SQL
           result.any?
@@ -45,12 +45,12 @@ module Que
         def reenqueue_scheduler_if_missing
           return unless Que::Scheduler::Db.count_schedulers.zero?
 
-          Que::Scheduler::VersionSupport.enqueue_a_job(Que::Scheduler::SchedulerJob)
+          Que::Scheduler::DbSupport.enqueue_a_job(Que::Scheduler::SchedulerJob)
         end
 
         private def migrate_up(current, version)
           if current.zero? # Version 1 does not use SQL
-            Que::Scheduler::VersionSupport.enqueue_a_job(Que::Scheduler::SchedulerJob)
+            Que::Scheduler::DbSupport.enqueue_a_job(Que::Scheduler::SchedulerJob)
           end
           execute_step(current += 1, :up) until current == version
         end
@@ -62,10 +62,10 @@ module Que
 
         private def execute_step(number, direction)
           sql = File.read("#{__dir__}/migrations/#{number}/#{direction}.sql")
-          Que::Scheduler::VersionSupport.execute(sql)
+          Que::Scheduler::DbSupport.execute(sql)
           return unless audit_table_exists?
 
-          Que::Scheduler::VersionSupport.execute(
+          Que::Scheduler::DbSupport.execute(
             "COMMENT ON TABLE que_scheduler_audit IS '#{direction == :up ? number : number - 1}'"
           )
         end

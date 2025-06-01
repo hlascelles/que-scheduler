@@ -4,7 +4,6 @@ module IntegrationSetup
   class << self
     def setup_db
       inline_bundler_setup
-      apply_patches
 
       # Migrations
       db_config = {
@@ -51,29 +50,13 @@ module IntegrationSetup
       puts result.inspect
     end
 
-    def apply_patches
-      # Check if we need the patch to support Que 0.x / Rails 6
-      return unless Que::Scheduler::VersionSupport.zero_major? &&
-                    Gem.loaded_specs["activesupport"].version.to_s.start_with?("6")
-
-      puts "Que 0.x with rails 6 needs a patch to work"
-      # https://github.com/que-rb/que/issues/247
-      Que::Adapters::Base::CAST_PROCS[1184] = lambda do |value|
-        case value
-        when Time then value
-        when String then Time.zone.parse(value)
-        else raise "Unexpected time class: #{value.class} (#{value.inspect})"
-        end
-      end
-    end
-
     # :reek:TooManyStatements
     private def inline_bundler_setup
       require "bundler/inline"
 
       gemfile do
         source "https://rubygems.org"
-        gem "que", ENV.fetch("QUE_VERSION") { ENV["CI"] ? "MISSING IN CI!" : "0.14.3" }
+        gem "que", ENV.fetch("QUE_VERSION") { ENV["CI"] ? "MISSING IN CI!" : "2.4.1" }
         gem "que-scheduler", path: "../../../"
         gem "activerecord", ENV.fetch("ACTIVE_RECORD_VERSION")
         # Ruby 3.4 needs this gem for specs, otherwise we see "cannot load such file -- base64"
@@ -97,15 +80,15 @@ module IntegrationSetup
     # last_run, and also the internal knowledge "last_run_time" which could be different
     # if the job errors.
     private def make_scheduler_last_run(time)
-      Que::Scheduler::VersionSupport.execute(<<~SQL)
+      Que::Scheduler::DbSupport.execute(<<~SQL)
         UPDATE que_jobs SET run_at = '#{time}'
         WHERE job_class = 'Que::Scheduler::SchedulerJob'
       SQL
-      args = Que::Scheduler::VersionSupport.execute(<<~SQL).first[:args]
+      args = Que::Scheduler::DbSupport.execute(<<~SQL).first[:args]
         SELECT * FROM que_jobs WHERE job_class = 'Que::Scheduler::SchedulerJob'
       SQL
       args.first["last_run_time"] = time
-      Que::Scheduler::VersionSupport.execute(<<~SQL)
+      Que::Scheduler::DbSupport.execute(<<~SQL)
         UPDATE que_jobs
         SET args = '#{args.to_json}'
         WHERE job_class = 'Que::Scheduler::SchedulerJob'

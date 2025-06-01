@@ -33,15 +33,15 @@ module DbSupport
       Que::Scheduler::Migrations.migrate!(version: Que::Scheduler::Migrations::MAX_VERSION)
 
       puts "Setting DB timezone to #{::Time.zone.tzinfo.identifier}"
-      Que::Scheduler::VersionSupport.execute("set timezone TO '#{::Time.zone.tzinfo.identifier}';")
+      Que::Scheduler::DbSupport.execute("set timezone TO '#{::Time.zone.tzinfo.identifier}';")
     end
 
     def jobs_by_class(clazz)
-      Que::Scheduler::VersionSupport.execute("SELECT * FROM que_jobs where job_class = '#{clazz}'")
+      Que::Scheduler::DbSupport.execute("SELECT * FROM que_jobs where job_class = '#{clazz}'")
     end
 
     def column_default(table, column_name)
-      Que::Scheduler::VersionSupport.execute(%{
+      Que::Scheduler::DbSupport.execute(%{
         SELECT column_name, column_default
         FROM information_schema.columns
         WHERE (table_schema, table_name, column_name) = ('public', '#{table}', '#{column_name}')
@@ -54,7 +54,7 @@ module DbSupport
     end
 
     def scheduler_job_id_type
-      Que::Scheduler::VersionSupport.execute(
+      Que::Scheduler::DbSupport.execute(
         "select column_name, data_type from information_schema.columns " \
         "where table_name = 'que_scheduler_audit';"
       ).find { |row| row.fetch(:column_name) == "scheduler_job_id" }.fetch(:data_type)
@@ -76,7 +76,7 @@ module DbSupport
     end
 
     def primary_key_exists?(table_name)
-      result = Que::Scheduler::VersionSupport.execute(<<~SQL)
+      result = Que::Scheduler::DbSupport.execute(<<~SQL)
         SELECT * FROM information_schema.table_constraints
         WHERE table_name = '#{table_name}' AND constraint_type = 'PRIMARY KEY';
       SQL

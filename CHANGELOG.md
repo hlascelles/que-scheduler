@@ -1,5 +1,6 @@
 ## UNRELEASED
 
+- Drop support for Que 0.x and Que 1.x [#548](https://github.com/hlascelles/que-scheduler/pull/548)
 - Dependency updates and quality improvements [#534](https://github.com/hlascelles/que-scheduler/pull/534)
 
 ## 5.1.1  (2024-08-21)

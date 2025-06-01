@@ -24,9 +24,9 @@ module Que
 
       class << self
         def append(scheduler_job_id, executed_at, enqueued_jobs)
-          ::Que::Scheduler::VersionSupport.execute(INSERT_AUDIT, [scheduler_job_id, executed_at])
+          ::Que::Scheduler::DbSupport.execute(INSERT_AUDIT, [scheduler_job_id, executed_at])
           enqueued_jobs.each do |j|
-            inserted = ::Que::Scheduler::VersionSupport.execute(
+            inserted = ::Que::Scheduler::DbSupport.execute(
               INSERT_AUDIT_ENQUEUED,
               [scheduler_job_id] +
                 j.values_at(:job_class, :queue, :priority, :args, :job_id, :run_at)
