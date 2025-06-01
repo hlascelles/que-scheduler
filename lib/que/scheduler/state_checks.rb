@@ -16,8 +16,8 @@ module Que
           return if db_version == Que::Scheduler::Migrations::MAX_VERSION
 
           sync_err =
-            if Que::Scheduler::VersionSupport.running_synchronously? && db_version.zero?
-              code = Que::Scheduler::VersionSupport.running_synchronously_code?
+            if Que.run_synchronously && db_version.zero?
+              code = "Que.run_synchronously = true"
               <<~ERR_SYNC
                 You currently have Que to run in synchronous mode using
                 #{code}, so it is most likely this error

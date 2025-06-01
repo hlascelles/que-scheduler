@@ -30,13 +30,7 @@ IntegrationSetup.trigger_scheduler
 # Now "run that job that was scheduled"
 IntegrationSetup.run_a_job
 
-# Note the key "foo" is a string under Que 0.x, but a symbol in Que 1.x
-expected =
-  if Que::Scheduler::VersionSupport.zero_major?
-    { "foo" => "bar" }
-  else
-    { foo: "bar" }
-  end
+expected = { foo: "bar" }
 unless TestNoRailsJob.test_job_ran_result == expected
   raise "Test run did not yield expected args: #{TestNoRailsJob.test_job_ran_result}"
 end

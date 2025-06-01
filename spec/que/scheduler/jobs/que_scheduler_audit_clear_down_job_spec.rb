@@ -50,8 +50,8 @@ RSpec.describe Que::Scheduler::Jobs::QueSchedulerAuditClearDownJob do
 
     context "when handling both string and symbol run args (ie Que 0.x and 1.x)" do
       def set_up_expects
-        allow(Que::Scheduler::VersionSupport).to receive(:execute).and_call_original
-        expect(Que::Scheduler::VersionSupport)
+        allow(Que::Scheduler::DbSupport).to receive(:execute).and_call_original
+        expect(Que::Scheduler::DbSupport)
           .to receive(:execute).with(described_class::DELETE_AUDIT_SQL, [1]).and_call_original
       end
 

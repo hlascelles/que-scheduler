@@ -48,7 +48,11 @@ Lint/StructNewOverride:
   Enabled: true
 Metrics/MethodLength:
   Max: 30
+Rails/Blank:
+  Enabled: false # Gems aren't Rails
 Rails/Delegate:
+  Enabled: false # Gems aren't Rails
+Rails/Present:
   Enabled: false # Gems aren't Rails
 Rails/Output:
   Enabled: false # Gems aren't Rails

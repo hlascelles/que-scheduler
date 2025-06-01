@@ -319,10 +319,6 @@ The latest version of que-scheduler supports Ruby 3.0 and above.
 que-scheduler versions below 4.4.0 work with Ruby 2.7.
 que-scheduler versions below 4.2.3 work with Ruby 2.5 and Ruby 2.6.
 
-Using que 0.x with Rails 6 needs a patch to support it. 
-See the patch and how to use it here: https://github.com/que-rb/que/issues/247#issuecomment-595258236
-If that patch is included then que-scheduler will work. This setup is tested, but is not supported.
-
 ## Inspiration
 
 This gem was inspired by the makers of the excellent [Que](https://github.com/chanks/que) job scheduler gem. 

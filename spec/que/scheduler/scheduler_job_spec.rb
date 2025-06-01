@@ -11,6 +11,15 @@ RSpec.describe Que::Scheduler::SchedulerJob do
   let(:run_time) { Time.zone.parse("2017-11-08T13:50:32") }
   let(:full_dictionary) { ::Que::Scheduler.schedule.keys }
 
+  describe "RETRY_PROC" do
+    it "sets the proc" do
+      expect(described_class::RETRY_PROC.call(6)).to eq(1299)
+      expect(described_class::RETRY_PROC.call(7)).to eq(2404)
+      expect(described_class::RETRY_PROC.call(8)).to eq(3600)
+      expect(described_class::RETRY_PROC.call(9)).to eq(3600)
+    end
+  end
+
   context "when scheduling" do
     around do |example|
       Timecop.freeze(run_time) do
@@ -169,7 +178,7 @@ RSpec.describe Que::Scheduler::SchedulerJob do
         null_enqueue_call(HalfHourlyTestJob)
         test_enqueued([{ job_class: HalfHourlyTestJob }])
         expect(Que.job_stats).to eq([])
-        qsae = Que::Scheduler::VersionSupport.execute("select * from que_scheduler_audit_enqueued")
+        qsae = Que::Scheduler::DbSupport.execute("select * from que_scheduler_audit_enqueued")
         expect(qsae.count).to eq(0)
       end
     end

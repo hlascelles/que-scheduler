@@ -63,7 +63,7 @@ module Que
     class QueJobType < ToEnqueue
       def enqueue
         job_settings = to_h.slice(:queue, :priority, :run_at).compact
-        job = Que::Scheduler::VersionSupport.enqueue_a_job(
+        job = Que::Scheduler::DbSupport.enqueue_a_job(
           job_class,
           job_settings,
           args
@@ -73,7 +73,7 @@ module Que
 
         # Now read the just inserted job back out of the DB to get the actual values that will
         # be used when the job is worked.
-        values = Que::Scheduler::VersionSupport.job_attributes(job).slice(
+        values = Que::Scheduler::DbSupport.job_attributes(job).slice(
           :args, :queue, :priority, :run_at, :job_class, :job_id
         )
         EnqueuedJobType.new(values)
@@ -121,7 +121,7 @@ module Que
         job_settings = {
           priority: priority,
           wait_until: run_at,
-          queue: queue || Que::Scheduler::VersionSupport.default_scheduler_queue,
+          queue: queue || Que::DEFAULT_QUEUE,
         }.compact
 
         job_class_set = job_class.set(**job_settings)

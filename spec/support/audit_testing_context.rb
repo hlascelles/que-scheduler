@@ -22,7 +22,7 @@ shared_context "when audit testing" do
 
   private def find_audit_table_rows(table, expect_count)
     sql = "SELECT * FROM #{table} ORDER BY scheduler_job_id"
-    Que::Scheduler::VersionSupport.execute(sql).tap do |audit|
+    Que::Scheduler::DbSupport.execute(sql).tap do |audit|
       expect(audit.count).to eq(expect_count)
     end
   end
