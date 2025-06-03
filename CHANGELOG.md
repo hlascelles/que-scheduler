@@ -1,20 +1,19 @@
-## UNRELEASED
+## 6.0.0 (2025-06-03) 
 
-BREAKING CHANGES:
-- Remove automatic scheduler job enqueueing in migrations [#549](https://github.com/hlascelles/que-scheduler/pull/549)
+- Add trusted publishing [#550](https://github.com/hlascelles/que-scheduler/pull/550)
+- BREAKING CHANGE: Remove automatic scheduler job enqueueing in migrations [#549](https://github.com/hlascelles/que-scheduler/pull/549)
 - Drop support for Que 0.x and Que 1.x [#548](https://github.com/hlascelles/que-scheduler/pull/548)
-
 - Dependency updates and quality improvements [#534](https://github.com/hlascelles/que-scheduler/pull/534)
 
-## 5.1.1  (2024-08-21)
+## 5.1.1 (2024-08-21)
 
 - Update fugit requirement to prevent https://github.com/floraison/fugit/issues/104 [#506](https://github.com/hlascelles/que-scheduler/pull/506)
 
-## 5.1.0  (2024-04-07)
+## 5.1.0 (2024-04-07)
 
 - Explicit Rails 7.0 and 7.1 support [#474](https://github.com/hlascelles/que-scheduler/pull/474)
 
-## 5.0.0  (2024-03-10)
+## 5.0.0 (2024-03-10)
 
 - Add primary key to audit enqueued table [#456](https://github.com/hlascelles/que-scheduler/pull/456). Note, this requires a migration version "8"
   to be run which will lock and rewrite the `que_scheduler_audit_enqueued` table. Check how large
