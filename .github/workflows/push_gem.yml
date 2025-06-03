@@ -4,7 +4,7 @@ on:
   push:
     branches: [master]
     paths:
-    - 'lib/*/version.rb'
+    - 'lib/que/scheduler/version.rb'
 
 permissions:
   contents: read
