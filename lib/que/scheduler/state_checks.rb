@@ -51,6 +51,7 @@ module Que
             class UpdateQueSchedulerSchema < ActiveRecord::Migration[6.0]
               def change
                 Que::Scheduler::Migrations.migrate!(version: #{Que::Scheduler::Migrations::MAX_VERSION})
+                Que::Scheduler::Migrations.reenqueue_scheduler_if_missing
               end
             end
 

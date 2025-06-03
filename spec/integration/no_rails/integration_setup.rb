@@ -22,6 +22,7 @@ module IntegrationSetup
       Que.connection = ActiveRecord
       Que.migrate!(version: ::Que::Migrations::CURRENT_VERSION)
       Que::Scheduler::Migrations.migrate!(version: Que::Scheduler::Migrations::MAX_VERSION)
+      Que::Scheduler::Migrations.reenqueue_scheduler_if_missing
     end
 
     def trigger_scheduler

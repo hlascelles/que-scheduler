@@ -23,13 +23,14 @@ needs to be run, enqueueing those jobs, then enqueueing itself to check again la
 que-scheduler will look for it is `config/que_schedule.yml`. The format is essentially the same as
 resque-scheduler files, but with additional features.
 
-1. Add a migration to start the job scheduler and prepare the audit table. Note that this migration 
+1. Add a migration to prepare the audit table and start the job scheduler. Note that this migration 
    will fail if Que is set to execute jobs synchronously, i.e. `Que::Job.run_synchronously = true`.
 
     ```ruby
     class CreateQueSchedulerSchema < ActiveRecord::Migration[6.0]
       def change
         Que::Scheduler::Migrations.migrate!(version: 8)
+        Que::Scheduler::Migrations.reenqueue_scheduler_if_missing
       end
     end
     ```
@@ -215,6 +216,7 @@ performed.
 class CreateQueSchedulerSchema < ActiveRecord::Migration[6.0]
   def change
     Que::Scheduler::Migrations.migrate!(version: 8)
+    Que::Scheduler::Migrations.reenqueue_scheduler_if_missing
   end
 end
 ```

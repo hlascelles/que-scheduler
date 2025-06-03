@@ -60,19 +60,16 @@ RSpec.describe Que::Scheduler::Migrations do
       # Check 2 change down
       expect(described_class.audit_table_exists?).to be true
       described_class.migrate!(version: 1)
-      expect(described_class.db_version).to eq(1)
+      expect(described_class.db_version).to eq(0)
       expect(described_class.audit_table_exists?).to be false
 
       # Check 1 change down
-      expect(Que::Scheduler::Db.count_schedulers).to eq(1)
       described_class.migrate!(version: 0)
       expect(described_class.db_version).to eq(0)
-      expect(Que::Scheduler::Db.count_schedulers).to eq(0)
 
       # Check 1 change up
       described_class.migrate!(version: 1)
-      expect(described_class.db_version).to eq(1)
-      expect(Que::Scheduler::Db.count_schedulers).to eq(1)
+      expect(described_class.db_version).to eq(0)
 
       # Check 2 change up
       expect(described_class.audit_table_exists?).to be false

@@ -26,13 +26,17 @@ module Que
           end
         end
 
+        # rubocop:disable MagicNumbers/NoReturn
         def db_version
           if audit_table_exists?
             return Que::Scheduler::DbSupport.execute(TABLE_COMMENT).first[:description].to_i
           end
 
-          Que::Scheduler::Db.count_schedulers.zero? ? 0 : 1
+          # At this point we used to be able to tell if it was 0 or 1 by the presence of the
+          # que_scheduler job, but that isn't auto enqueued anymore, so we assume it is 0.
+          0
         end
+        # rubocop:enable MagicNumbers/NoReturn
 
         def audit_table_exists?
           result = Que::Scheduler::DbSupport.execute(<<-SQL)
@@ -41,17 +45,26 @@ module Que
           result.any?
         end
 
-        # This method is only intended for use in squashed migrations
+        # This method must be used during initial installation of que-scheduler and if the
+        # project migrations are squashed.
         def reenqueue_scheduler_if_missing
+          raise <<~MSG unless Que::Migrations.db_version >= 6
+            Cannot (re)enqueue the que-scheduler worker unless the Que migrations have been run to at least version 6.
+            This probably means you have an old migration that installed que-scheduler, and have then since
+            run in another migration that has upgraded que, and are now running the migrations from scratch into a new database.
+
+            To fix this, you should remove the "Que::Scheduler::Migrations.reenqueue_scheduler_if_missing" line from any
+            of the older migrations and add it after the last migration that updates Que to at least version 6. eg:
+
+            Que.migrate!(version: 6)
+            Que::Scheduler::Migrations.reenqueue_scheduler_if_missing
+          MSG
           return unless Que::Scheduler::Db.count_schedulers.zero?
 
           Que::Scheduler::DbSupport.enqueue_a_job(Que::Scheduler::SchedulerJob)
         end
 
         private def migrate_up(current, version)
-          if current.zero? # Version 1 does not use SQL
-            Que::Scheduler::DbSupport.enqueue_a_job(Que::Scheduler::SchedulerJob)
-          end
           execute_step(current += 1, :up) until current == version
         end
 
