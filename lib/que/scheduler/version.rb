@@ -1,5 +1,5 @@
 module Que
   module Scheduler
-    VERSION = "5.1.1".freeze
+    VERSION = "6.0.0".freeze
   end
 end
