@@ -31,6 +31,7 @@ module DbSupport
 
       # Now migrate que scheduler
       Que::Scheduler::Migrations.migrate!(version: Que::Scheduler::Migrations::MAX_VERSION)
+      Que::Scheduler::Migrations.reenqueue_scheduler_if_missing
 
       puts "Setting DB timezone to #{::Time.zone.tzinfo.identifier}"
       Que::Scheduler::DbSupport.execute("set timezone TO '#{::Time.zone.tzinfo.identifier}';")

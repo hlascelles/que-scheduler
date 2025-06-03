@@ -75,3 +75,4 @@ _site
 **/.byebug_history
 .bundle
 **/.bundle
+spec/integration/migrations/target
