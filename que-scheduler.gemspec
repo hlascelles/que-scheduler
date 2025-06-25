@@ -29,8 +29,8 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency "activesupport", ">= 6.0"
   spec.add_dependency "fugit", "~> 1.1", ">= 1.11.1" # 1.11.1 prevents https://github.com/floraison/fugit/issues/104
-  spec.add_dependency "hashie", ">= 3", "< 6"
   spec.add_dependency "que", ">= 2.0", "< 3.0"
+  spec.add_dependency "sorbet-runtime", "~> 0.5.11181"
 
   spec.add_development_dependency "activerecord", ">= 5.0", "< 8.0"
   spec.add_development_dependency "appraisal"
