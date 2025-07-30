@@ -18,7 +18,7 @@ module DbSupport
       ActiveRecord::Base.establish_connection(db_config.merge(database: "postgres"))
 
       conn = ActiveRecord::Base.connection
-      if conn.execute("SELECT 1 from pg_database WHERE datname='#{testing_db}';").count > 0
+      if conn.execute("SELECT 1 from pg_database WHERE datname='#{testing_db}';").any?
         conn.execute("DROP DATABASE #{testing_db}")
       end
       conn.execute("CREATE DATABASE #{testing_db}")
@@ -81,7 +81,7 @@ module DbSupport
         SELECT * FROM information_schema.table_constraints
         WHERE table_name = '#{table_name}' AND constraint_type = 'PRIMARY KEY';
       SQL
-      result.count.positive?
+      result.any?
     end
   end
 end
