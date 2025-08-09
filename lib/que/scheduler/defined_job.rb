@@ -1,42 +1,53 @@
-require "hashie"
+require "sorbet-runtime"
 require "fugit"
 
 # This is the definition of one scheduleable job in the que-scheduler config yml file.
 module Que
   module Scheduler
-    class DefinedJob < Hashie::Dash
-      include Hashie::Extensions::Dash::PropertyTranslation
+    class DefinedJob < T::Struct
+      extend T::Sig
 
       DEFINED_JOB_TYPES = [
         DEFINED_JOB_TYPE_DEFAULT = :default,
         DEFINED_JOB_TYPE_EVERY_EVENT = :every_event,
       ].freeze
 
-      property :name
-      property :job_class, transform_with: ->(v) { Object.const_get(v) }
-      property :cron, transform_with: ->(v) { Fugit::Cron.parse(v) }
-      property :queue
-      property :priority
-      property :args_array
-      property :schedule_type, default: DEFINED_JOB_TYPE_DEFAULT
+      const :name, String
+      const :job_class, Class
+      const :cron, Fugit::Cron
+      const :queue, T.nilable(String)
+      const :priority, T.nilable(Integer)
+      const :args_array, T.nilable(Array)
+      const :schedule_type, Symbol, default: DEFINED_JOB_TYPE_DEFAULT
 
       class << self
+        extend T::Sig
+
+        sig { params(options: T::Hash[Symbol, T.untyped]).returns(DefinedJob) }
         def create(options)
-          defined_job = new(options.compact)
-          defined_job.freeze.tap { |dj| dj.validate(options) }
+          transformed_options = options.compact.merge(
+            job_class: Object.const_get(options[:job_class].to_s),
+            cron: Fugit::Cron.parse(options[:cron].to_s)
+          )
+          defined_job = new(transformed_options)
+          defined_job.validate(options)
+          defined_job.freeze
         end
       end
 
       # Given a "last time", return the next Time the event will occur, or nil if it
       # is after "to".
+      sig { params(from: Time, to: Time).returns(T.nilable(Time)) }
       def next_run_time(from, to)
         next_time = cron.next_time(from)
+        # Ensure we are comparing timezone-aware times
         next_run = next_time.to_local_time.in_time_zone(next_time.zone)
         next_run <= to ? next_run : nil
       end
 
       # Given the last scheduler run time, and this run time, return all
       # the instances that should be enqueued for the job class.
+      sig { params(last_run_time: Time, as_time: Time).returns(T::Array[ToEnqueue]) }
       def calculate_missed_runs(last_run_time, as_time)
         missed_times = []
         last_time = last_run_time
@@ -48,6 +59,7 @@ module Que
         generate_to_enqueue_list(missed_times)
       end
 
+      sig { params(options: T::Hash[Symbol, T.untyped]).void }
       def validate(options)
         validate_fields_presence(options)
         validate_fields_types(options)
@@ -112,14 +124,22 @@ module Que
       private def generate_to_enqueue_list(missed_times)
         return [] if missed_times.empty?
 
-        options = to_h.slice(:args, :queue, :priority, :job_class).compact
+        # Convert T::Struct to hash for ToEnqueue.create
+        options = {
+          job_class: job_class,
+          queue: queue,
+          priority: priority,
+          args: args_array, # Default args
+        }.compact
 
         if schedule_type == DefinedJob::DEFINED_JOB_TYPE_EVERY_EVENT
           missed_times.map do |time_missed|
-            ToEnqueue.create(options.merge(args: [time_missed] + args_array))
+            # Prepend time_missed to the existing args_array
+            current_args = args_array.nil? ? [time_missed] : [time_missed] + args_array
+            ToEnqueue.create(options.merge(args: current_args))
           end
         else
-          [ToEnqueue.create(options.merge(args: args_array))]
+          [ToEnqueue.create(options)]
         end
       end
     end
