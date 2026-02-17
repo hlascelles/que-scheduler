@@ -119,7 +119,8 @@ GEM
     fugit (1.12.1)
       et-orbi (~> 1.4)
       raabro (~> 1.4)
-    hashie (5.0.0)
+    hashie (5.1.0)
+      logger
     i18n (1.14.7)
       concurrent-ruby (~> 1.0)
     io-console (0.8.0)
