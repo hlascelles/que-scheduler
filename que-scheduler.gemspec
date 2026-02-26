@@ -32,7 +32,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency "hashie", ">= 3", "< 6"
   spec.add_dependency "que", ">= 2.0", "< 3.0"
 
-  spec.add_development_dependency "activerecord", ">= 5.0", "< 8.0"
+  spec.add_development_dependency "activerecord", ">= 7.0", "< 9.0"
   spec.add_development_dependency "appraisal"
   # Ruby 3.4 needs this gem for specs, otherwise we see "cannot load such file -- base64"
   spec.add_development_dependency "base64"
@@ -46,7 +46,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "mutex_m"
   spec.add_development_dependency "pg", ">= 1.0"
   spec.add_development_dependency "pry-byebug"
-  spec.add_development_dependency "psych", "3.1.0" # Default version in dev ruby
+  spec.add_development_dependency "psych"
   spec.add_development_dependency "rake"
   spec.add_development_dependency "reek"
   spec.add_development_dependency "rspec"

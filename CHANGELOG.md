@@ -1,4 +1,8 @@
-## 6.0.0 (2025-06-03) 
+## 6.0.0 (2026-02-23)
+
+- Add ruby 4.0 specs [#595](https://github.com/hlascelles/que-scheduler/pull/595)
+
+## 6.0.0 (2025-06-03)
 
 - Add trusted publishing [#550](https://github.com/hlascelles/que-scheduler/pull/550)
 - BREAKING CHANGE: Remove automatic scheduler job enqueueing in migrations [#549](https://github.com/hlascelles/que-scheduler/pull/549)

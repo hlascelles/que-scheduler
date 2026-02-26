@@ -70,6 +70,8 @@ RSpec/MultipleExpectations:
   Max: 5
 RSpec/NoExpectationExample:
   Enabled: false
+RSpec/Output:
+  Enabled: false
 RSpec/ExpectInHook:
   Enabled: false
 RSpec/StubbedMock:

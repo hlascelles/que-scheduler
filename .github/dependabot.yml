@@ -3,5 +3,5 @@ updates:
 - package-ecosystem: bundler
   directory: "/"
   schedule:
-    interval: monthly
+    interval: semiannually
   open-pull-requests-limit: 10

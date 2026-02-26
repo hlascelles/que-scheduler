@@ -82,7 +82,9 @@ detectors:
     accept: []
   UncommunicativeModuleName:
     enabled: true
-    exclude: []
+    exclude:
+    - Migration1
+    - Migration2
     reject:
     - /^.$/
     - /[0-9]$/
