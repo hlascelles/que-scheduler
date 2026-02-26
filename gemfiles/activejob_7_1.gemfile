@@ -5,7 +5,6 @@ source "https://rubygems.org"
 gem "activejob", "~> 7.1.0"
 gem "activesupport", "~> 7.1.0"
 gem "pg", "~> 1.4"
-gem "que", "~> 2.0"
 
 group :development, :test do
   gem "fasterer"
