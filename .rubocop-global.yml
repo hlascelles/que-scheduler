@@ -107,3 +107,7 @@ Style/FrozenStringLiteralComment:
   Enabled: false
 Style/StringLiterals:
   EnforcedStyle: double_quotes
+ThreadSafety/DirChdir:
+  Enabled: true
+  Exclude:
+  - 'spec/**/*.rb' # specs are single threaded
