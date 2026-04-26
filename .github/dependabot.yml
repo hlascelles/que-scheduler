@@ -3,5 +3,9 @@ updates:
 - package-ecosystem: bundler
   directory: "/"
   schedule:
-    interval: semiannually
-  open-pull-requests-limit: 10
+    # Runs at 00:00 on the 1st day of March and September
+    interval: "0 0 1 3,9 *"
+  groups:
+    everything:
+      patterns:
+      - "*" # Bundle update everything
