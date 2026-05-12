@@ -1,33 +1,39 @@
-require "hashie"
+require "sorbet-runtime"
 require "active_support"
 require "active_support/time_with_zone"
 
 # These are the args that are used for this particular run of the scheduler.
 module Que
   module Scheduler
-    class SchedulerJobArgs < Hashie::Dash
-      property :last_run_time, required: true
-      property :job_dictionary, required: true
-      property :as_time, required: true
+    class SchedulerJobArgs < T::Struct
+      extend T::Sig
 
+      const :last_run_time, Time
+      const :job_dictionary, T::Array[String]
+      const :as_time, Time
+
+      sig { params(options: T.nilable(T::Hash[Symbol, T.untyped])).returns(SchedulerJobArgs) }
       def self.build(options)
         now = Que::Scheduler::Db.now
-        parsed =
+        parsed_options =
           if options.nil?
             # First ever run, there is nothing to do but reschedule self to run on the next minute.
             {
               last_run_time: now,
               job_dictionary: [],
+              as_time: now,
             }
           else
-            options = options.symbolize_keys
+            symbolized_options = options.transform_keys(&:to_sym)
             {
-              last_run_time:
-                Que::Scheduler::TimeZone.time_zone.parse(options.fetch(:last_run_time)),
-              job_dictionary: options.fetch(:job_dictionary),
+              last_run_time: Que::Scheduler::TimeZone.time_zone.parse(
+                symbolized_options.fetch(:last_run_time).to_s
+              ),
+              job_dictionary: symbolized_options.fetch(:job_dictionary),
+              as_time: now,
             }
           end
-        SchedulerJobArgs.new(parsed.merge(as_time: now))
+        new(parsed_options)
       end
     end
   end

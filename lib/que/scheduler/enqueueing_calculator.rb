@@ -1,14 +1,24 @@
+require "sorbet-runtime"
 require "fugit"
 
 module Que
   module Scheduler
     module EnqueueingCalculator
-      class Result < Hashie::Dash
-        property :missed_jobs, required: true
-        property :job_dictionary, required: true
+      class Result < T::Struct
+        extend T::Sig
+        const :missed_jobs, T::Array[ToEnqueue]
+        const :job_dictionary, T::Array[String]
       end
 
       class << self
+        extend T::Sig
+
+        sig {
+          params(
+            scheduler_config: T::Array[DefinedJob],
+            scheduler_job_args: SchedulerJobArgs
+          ).returns(Result)
+        }
         def parse(scheduler_config, scheduler_job_args)
           job_dictionary = []
 
