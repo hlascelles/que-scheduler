@@ -1,4 +1,8 @@
-## 6.0.0 (2026-02-23)
+## 7.0.0 (2026-05-15)
+
+- Use ISO 8601 every_event args [#598](https://github.com/hlascelles/que-scheduler/pull/598)
+
+## 6.0.1 (2026-02-23)
 
 - Add ruby 4.0 specs [#595](https://github.com/hlascelles/que-scheduler/pull/595)
 

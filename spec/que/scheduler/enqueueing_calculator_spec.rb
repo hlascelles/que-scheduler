@@ -45,7 +45,7 @@ RSpec.describe Que::Scheduler::EnqueueingCalculator do
 
     # Now tip it over the required time by a 1 second so it should run.
     # Since it is an `every_event` job it should receive the schedule time as an arg.
-    expected_arg_time = Time.zone.parse("2017-12-01T07:05:00-08")
+    expected_arg_time = Time.zone.parse("2017-12-01T07:05:00-08").iso8601
     run_test_with_times(
       last_run, this_run + 1.second, [{ job_class: TimezoneTestJob, args: [expected_arg_time] }]
     )
@@ -90,14 +90,17 @@ RSpec.describe Que::Scheduler::EnqueueingCalculator do
   end
 
   it "enqueues an every_event job once with date arg if seen to be missed once" do
+    arg_time = Time.zone.parse("2017-10-08T06:10:00").iso8601
     run_test(
       "2017-10-08T06:09:59",
       2.seconds,
-      [{ job_class: DailyTestJob, args: [Time.zone.parse("2017-10-08T06:10:00"), "Single arg"] }]
+      [{ job_class: DailyTestJob, args: [arg_time, "Single arg"] }]
     )
   end
 
   it "enqueues an every_event job multiple times if missed repeatedly" do
+    arg_time1 = Time.zone.parse("2017-10-08T06:10:00").iso8601
+    arg_time2 = Time.zone.parse("2017-10-09T06:10:00").iso8601
     run_test(
       "2017-10-08T02:09:59",
       2.days,
@@ -110,29 +113,29 @@ RSpec.describe Que::Scheduler::EnqueueingCalculator do
         { job_class: SpecifiedByClassTestJob, args: ["One arg"] },
         # These are "every_event", so all their missed schedules are enqueued, with that
         # Time as an argument.
-        { job_class: DailyTestJob, args: [Time.zone.parse("2017-10-08T06:10:00"), "Single arg"] },
-        { job_class: DailyTestJob, args: [Time.zone.parse("2017-10-09T06:10:00"), "Single arg"] },
+        { job_class: DailyTestJob, args: [arg_time1, "Single arg"] },
+        { job_class: DailyTestJob, args: [arg_time2, "Single arg"] },
         {
           job_class: TwiceDailyTestJob,
-          args: [Time.zone.parse("2017-10-08T11:10:00")],
+          args: [Time.zone.parse("2017-10-08T11:10:00").iso8601],
           queue: "backlog",
           priority: 35,
         },
         {
           job_class: TwiceDailyTestJob,
-          args: [Time.zone.parse("2017-10-08T16:10:00")],
+          args: [Time.zone.parse("2017-10-08T16:10:00").iso8601],
           queue: "backlog",
           priority: 35,
         },
         {
           job_class: TwiceDailyTestJob,
-          args: [Time.zone.parse("2017-10-09T11:10:00")],
+          args: [Time.zone.parse("2017-10-09T11:10:00").iso8601],
           queue: "backlog",
           priority: 35,
         },
         {
           job_class: TwiceDailyTestJob,
-          args: [Time.zone.parse("2017-10-09T16:10:00")],
+          args: [Time.zone.parse("2017-10-09T16:10:00").iso8601],
           queue: "backlog",
           priority: 35,
         },
