@@ -3,6 +3,27 @@ require "spec_helper"
 RSpec.describe Que::Scheduler::Jobs::QueSchedulerAuditClearDownJob do
   include_context "when audit testing"
 
+  describe ".enqueue" do
+    it "uses the configured scheduler queue" do
+      Que::Scheduler.configuration.que_scheduler_queue = "low_priority"
+
+      job = described_class.enqueue(retain_row_count: 1)
+      queue = Que::Scheduler::DbSupport.job_attributes(job).fetch(:queue)
+
+      expect(queue).to eq("low_priority")
+    end
+
+    it "allows the queue to be overridden when enqueued" do
+      job = described_class.enqueue(
+        retain_row_count: 1,
+        job_options: { queue: "maintenance" }
+      )
+      queue = Que::Scheduler::DbSupport.job_attributes(job).fetch(:queue)
+
+      expect(queue).to eq("maintenance")
+    end
+  end
+
   def insert_test_rows
     now = Que::Scheduler::Db.now
     initial = 10
