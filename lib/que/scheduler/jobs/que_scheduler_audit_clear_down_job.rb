@@ -26,6 +26,7 @@ module Que
 
         # Very low priority
         self.priority = 100
+        self.queue = -> { Que::Scheduler.configuration.que_scheduler_queue }
 
         def run(options)
           retain_row_count = options.symbolize_keys.fetch(:retain_row_count)
