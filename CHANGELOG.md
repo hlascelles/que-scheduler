@@ -1,3 +1,7 @@
+## 7.0.1 (2027-07-21)
+
+- Use scheduler queue for audit clear-down job [#599](https://github.com/hlascelles/que-scheduler/pull/599)
+
 ## 7.0.0 (2026-05-15)
 
 - Use ISO 8601 every_event args [#598](https://github.com/hlascelles/que-scheduler/pull/598)

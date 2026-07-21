@@ -327,13 +327,14 @@ This gem was inspired by the makers of the excellent [Que](https://github.com/ch
 
 ## Contributors
 
-* @bnauta
-* @bjeanes
 * @JackDanger
+* @ajoneil
+* @bjeanes
+* @bnauta
+* @ippachi
 * @jish
 * @joehorsnell
 * @krzyzak
-* @papodaca
-* @ajoneil
-* @ippachi
 * @milgner
+* @oiahoon
+* @papodaca
