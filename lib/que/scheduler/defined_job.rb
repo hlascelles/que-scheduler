@@ -116,10 +116,11 @@ module Que
 
         if schedule_type == DefinedJob::DEFINED_JOB_TYPE_EVERY_EVENT
           missed_times.map do |time_missed|
-            ToEnqueue.create(options.merge(args: [time_missed.iso8601] + args_array))
+            ToEnqueue.create(options.merge(run_at: time_missed,
+                                           args: [time_missed.iso8601] + args_array))
           end
         else
-          [ToEnqueue.create(options.merge(args: args_array))]
+          [ToEnqueue.create(options.merge(run_at: missed_times.last, args: args_array))]
         end
       end
     end
