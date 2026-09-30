@@ -20,16 +20,25 @@ RSpec.describe Que::Scheduler::EnqueueingCalculator do
   end
 
   it "enqueues the HalfHourlyTestJob if half an hour has gone by" do
-    run_test("2017-10-08T16:40:32", 31.minutes, [{ job_class: HalfHourlyTestJob }])
+    run_test(
+      "2017-10-08T16:40:32", 31.minutes,
+      [{ job_class: HalfHourlyTestJob, run_at: Time.zone.parse("2017-10-08T17:00:00") }]
+    )
   end
 
   it "enqueues the HalfHourlyTestJob just once if more than an hour has gone by" do
     # Not "every_event", so, we just schedule the latest
-    run_test("2017-10-08T16:40:32", 61.minutes, [{ job_class: HalfHourlyTestJob }])
+    run_test(
+      "2017-10-08T16:40:32", 61.minutes,
+      [{ job_class: HalfHourlyTestJob, run_at: Time.zone.parse("2017-10-08T17:30:00") }]
+    )
   end
 
   it "enqueues if the run time is exactly the cron time" do
-    run_test("2017-10-08T16:59:59", 1.second, [{ job_class: HalfHourlyTestJob }])
+    run_test(
+      "2017-10-08T16:59:59", 1.second,
+      [{ job_class: HalfHourlyTestJob, run_at: Time.zone.parse("2017-10-08T17:00:00") }]
+    )
   end
 
   it "enqueues if a job has been defined in a different timezone" do
@@ -47,7 +56,8 @@ RSpec.describe Que::Scheduler::EnqueueingCalculator do
     # Since it is an `every_event` job it should receive the schedule time as an arg.
     expected_arg_time = Time.zone.parse("2017-12-01T07:05:00-08").iso8601
     run_test_with_times(
-      last_run, this_run + 1.second, [{ job_class: TimezoneTestJob, args: [expected_arg_time] }]
+      last_run, this_run + 1.second, [{ job_class: TimezoneTestJob, args: [expected_arg_time],
+                                        run_at: Time.zone.parse(expected_arg_time) }]
     )
   end
 
@@ -61,7 +71,8 @@ RSpec.describe Que::Scheduler::EnqueueingCalculator do
     run_test(
       "2017-10-08T11:39:59",
       2.seconds,
-      [{ job_class: WithArgsTestJob, args: ["My Args", 1234, { "some_hash" => true }] }]
+      [{ job_class: WithArgsTestJob, args: ["My Args", 1234, { "some_hash" => true }],
+         run_at: Time.zone.parse("2017-10-08T11:40:00") }]
     )
   end
 
@@ -69,7 +80,8 @@ RSpec.describe Que::Scheduler::EnqueueingCalculator do
     run_test(
       "2017-10-08T11:41:59",
       2.seconds,
-      [{ job_class: WithHashArgsTestJob, args: [{ "this" => "that" }] }]
+      [{ job_class: WithHashArgsTestJob, args: [{ "this" => "that" }],
+         run_at: Time.zone.parse("2017-10-08T11:42:00") }]
     )
   end
 
@@ -77,7 +89,8 @@ RSpec.describe Que::Scheduler::EnqueueingCalculator do
     run_test(
       "2017-10-08T11:43:59",
       2.seconds,
-      [{ job_class: WithNilArgTestJob, args: [nil] }]
+      [{ job_class: WithNilArgTestJob, args: [nil],
+         run_at: Time.zone.parse("2017-10-08T11:44:00") }]
     )
   end
 
@@ -85,7 +98,8 @@ RSpec.describe Que::Scheduler::EnqueueingCalculator do
     run_test(
       "2017-10-08T03:09:59",
       2.seconds,
-      [{ job_class: SpecifiedByClassTestJob, args: ["One arg"] }]
+      [{ job_class: SpecifiedByClassTestJob, args: ["One arg"],
+         run_at: Time.zone.parse("2017-10-08T03:10:00") }]
     )
   end
 
@@ -94,7 +108,8 @@ RSpec.describe Que::Scheduler::EnqueueingCalculator do
     run_test(
       "2017-10-08T06:09:59",
       2.seconds,
-      [{ job_class: DailyTestJob, args: [arg_time, "Single arg"] }]
+      [{ job_class: DailyTestJob, args: [arg_time, "Single arg"],
+         run_at: Time.zone.parse(arg_time) }]
     )
   end
 
@@ -106,36 +121,46 @@ RSpec.describe Que::Scheduler::EnqueueingCalculator do
       2.days,
       [
         # These are "missable", so only come up once
-        { job_class: HalfHourlyTestJob },
-        { job_class: WithArgsTestJob, args: ["My Args", 1234, { "some_hash" => true }] },
-        { job_class: WithHashArgsTestJob, args: [{ "this" => "that" }] }, # One arg which is a hash
-        { job_class: WithNilArgTestJob, args: [nil] }, # One arg which is a nil
-        { job_class: SpecifiedByClassTestJob, args: ["One arg"] },
+        { job_class: HalfHourlyTestJob, run_at: Time.zone.parse("2017-10-10T02:00:00") },
+        { job_class: WithArgsTestJob, args: ["My Args", 1234, { "some_hash" => true }],
+          run_at: Time.zone.parse("2017-10-09T11:40:00") },
+        { job_class: WithHashArgsTestJob, args: [{ "this" => "that" }],
+          run_at: Time.zone.parse("2017-10-09T11:42:00") },
+        { job_class: WithNilArgTestJob, args: [nil],
+          run_at: Time.zone.parse("2017-10-09T11:44:00") },
+        { job_class: SpecifiedByClassTestJob, args: ["One arg"],
+          run_at: Time.zone.parse("2017-10-09T03:10:00") },
         # These are "every_event", so all their missed schedules are enqueued, with that
         # Time as an argument.
-        { job_class: DailyTestJob, args: [arg_time1, "Single arg"] },
-        { job_class: DailyTestJob, args: [arg_time2, "Single arg"] },
+        { job_class: DailyTestJob, args: [arg_time1, "Single arg"],
+          run_at: Time.zone.parse(arg_time1) },
+        { job_class: DailyTestJob, args: [arg_time2, "Single arg"],
+          run_at: Time.zone.parse(arg_time2) },
         {
           job_class: TwiceDailyTestJob,
           args: [Time.zone.parse("2017-10-08T11:10:00").iso8601],
+          run_at: Time.zone.parse("2017-10-08T11:10:00"),
           queue: "backlog",
           priority: 35,
         },
         {
           job_class: TwiceDailyTestJob,
           args: [Time.zone.parse("2017-10-08T16:10:00").iso8601],
+          run_at: Time.zone.parse("2017-10-08T16:10:00"),
           queue: "backlog",
           priority: 35,
         },
         {
           job_class: TwiceDailyTestJob,
           args: [Time.zone.parse("2017-10-09T11:10:00").iso8601],
+          run_at: Time.zone.parse("2017-10-09T11:10:00"),
           queue: "backlog",
           priority: 35,
         },
         {
           job_class: TwiceDailyTestJob,
           args: [Time.zone.parse("2017-10-09T16:10:00").iso8601],
+          run_at: Time.zone.parse("2017-10-09T16:10:00"),
           queue: "backlog",
           priority: 35,
         },

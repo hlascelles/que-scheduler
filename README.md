@@ -123,11 +123,13 @@ A job can have a `schedule_type` assigned to it. Valid values are:
   times go by during an extended period of downtime (eg a long maintenance window) then only one job
   will be enqueued when the system starts back up. Multiple missed events are coalesced. This mimics
   the way resque-scheduler would perform if it were taken down for some time.
+  The job's `run_at` is the latest missed cron time.
 1. `every_event` - Every cron match will result in a job being scheduled. If multiple cron times go 
   by during an extended period of downtime, then a job will be scheduled for every one missed on 
   startup. This `schedule_type` should be used for regular batch jobs that need to know which time
   they are running a batch for. The job will always be scheduled with an ISO8601 string of the cron 
   that matched as the first argument. 
+  Its `run_at` is that same cron time, so overdue jobs retain their scheduled order within a priority.
   
   An example would be an eventing DailyReportJob which summarises a day's sales. If no jobs run for
   a few days due to a technical failure, then on recovery a report would still be needed for each 

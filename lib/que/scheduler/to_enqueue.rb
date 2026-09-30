@@ -14,7 +14,7 @@ module Que
       class << self
         def create(options)
           type_from_job_class(options.fetch(:job_class)).new(
-            options.merge(run_at: Que::Scheduler::Db.now)
+            options.merge(run_at: options.fetch(:run_at) { Que::Scheduler::Db.now })
           )
         end
 
