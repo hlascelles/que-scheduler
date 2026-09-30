@@ -1,4 +1,8 @@
-## 7.0.1 (2027-07-21)
+## 7.1.1 (2026-09-30)
+
+- Preserve scheduled times for overdue jobs [#601](https://github.com/hlascelles/que-scheduler/pull/601)
+
+## 7.0.1 (2026-07-21)
 
 - Use scheduler queue for audit clear-down job [#599](https://github.com/hlascelles/que-scheduler/pull/599)
 
