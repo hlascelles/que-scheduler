@@ -27,6 +27,7 @@ RSpec.describe Que::Scheduler::SchedulerJob do
     SQL
   end
 
+  # :reek:UtilityFunction
   def audited_run_times
     Que::Scheduler::DbSupport.execute(
       "SELECT run_at FROM que_scheduler_audit_enqueued ORDER BY run_at"
