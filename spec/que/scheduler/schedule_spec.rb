@@ -12,6 +12,26 @@ RSpec.describe Que::Scheduler::Schedule do
     '
   }
 
+  describe ".from_yaml" do
+    it "supports YAML anchors, aliases and merge keys" do
+      schedule = described_class.from_yaml(<<~YAML)
+        SpecifiedByClassTestJob: &base
+          cron: "02 11 * * *"
+          queue: shared
+          priority: 25
+        HalfHourlyTestJob:
+          <<: *base
+          cron: "0,30 * * * *"
+      YAML
+
+      expect(schedule.keys).to eq(%w[SpecifiedByClassTestJob HalfHourlyTestJob])
+      job = schedule.fetch("HalfHourlyTestJob")
+      expect(job.queue).to eq("shared")
+      expect(job.priority).to eq(25)
+      expect(job.cron.original).to eq("0,30 * * * *")
+    end
+  end
+
   describe ".schedule" do
     it "allows access via ::Que::Scheduler.schedule" do
       expect(described_class).to receive(:schedule)

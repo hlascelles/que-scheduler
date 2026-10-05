@@ -31,7 +31,7 @@ module Que
         end
 
         def from_yaml(config)
-          config_hash = YAML.safe_load(config)
+          config_hash = YAML.safe_load(config, aliases: true)
           from_hash(config_hash)
         end
 
