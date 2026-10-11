@@ -1,10 +1,9 @@
 PATH
   remote: .
   specs:
-    que-scheduler (8.0.0)
+    que-scheduler (9.0.0)
       activesupport (>= 8.0)
       fugit (~> 1.1, >= 1.11.1)
-      hashie (>= 3, < 6)
       que (>= 2.0, < 3.0)
       sorbet-runtime (>= 0.5)
 
@@ -114,8 +113,6 @@ GEM
     fugit (1.12.1)
       et-orbi (~> 1.4)
       raabro (~> 1.4)
-    hashie (5.1.0)
-      logger
     i18n (1.14.8)
       concurrent-ruby (~> 1.0)
     io-console (0.8.2)

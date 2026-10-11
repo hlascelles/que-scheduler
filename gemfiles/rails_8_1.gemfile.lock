@@ -1,10 +1,9 @@
 PATH
   remote: ..
   specs:
-    que-scheduler (8.0.0)
+    que-scheduler (9.0.0)
       activesupport (>= 8.0)
       fugit (~> 1.1, >= 1.11.1)
-      hashie (>= 3, < 6)
       que (>= 2.0, < 3.0)
       sorbet-runtime (>= 0.5)
 
@@ -118,8 +117,6 @@ GEM
       raabro (~> 1.4)
     globalid (1.4.0)
       activesupport (>= 6.1)
-    hashie (5.1.0)
-      logger
     i18n (1.15.2)
       concurrent-ruby (~> 1.0)
     io-console (0.9.4)
@@ -432,7 +429,6 @@ CHECKSUMS
   fasterer (0.11.0) sha256=9c38b77583584f3339a729eb077fd8f2856a317abe747528f6563d7c23e9dda8
   fugit (1.14.0) sha256=e311a9cc85a54bb67649df45060e721282a1e2c8ebad40e41874a3a7d576f37e
   globalid (1.4.0) sha256=037f12fbf1d9d7a014d501c2d5c77356fd4ddd96d7a7991d6700bba96706f427
-  hashie (5.1.0) sha256=c266471896f323c446ea8207f8ffac985d2718df0a0ba98651a3057096ca3870
   i18n (1.15.2) sha256=00f9eb62412fe593b2a65a97daa75300d37abb8f7202ec748e94b6d46a9dd1b5
   io-console (0.9.4) sha256=a403304f32928ee85e56d457b4612ca43f2703b561a3258844992bd24085fbb1
   irb (1.18.0) sha256=de9454a0703a54704b9811a5ef31a60c86949fbf4013fcf244fabc7c775248e3
@@ -466,7 +462,7 @@ CHECKSUMS
   pry-byebug (3.12.0) sha256=594e094ae8a8390a7ad4c7b36ae36e13304ed02664c67417d108dc5f7213d1b7
   psych (5.5.0) sha256=4b245bbbd0f3238df8ccee766ebc1a6b062b10e4ee1d3284eb588739ba156a0a
   que (2.4.1) sha256=a7ba7679d13ef499da5de30a147f910e9e6d9d60cad15f8691a0b0b5bc758a7b
-  que-scheduler (8.0.0)
+  que-scheduler (9.0.0)
   raabro (1.5.0) sha256=3f998a7bc84f9c84df3ab580634d2e0a5bda4f0841168d56035f529c9877440a
   racc (1.8.1) sha256=4a7f6929691dbec8b5209a0b373bc2614882b55fc5d2e447a21aaa691303d62f
   rack (3.2.7) sha256=93e13e1c24f93556671d85d2d79fa228c3485815c50d7e2f265b5330c6528fb7

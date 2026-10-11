@@ -2,6 +2,8 @@ require "spec_helper"
 require "active_support/core_ext/numeric/time"
 
 RSpec.describe Que::Scheduler::EnqueueingCalculator do
+  let(:to_enqueue_defaults) { { args: [], queue: nil, priority: nil } }
+
   let(:all_keys) {
     %w[
       HalfHourlyTestJob
@@ -181,11 +183,8 @@ RSpec.describe Que::Scheduler::EnqueueingCalculator do
       as_time: as_time
     )
     out = described_class.parse(::Que::Scheduler.schedule.values, scheduler_job_args)
-    missed_jobs = HashSupport.hash_to_enqueues(expect_scheduled)
-    exp = Que::Scheduler::EnqueueingCalculator::Result.new(
-      missed_jobs: missed_jobs, job_dictionary: all_keys
-    )
-    expect(out.missed_jobs).to eq(exp.missed_jobs)
-    expect(out.job_dictionary).to eq(exp.job_dictionary)
+    expected_jobs = expect_scheduled.map { have_attributes(to_enqueue_defaults.merge(it)) }
+    expect(out.missed_jobs).to match(expected_jobs)
+    expect(out.job_dictionary).to eq(all_keys)
   end
 end

@@ -1,39 +1,25 @@
 # typed: true
 
-require "hashie"
 require "sorbet-runtime"
 require "fugit"
+require_relative "schedule_type"
+require_relative "to_enqueue"
 require_relative "types"
 
 # This is the definition of one scheduleable job in the que-scheduler config yml file.
 module Que
   module Scheduler
-    class DefinedJob < Hashie::Dash
-      include Hashie::Extensions::Dash::PropertyTranslation
+    class DefinedJob < T::Struct
       extend T::Sig
 
-      DEFINED_JOB_TYPES = [
-        DEFINED_JOB_TYPE_DEFAULT = :default,
-        DEFINED_JOB_TYPE_EVERY_EVENT = :every_event,
-      ].freeze
-
-      property :name
-      property :job_class, transform_with: ->(v) { Object.const_get(v) }
-      property :cron, transform_with: ->(v) { Fugit::Cron.parse(v) }
-      property :queue
-      property :priority
-      property :args_array
-      property :schedule_type, default: DEFINED_JOB_TYPE_DEFAULT
-
-      class << self
-        extend T::Sig
-
-        sig { params(options: T::Hash[Symbol, T.anything]).returns(DefinedJob) }
-        def create(options)
-          defined_job = new(options.compact)
-          defined_job.freeze.tap { |dj| dj.validate(options) }
-        end
-      end
+      const :name, String
+      const :job_class, Class
+      const :cron, Fugit::Cron
+      # nil means use the job class's own queue and priority
+      const :queue, T.nilable(String)
+      const :priority, T.nilable(Integer)
+      const :args_array, T::Array[T.anything], default: []
+      const :schedule_type, ScheduleType, default: ScheduleType::DEFAULT
 
       # Given a "last time", return the next Time the event will occur, or nil if it
       # is after "to".
@@ -58,66 +44,23 @@ module Que
         generate_to_enqueue_list(missed_times)
       end
 
-      sig { params(options: T::Hash[Symbol, T.anything]).void }
-      def validate(options)
-        validate_fields_presence(options)
-        validate_fields_types(options)
-        validate_job_class_related(options)
-      end
-
-      # rubocop:disable Style/GuardClause -- This reads better as a conditional
-      sig { params(options: T::Hash[Symbol, T.anything]).void }
-      private def validate_fields_types(options)
-        unless queue.nil? || queue.is_a?(String)
-          err_field(:queue, options, "queue must be a string")
-        end
-        unless priority.nil? || priority.is_a?(Integer)
-          err_field(:priority, options, "priority must be an integer")
-        end
-        unless DEFINED_JOB_TYPES.include?(schedule_type)
-          err_field(:schedule_type, options, "Not in #{DEFINED_JOB_TYPES}")
-        end
-      end
-      # rubocop:enable Style/GuardClause
-
-      sig { params(options: T::Hash[Symbol, T.anything]).void }
-      private def validate_fields_presence(options)
-        err_field(:name, options, "name must be present") if name.nil?
-        err_field(:job_class, options, "job_class must be present") if job_class.nil?
-        # An invalid cron is nil
-        err_field(:cron, options, "cron must be present") if cron.nil?
-      end
-
-      sig { params(options: T::Hash[Symbol, T.anything]).void }
-      private def validate_job_class_related(options)
-        # Only support known job engines
-        return if Que::Scheduler::ToEnqueue.valid_job_class?(job_class)
-
-        err_field(:job_class, options, "Job #{job_class} was not a supported job type")
-      end
-
-      sig { params(field: Symbol, options: T::Hash[Symbol, T.anything], reason: String).returns(T.noreturn) }
-      private def err_field(field, options, reason = "")
-        schedule = Que::Scheduler.configuration.schedule_location
-        value = options[field]
-        raise "Invalid #{field} '#{value}' for '#{name}' in que-scheduler schedule #{schedule}.\n" \
-              "#{reason}"
-      end
-
       sig { params(missed_times: T::Array[ActiveSupport::TimeWithZone]).returns(T::Array[ToEnqueue]) }
       private def generate_to_enqueue_list(missed_times)
-        return [] if missed_times.empty?
+        last_missed_time = missed_times.last
+        return [] if last_missed_time.nil?
 
-        options = to_h.slice(:args, :queue, :priority, :job_class).compact
-
-        if schedule_type == DefinedJob::DEFINED_JOB_TYPE_EVERY_EVENT
-          missed_times.map do |time_missed|
-            ToEnqueue.create(options.merge(run_at: time_missed,
-                                           args: [time_missed.iso8601] + args_array))
-          end
+        if schedule_type == ScheduleType::EVERY_EVENT
+          missed_times.map { to_enqueue(it, [it.iso8601] + args_array) }
         else
-          [ToEnqueue.create(options.merge(run_at: missed_times.last, args: args_array))]
+          [to_enqueue(last_missed_time, args_array)]
         end
+      end
+
+      sig { params(run_at: ActiveSupport::TimeWithZone, args: T::Array[T.anything]).returns(ToEnqueue) }
+      private def to_enqueue(run_at, args)
+        ToEnqueue.new(
+          job_class: job_class, args: args, queue: queue, priority: priority, run_at: run_at
+        )
       end
     end
   end

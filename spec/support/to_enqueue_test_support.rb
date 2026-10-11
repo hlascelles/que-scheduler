@@ -1,5 +1,5 @@
 shared_context "when job testing" do
-  if Que::Scheduler::ToEnqueue.active_job_defined?
+  if Que::Scheduler::JobAdapters.active_job_defined?
     def expected_class_in_db(_enqueued_class)
       ActiveJob::QueueAdapters::QueAdapter::JobWrapper
     end

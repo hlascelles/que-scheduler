@@ -30,7 +30,7 @@ module Que
       self.maximum_retry_count = 1 << 128 # Heat death of universe
       self.retry_interval = RETRY_PROC
 
-      sig { params(options: T.nilable(T::Hash[T.any(String, Symbol), T.anything])).void }
+      sig { params(options: T.nilable(T::Hash[T.any(String, Symbol), Object])).void }
       def run(options = nil)
         Que::Scheduler::Db.transaction do
           Que::Scheduler::StateChecks.check
@@ -53,7 +53,7 @@ module Que
         params(
           calculator_result: EnqueueingCalculator::Result,
           logs: T::Array[String]
-        ).returns(T::Array[EnqueuedJobType])
+        ).returns(T::Array[EnqueuedJob])
       end
       def enqueue_required_jobs(calculator_result, logs)
         calculator_result.missed_jobs.filter_map do |to_enqueue|
@@ -66,7 +66,7 @@ module Que
       sig do
         params(
           to_enqueue: ToEnqueue,
-          enqueued_job: T.nilable(EnqueuedJobType),
+          enqueued_job: T.nilable(EnqueuedJob),
           logs: T::Array[String]
         ).void
       end
@@ -86,7 +86,7 @@ module Que
           scheduler_job_args: SchedulerJobArgs,
           last_full_execution: Types::TIME,
           job_dictionary: T::Array[String],
-          enqueued_jobs: T::Array[EnqueuedJobType]
+          enqueued_jobs: T::Array[EnqueuedJob]
         ).void
       end
       private def enqueue_self_again(scheduler_job_args, last_full_execution, job_dictionary,
@@ -103,17 +103,12 @@ module Que
             queue: Que::Scheduler.configuration.que_scheduler_queue,
             run_at: next_run_at,
           },
-          {
-            last_run_time: last_full_execution.iso8601,
-            job_dictionary: job_dictionary,
-          }
+          [{ last_run_time: last_full_execution.iso8601, job_dictionary: job_dictionary }]
         )
 
-        # rubocop:disable Style/GuardClause -- This reads better as a conditional
-        unless enqueued_job && DbSupport.job_attributes(enqueued_job).fetch(:job_id)
-          raise "SchedulerJob could not self-schedule. Has `.enqueue` been monkey patched?"
-        end
-        # rubocop:enable Style/GuardClause
+        return if enqueued_job
+
+        raise "SchedulerJob could not self-schedule. Has `.enqueue` been monkey patched?"
       end
     end
   end

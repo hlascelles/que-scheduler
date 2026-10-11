@@ -3,10 +3,11 @@ shared_context "when audit testing" do
 
   def enqueue_test_jobs_for_audit
     te = Que::Scheduler::ToEnqueue
+    now = Que::Scheduler::Db.now
     items = [
-      te.create(job_class: HalfHourlyTestJob, args: 5, queue: "something1"),
-      te.create(job_class: HalfHourlyTestJob, priority: 80),
-      te.create(job_class: DailyTestJob, args: 3, queue: "something3", priority: 42),
+      te.new(job_class: HalfHourlyTestJob, args: [5], queue: "something1", run_at: now),
+      te.new(job_class: HalfHourlyTestJob, priority: 80, run_at: now),
+      te.new(job_class: DailyTestJob, args: [3], queue: "something3", priority: 42, run_at: now),
     ]
     expect(items.count).to eq(test_jobs_for_audit_count)
     items.map(&:enqueue)
