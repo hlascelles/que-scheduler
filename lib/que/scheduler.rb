@@ -1,3 +1,5 @@
+# typed: true
+
 require "que/scheduler/version"
 require "que/scheduler/db_support"
 require "que/scheduler/configuration"

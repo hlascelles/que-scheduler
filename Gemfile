@@ -15,4 +15,6 @@ group :development, :test do
   gem "rubocop-rake", "> 0.7.0" # as plugin
   gem "rubocop-rspec", "> 3.5.0" # as plugin
   gem "rubocop-thread_safety"
+  gem "sorbet", require: false
+  gem "tapioca", require: false
 end

@@ -1,11 +1,16 @@
+# typed: true
+
 require "hashie"
+require "sorbet-runtime"
 require "fugit"
+require_relative "types"
 
 # This is the definition of one scheduleable job in the que-scheduler config yml file.
 module Que
   module Scheduler
-    class DefinedJob < Hashie::Dash
+    class DefinedJob < Hashie::Dash # rubocop:disable Metrics/ClassLength -- shrinks with T::Struct
       include Hashie::Extensions::Dash::PropertyTranslation
+      extend T::Sig
 
       DEFINED_JOB_TYPES = [
         DEFINED_JOB_TYPE_DEFAULT = :default,
@@ -21,6 +26,9 @@ module Que
       property :schedule_type, default: DEFINED_JOB_TYPE_DEFAULT
 
       class << self
+        extend T::Sig
+
+        sig { params(options: T::Hash[Symbol, T.anything]).returns(DefinedJob) }
         def create(options)
           defined_job = new(options.compact)
           defined_job.freeze.tap { |dj| dj.validate(options) }
@@ -29,6 +37,7 @@ module Que
 
       # Given a "last time", return the next Time the event will occur, or nil if it
       # is after "to".
+      sig { params(from: Types::TIME, to: Types::TIME).returns(T.nilable(ActiveSupport::TimeWithZone)) }
       def next_run_time(from, to)
         next_time = cron.next_time(from)
         next_run = next_time.to_local_time.in_time_zone(next_time.zone)
@@ -37,9 +46,10 @@ module Que
 
       # Given the last scheduler run time, and this run time, return all
       # the instances that should be enqueued for the job class.
+      sig { params(last_run_time: Types::TIME, as_time: Types::TIME).returns(T::Array[ToEnqueue]) }
       def calculate_missed_runs(last_run_time, as_time)
-        missed_times = []
-        last_time = last_run_time
+        missed_times = T.let([], T::Array[ActiveSupport::TimeWithZone])
+        last_time = T.let(last_run_time, Types::TIME)
         while (next_run = next_run_time(last_time, as_time))
           missed_times << next_run
           last_time = next_run
@@ -48,6 +58,7 @@ module Que
         generate_to_enqueue_list(missed_times)
       end
 
+      sig { params(options: T::Hash[Symbol, T.anything]).void }
       def validate(options)
         validate_fields_presence(options)
         validate_fields_types(options)
@@ -55,6 +66,7 @@ module Que
       end
 
       # rubocop:disable Style/GuardClause -- This reads better as a conditional
+      sig { params(options: T::Hash[Symbol, T.anything]).void }
       private def validate_fields_types(options)
         unless queue.nil? || queue.is_a?(String)
           err_field(:queue, options, "queue must be a string")
@@ -68,6 +80,7 @@ module Que
       end
       # rubocop:enable Style/GuardClause
 
+      sig { params(options: T::Hash[Symbol, T.anything]).void }
       private def validate_fields_presence(options)
         err_field(:name, options, "name must be present") if name.nil?
         err_field(:job_class, options, "job_class must be present") if job_class.nil?
@@ -75,6 +88,7 @@ module Que
         err_field(:cron, options, "cron must be present") if cron.nil?
       end
 
+      sig { params(options: T::Hash[Symbol, T.anything]).void }
       private def validate_job_class_related(options)
         # Only support known job engines
         unless Que::Scheduler::ToEnqueue.valid_job_class?(job_class)
@@ -86,7 +100,7 @@ module Que
         if queue &&
            Que::Scheduler::ToEnqueue.active_job_defined? &&
            job_class < ::ActiveJob::Base &&
-           Que::Scheduler::ToEnqueue.active_job_version < Gem::Version.create("6.0.3")
+           T.must(Que::Scheduler::ToEnqueue.active_job_version) < Gem::Version.create("6.0.3")
           puts <<~ERR
             WARNING from que-scheduler....
             Between versions 4.2.3 and 6.0.2 (inclusive) Rails did not support setting queue names
@@ -102,6 +116,7 @@ module Que
         end
       end
 
+      sig { params(field: Symbol, options: T::Hash[Symbol, T.anything], reason: String).returns(T.noreturn) }
       private def err_field(field, options, reason = "")
         schedule = Que::Scheduler.configuration.schedule_location
         value = options[field]
@@ -109,6 +124,7 @@ module Que
               "#{reason}"
       end
 
+      sig { params(missed_times: T::Array[ActiveSupport::TimeWithZone]).returns(T::Array[ToEnqueue]) }
       private def generate_to_enqueue_list(missed_times)
         return [] if missed_times.empty?
 

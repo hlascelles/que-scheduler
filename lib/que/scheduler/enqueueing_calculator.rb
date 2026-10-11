@@ -1,4 +1,7 @@
+# typed: true
+
 require "fugit"
+require "sorbet-runtime"
 
 module Que
   module Scheduler
@@ -9,6 +12,14 @@ module Que
       end
 
       class << self
+        extend T::Sig
+
+        sig do
+          params(
+            scheduler_config: T::Array[DefinedJob],
+            scheduler_job_args: SchedulerJobArgs
+          ).returns(Result)
+        end
         def parse(scheduler_config, scheduler_job_args)
           job_dictionary = []
 

@@ -1,4 +1,7 @@
+# typed: true
 # frozen_string_literal: true
+
+require "sorbet-runtime"
 
 module Que
   module Scheduler
@@ -12,6 +15,9 @@ module Que
       MAX_VERSION = Dir.glob("#{__dir__}/migrations/*").map { |d| File.basename(d) }.map(&:to_i).max
 
       class << self
+        extend T::Sig
+
+        sig { params(version: Integer).void }
         def migrate!(version:)
           # Like que, Do not migrate test DBs.
           return if defined?(Que::Testing)
@@ -27,9 +33,11 @@ module Que
         end
 
         # rubocop:disable MagicNumbers/NoReturn
+        sig { returns(Integer) }
         def db_version
           if audit_table_exists?
-            return Que::Scheduler::DbSupport.execute(TABLE_COMMENT).first[:description].to_i
+            comment = Que::Scheduler::DbSupport.execute(TABLE_COMMENT).fetch(0).fetch(:description)
+            return T.cast(comment, T.nilable(String)).to_i
           end
 
           # At this point we used to be able to tell if it was 0 or 1 by the presence of the
@@ -38,6 +46,7 @@ module Que
         end
         # rubocop:enable MagicNumbers/NoReturn
 
+        sig { returns(T::Boolean) }
         def audit_table_exists?
           result = Que::Scheduler::DbSupport.execute(<<-SQL)
             SELECT * FROM information_schema.tables WHERE table_name = '#{AUDIT_TABLE_NAME}';
@@ -47,6 +56,7 @@ module Que
 
         # This method must be used during initial installation of que-scheduler and if the
         # project migrations are squashed.
+        sig { void }
         def reenqueue_scheduler_if_missing
           raise <<~MSG unless Que::Migrations.db_version >= 6
             Cannot (re)enqueue the que-scheduler worker unless the Que migrations have been run to at least version 6.
@@ -64,15 +74,18 @@ module Que
           Que::Scheduler::DbSupport.enqueue_a_job(Que::Scheduler::SchedulerJob)
         end
 
+        sig { params(current: Integer, version: Integer).void }
         private def migrate_up(current, version)
           execute_step(current += 1, :up) until current == version
         end
 
+        sig { params(current: Integer, version: Integer).void }
         private def migrate_down(current, version)
           current += 1
           execute_step(current -= 1, :down) until current == version + 1
         end
 
+        sig { params(number: Integer, direction: Symbol).void }
         private def execute_step(number, direction)
           sql = File.read("#{__dir__}/migrations/#{number}/#{direction}.sql")
           Que::Scheduler::DbSupport.execute(sql)

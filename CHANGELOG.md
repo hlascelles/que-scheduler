@@ -1,3 +1,7 @@
+## 7.2.0 (2026-10-11)
+
+- Add sorbet type signatures and `srb tc` checks [#603](https://github.com/hlascelles/que-scheduler/pull/603)
+
 ## 7.1.1 (2026-09-30)
 
 - Preserve scheduled times for overdue jobs [#601](https://github.com/hlascelles/que-scheduler/pull/601)

@@ -1,6 +1,9 @@
+# typed: true
 # frozen_string_literal: true
 
+require "sorbet-runtime"
 require_relative "to_enqueue"
+require_relative "types"
 
 module Que
   module Scheduler
@@ -23,6 +26,15 @@ module Que
       }.freeze
 
       class << self
+        extend T::Sig
+
+        sig do
+          params(
+            scheduler_job_id: Integer,
+            executed_at: Types::TIME,
+            enqueued_jobs: T::Array[Que::Scheduler::EnqueuedJobType]
+          ).void
+        end
         def append(scheduler_job_id, executed_at, enqueued_jobs)
           ::Que::Scheduler::DbSupport.execute(INSERT_AUDIT, [scheduler_job_id, executed_at])
           enqueued_jobs.each do |j|
