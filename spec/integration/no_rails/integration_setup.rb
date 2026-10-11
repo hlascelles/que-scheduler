@@ -60,14 +60,10 @@ module IntegrationSetup
         gem "que", ENV.fetch("QUE_VERSION") { ENV["CI"] ? "MISSING IN CI!" : "2.4.1" }
         gem "que-scheduler", path: "../../../"
         gem "activerecord", ENV.fetch("ACTIVE_RECORD_VERSION")
-        # Ruby 3.4 needs this gem for specs, otherwise we see "cannot load such file -- base64"
-        gem "base64"
-        # Ruby 3.4 needs this gem for specs, otherwise we see "cannot load such file -- bigdecimal"
-        gem "bigdecimal"
+        # que 2.4.1 passes create_additions to JSON.parse, which json 3 removed
+        gem "json", "< 3"
         gem "pg"
         gem "pry-byebug"
-        # Ruby 3.4 needs this gem for specs, otherwise we see "cannot load such file -- mutex_m"
-        gem "mutex_m"
       end
 
       require "que"

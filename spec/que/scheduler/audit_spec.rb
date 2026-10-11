@@ -13,7 +13,6 @@ RSpec.describe Que::Scheduler::Audit do
       expect(audit.first[:executed_at]).to eq(executed_at)
 
       db_jobs = find_audit_enqueued_rows(expect: 3)
-      DbSupport.convert_args_column(db_jobs)
       expect(db_jobs.count).to eq(enqueued.count)
       db_jobs
     end
@@ -38,7 +37,7 @@ RSpec.describe Que::Scheduler::Audit do
               id: 1,
               scheduler_job_id: scheduler_job_id,
               job_class: "HalfHourlyTestJob",
-              queue: handles_queue_name ? "something1" : nil,
+              queue: "something1",
               priority: 100,
               args: [5],
               job_id: enqueued[0].job_id,
@@ -48,7 +47,7 @@ RSpec.describe Que::Scheduler::Audit do
               id: 2,
               scheduler_job_id: scheduler_job_id,
               job_class: "HalfHourlyTestJob",
-              queue: handles_queue_name ? Que::Scheduler.configuration.que_scheduler_queue : nil,
+              queue: Que::Scheduler.configuration.que_scheduler_queue,
               priority: 80,
               args: [],
               job_id: enqueued[1].job_id,
@@ -58,7 +57,7 @@ RSpec.describe Que::Scheduler::Audit do
               id: 3,
               scheduler_job_id: scheduler_job_id,
               job_class: "DailyTestJob",
-              queue: handles_queue_name ? "something3" : nil,
+              queue: "something3",
               priority: 42,
               args: [3],
               job_id: enqueued[2].job_id,

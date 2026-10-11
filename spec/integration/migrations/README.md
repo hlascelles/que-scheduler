@@ -5,7 +5,7 @@ See this issue for more details: https://github.com/hlascelles/que-scheduler/iss
 
 First start a postgres docker container with:
 
-`docker run -p 5430:5432 postgres:9.6.0`
+`docker run -p 5430:5432 -e POSTGRES_PASSWORD=postgres postgres:17`
 
 Then run: 
 

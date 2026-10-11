@@ -24,14 +24,7 @@ if Gem.loaded_specs["rails"]
   require "rails"
   require "rails/railtie"
 end
-if Gem.loaded_specs["activejob"]
-  require "active_job"
-  # This adapter was removed in later versions of Rails, so we only attempt to load it. It is also
-  # supplied in the que gem itself.
-  # https://github.com/rails/rails/pull/46005
-  # https://github.com/que-rb/que/blob/master/lib/que/active_job/extensions.rb#L113
-  require "active_job/queue_adapters/que_adapter" if ActiveJob.gem_version < Gem::Version.new("7.1")
-end
+require "active_job" if Gem.loaded_specs["activejob"]
 
 Bundler.require :default, :development
 
@@ -67,8 +60,9 @@ RSpec.configure do |config|
     DbSupport.setup_db
   end
   config.around do |example|
-    DatabaseCleaner.cleaning do
+    ActiveRecord::Base.transaction do
       example.run
+      raise ActiveRecord::Rollback
     end
   end
 end

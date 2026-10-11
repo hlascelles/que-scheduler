@@ -42,21 +42,6 @@ module Que
           Object.const_defined?(:ActiveJob)
         end
 
-        sig { returns(T.nilable(Gem::Version)) }
-        def active_job_version
-          Gem.loaded_specs["activejob"]&.version
-        end
-
-        sig { returns(T::Boolean) }
-        def active_job_version_supports_queues?
-          # Supporting queue name in ActiveJob was removed in Rails 4.2.3
-          # https://github.com/rails/rails/pull/19498
-          # and readded in Rails 6.0.3
-          # https://github.com/rails/rails/pull/38635
-          version = ToEnqueue.active_job_version
-          !version.nil? && version >= Gem::Version.create("6.0.3")
-        end
-
         sig { params(job_class: Class).returns(T.nilable(T.class_of(ToEnqueue))) }
         private def type_from_job_class(job_class)
           types.each do |type, implementation|
@@ -90,7 +75,7 @@ module Que
           args
         )
 
-        return nil if job.nil? || !job # nil in Rails < 6.1, false after.
+        return nil if job.nil? || !job
 
         # Now read the just inserted job back out of the DB to get the actual values that will
         # be used when the job is worked.
@@ -107,7 +92,7 @@ module Que
       def enqueue
         job = enqueue_active_job
 
-        return nil if job.nil? || !job # nil in Rails < 6.1, false after.
+        return nil if job.nil? || !job
 
         enqueued_values = calculate_enqueued_values(job)
         EnqueuedJobType.new(enqueued_values)
@@ -121,9 +106,6 @@ module Que
 
         scheduled_at = self.class.extract_scheduled_at(data[:scheduled_at])
 
-        # Rails didn't support queues for ActiveJob for a while
-        used_queue = data[:queue_name] if ToEnqueue.active_job_version_supports_queues?
-
         # We can't get the priority out of the DB, as the returned `job` doesn't give us access
         # to the underlying ActiveJob that was scheduled. We have no option but to assume
         # it was what we told it to use. If no priority was specified, we must assume it was
@@ -132,7 +114,7 @@ module Que
 
         {
           args: data.fetch(:arguments),
-          queue: used_queue,
+          queue: data[:queue_name],
           priority: assume_used_priority,
           run_at: scheduled_at,
           job_class: job_class.to_s,
@@ -162,20 +144,10 @@ module Que
       class << self
         extend T::Sig
 
-        # ActiveJob scheduled_at is returned as a float, or a string post Rails 7.1,
-        # and we want a Time for consistency
-        sig { params(scheduled_at: T.anything).returns(T.nilable(ActiveSupport::TimeWithZone)) }
+        # ActiveJob serialises scheduled_at as an ISO 8601 string; we want a Time
+        sig { params(scheduled_at: T.nilable(String)).returns(T.nilable(ActiveSupport::TimeWithZone)) }
         def extract_scheduled_at(scheduled_at)
-          # rubocop:disable Style/EmptyElse
-          case scheduled_at
-          when Float
-            Que::Scheduler::TimeZone.time_zone.at(scheduled_at)
-          when String
-            Que::Scheduler::TimeZone.time_zone.parse(scheduled_at)
-          else
-            nil
-          end
-          # rubocop:enable Style/EmptyElse
+          scheduled_at && Que::Scheduler::TimeZone.time_zone.parse(scheduled_at)
         end
       end
     end

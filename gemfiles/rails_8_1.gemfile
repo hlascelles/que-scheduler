@@ -2,8 +2,9 @@
 
 source "https://rubygems.org"
 
-gem "activejob", "~> 7.1.0"
-gem "activesupport", "~> 7.1.0"
+gem "activejob", "~> 8.1.0"
+gem "activesupport", "~> 8.1.0"
+gem "json", "< 3"
 gem "pg", "~> 1.4"
 
 group :development, :test do

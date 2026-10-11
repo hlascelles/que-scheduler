@@ -1,5 +1,4 @@
 AllCops:
-  TargetRubyVersion: 3.1
   Exclude:
   - 'lib/que-scheduler.rb' # Fails "Naming/FileName" but is right for catching old require style
 

@@ -14,6 +14,8 @@ RSpec.describe Que::Scheduler::Migrations do
     it "migrates up and down versions" do
       # Readd the job that was removed by the rspec before all
       ::Que::Scheduler::SchedulerJob.enqueue
+      # Postgres won't CREATE INDEX on que_jobs with deferred trigger events pending
+      ActiveRecord::Base.connection.execute("SET CONSTRAINTS ALL IMMEDIATE")
       ::Que::Scheduler::StateChecks.check
 
       expect(described_class.db_version).to eq(8)
@@ -94,7 +96,6 @@ RSpec.describe Que::Scheduler::Migrations do
       expect(audit.first[:executed_at].to_s).to start_with("2017-01-01 00:00:00")
       # .. with the associated enqueued row
       audit = Que::Scheduler::DbSupport.execute("SELECT * FROM que_scheduler_audit_enqueued")
-      DbSupport.convert_args_column(audit)
       expect(audit.count).to eq(1)
       expect(audit.first[:scheduler_job_id]).to eq(17)
       expect(audit.first[:job_class]).to eq("DailyTestJob")

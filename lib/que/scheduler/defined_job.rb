@@ -8,7 +8,7 @@ require_relative "types"
 # This is the definition of one scheduleable job in the que-scheduler config yml file.
 module Que
   module Scheduler
-    class DefinedJob < Hashie::Dash # rubocop:disable Metrics/ClassLength -- shrinks with T::Struct
+    class DefinedJob < Hashie::Dash
       include Hashie::Extensions::Dash::PropertyTranslation
       extend T::Sig
 
@@ -91,29 +91,9 @@ module Que
       sig { params(options: T::Hash[Symbol, T.anything]).void }
       private def validate_job_class_related(options)
         # Only support known job engines
-        unless Que::Scheduler::ToEnqueue.valid_job_class?(job_class)
-          err_field(:job_class, options, "Job #{job_class} was not a supported job type")
-        end
+        return if Que::Scheduler::ToEnqueue.valid_job_class?(job_class)
 
-        # queue name is only supported for a subrange of ActiveJob versions. Print this out as a
-        # warning.
-        if queue &&
-           Que::Scheduler::ToEnqueue.active_job_defined? &&
-           job_class < ::ActiveJob::Base &&
-           T.must(Que::Scheduler::ToEnqueue.active_job_version) < Gem::Version.create("6.0.3")
-          puts <<~ERR
-            WARNING from que-scheduler....
-            Between versions 4.2.3 and 6.0.2 (inclusive) Rails did not support setting queue names
-            on que jobs with ActiveJob, so que-scheduler cannot support it.
-            See removed in Rails 4.2.3
-              https://github.com/rails/rails/pull/19498
-            And readded in Rails 6.0.3
-              https://github.com/rails/rails/pull/38635
-
-            Please remove all "queue" keys from ActiveJobs defined in the que-scheduler.yml config.
-            Specifically #{queue} for job #{name}.
-          ERR
-        end
+        err_field(:job_class, options, "Job #{job_class} was not a supported job type")
       end
 
       sig { params(field: Symbol, options: T::Hash[Symbol, T.anything], reason: String).returns(T.noreturn) }

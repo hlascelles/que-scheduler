@@ -1,6 +1,5 @@
 # typed: true
 
-require "pathname"
 require "que"
 require "sorbet-runtime"
 require_relative "db_support"
