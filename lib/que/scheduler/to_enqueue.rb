@@ -1,44 +1,63 @@
+# typed: true
+
 require "que"
+require "sorbet-runtime"
 
 # This module uses polymorphic dispatch to centralise the differences between supporting Que::Job
 # and other job systems.
 module Que
   module Scheduler
     class ToEnqueue < Hashie::Dash
+      extend T::Sig
+      extend T::Helpers
+
+      abstract!
+
       property :args, required: true, default: []
       property :queue
       property :priority
       property :run_at, required: true
       property :job_class, required: true
 
+      sig { abstract.returns(T.nilable(EnqueuedJobType)) }
+      def enqueue; end
+
       class << self
+        extend T::Sig
+
+        sig { params(options: T::Hash[Symbol, T.anything]).returns(ToEnqueue) }
         def create(options)
-          type_from_job_class(options.fetch(:job_class)).new(
+          T.must(type_from_job_class(T.cast(options.fetch(:job_class), Class))).new(
             options.merge(run_at: options.fetch(:run_at) { Que::Scheduler::Db.now })
           )
         end
 
+        sig { params(job_class: Class).returns(T::Boolean) }
         def valid_job_class?(job_class)
           type_from_job_class(job_class).present?
         end
 
+        sig { returns(T::Boolean) }
         def active_job_defined?
           Object.const_defined?(:ActiveJob)
         end
 
+        sig { returns(T.nilable(Gem::Version)) }
         def active_job_version
           Gem.loaded_specs["activejob"]&.version
         end
 
+        sig { returns(T::Boolean) }
         def active_job_version_supports_queues?
           # Supporting queue name in ActiveJob was removed in Rails 4.2.3
           # https://github.com/rails/rails/pull/19498
           # and readded in Rails 6.0.3
           # https://github.com/rails/rails/pull/38635
-          ToEnqueue.active_job_version && ToEnqueue.active_job_version >=
-            Gem::Version.create("6.0.3")
+          version = ToEnqueue.active_job_version
+          !version.nil? && version >= Gem::Version.create("6.0.3")
         end
 
+        sig { params(job_class: Class).returns(T.nilable(T.class_of(ToEnqueue))) }
         private def type_from_job_class(job_class)
           types.each do |type, implementation|
             return implementation if job_class < type
@@ -46,6 +65,7 @@ module Que
           nil
         end
 
+        sig { returns(T::Hash[Class, T.class_of(ToEnqueue)]) }
         private def types
           @types ||=
             begin
@@ -61,10 +81,11 @@ module Que
 
     # For jobs of type Que::Job
     class QueJobType < ToEnqueue
+      sig { override.returns(T.nilable(EnqueuedJobType)) }
       def enqueue
         job_settings = to_h.slice(:queue, :priority, :run_at).compact
         job = Que::Scheduler::DbSupport.enqueue_a_job(
-          job_class,
+          T.cast(job_class, T.class_of(Que::Job)),
           job_settings,
           args
         )
@@ -82,6 +103,7 @@ module Que
 
     # For jobs of type ActiveJob
     class ActiveJobType < ToEnqueue
+      sig { override.returns(T.nilable(EnqueuedJobType)) }
       def enqueue
         job = enqueue_active_job
 
@@ -91,6 +113,7 @@ module Que
         EnqueuedJobType.new(enqueued_values)
       end
 
+      sig { params(job: ::ActiveJob::Base).returns(T::Hash[Symbol, T.anything]) }
       def calculate_enqueued_values(job)
         # Now read the just inserted job back out of the DB to get the actual values that will
         # be used when the job is worked.
@@ -117,6 +140,7 @@ module Que
         }
       end
 
+      sig { returns(T.nilable(T.any(::ActiveJob::Base, FalseClass))) }
       def enqueue_active_job
         job_settings = {
           priority: priority,
@@ -124,22 +148,29 @@ module Que
           queue: queue || Que::DEFAULT_QUEUE,
         }.compact
 
-        job_class_set = job_class.set(**job_settings)
-        if args.is_a?(Hash)
-          job_class_set.perform_later(**args)
+        job_class_set = T.cast(job_class, T.class_of(::ActiveJob::Base)).set(**job_settings)
+        job_args = args
+        case job_args
+        when Hash
+          job_class_set.perform_later(**job_args)
         else
-          job_class_set.perform_later(*args)
+          # Sorbet cannot type a splat of a value of unknown size
+          T.unsafe(job_class_set).perform_later(*job_args)
         end
       end
 
       class << self
+        extend T::Sig
+
         # ActiveJob scheduled_at is returned as a float, or a string post Rails 7.1,
         # and we want a Time for consistency
+        sig { params(scheduled_at: T.anything).returns(T.nilable(ActiveSupport::TimeWithZone)) }
         def extract_scheduled_at(scheduled_at)
           # rubocop:disable Style/EmptyElse
-          if scheduled_at.is_a?(Float)
+          case scheduled_at
+          when Float
             Que::Scheduler::TimeZone.time_zone.at(scheduled_at)
-          elsif scheduled_at.is_a?(String)
+          when String
             Que::Scheduler::TimeZone.time_zone.parse(scheduled_at)
           else
             nil

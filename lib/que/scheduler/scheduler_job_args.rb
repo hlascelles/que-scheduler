@@ -1,4 +1,7 @@
+# typed: true
+
 require "hashie"
+require "sorbet-runtime"
 require "active_support"
 require "active_support/time_with_zone"
 
@@ -10,6 +13,9 @@ module Que
       property :job_dictionary, required: true
       property :as_time, required: true
 
+      extend T::Sig
+
+      sig { params(options: T.nilable(T::Hash[T.any(String, Symbol), T.anything])).returns(SchedulerJobArgs) }
       def self.build(options)
         now = Que::Scheduler::Db.now
         parsed =

@@ -13,3 +13,9 @@ MagicNumbers/NoAssignment:
 
 ThreadSafety/ClassInstanceVariable:
   Enabled: false # We use class instance variables in many places safely
+
+# Sorbet sigs must name the block parameter they type
+Naming/BlockForwarding:
+  EnforcedStyle: explicit
+Style/ArgumentsForwarding:
+  UseAnonymousForwarding: false

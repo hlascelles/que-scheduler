@@ -1,3 +1,7 @@
+# typed: true
+
+require "sorbet-runtime"
+
 module Que
   module Scheduler
     module TimeZone
@@ -35,6 +39,9 @@ module Que
       ERR
 
       class << self
+        extend T::Sig
+
+        sig { returns(ActiveSupport::TimeZone) }
         def time_zone
           @time_zone ||=
             begin

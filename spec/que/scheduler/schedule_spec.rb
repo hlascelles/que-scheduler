@@ -14,7 +14,7 @@ RSpec.describe Que::Scheduler::Schedule do
 
   describe ".schedule" do
     it "allows access via ::Que::Scheduler.schedule" do
-      expect(described_class).to receive(:schedule)
+      expect(described_class).to receive(:schedule).and_return({})
       Que::Scheduler.schedule
     end
 

@@ -8,4 +8,6 @@ bundle exec fasterer
 echo "Running rubocop..."
 bundle exec rubocop
 echo "Running reek..."
-bundle exec reek
+bundle exec reek .
+echo "Running sorbet..."
+bundle exec srb tc

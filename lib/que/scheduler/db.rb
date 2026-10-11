@@ -1,5 +1,7 @@
+# typed: true
 # frozen_string_literal: true
 
+require "sorbet-runtime"
 require_relative "configuration"
 
 module Que
@@ -10,19 +12,31 @@ module Que
       NOW_SQL = "SELECT now()"
 
       class << self
+        extend T::Sig
+
+        sig { returns(Integer) }
         def count_schedulers
-          Que::Scheduler::DbSupport.execute(SCHEDULER_COUNT_SQL).first.values.first.to_i
+          T.cast(first_value(SCHEDULER_COUNT_SQL), Integer)
         end
 
+        sig { returns(Time) }
         def now
-          Que::Scheduler::DbSupport.execute(NOW_SQL).first.values.first
+          T.cast(first_value(NOW_SQL), Time)
         end
 
-        # rubocop:disable Style/ExplicitBlockArgument
-        def transaction
-          Que::Scheduler.configuration.transaction_adapter.call { yield }
+        sig { params(sql: String).returns(T.anything) }
+        private def first_value(sql)
+          Que::Scheduler::DbSupport.execute(sql).fetch(0).values.fetch(0)
         end
-        # rubocop:enable Style/ExplicitBlockArgument
+
+        sig do
+          type_parameters(:U)
+            .params(blk: T.proc.returns(T.type_parameter(:U)))
+            .returns(T.type_parameter(:U))
+        end
+        def transaction(&blk)
+          Que::Scheduler.configuration.transaction_adapter.call(&blk)
+        end
       end
     end
   end

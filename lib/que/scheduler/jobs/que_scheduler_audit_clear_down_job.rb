@@ -1,4 +1,7 @@
+# typed: true
+
 require "que"
+require "sorbet-runtime"
 
 # This job can optionally be scheduled to clear down the que-scheduler audit log if it
 # isn't required in the long term.
@@ -6,7 +9,12 @@ module Que
   module Scheduler
     module Jobs
       class QueSchedulerAuditClearDownJob < Que::Job
+        extend T::Sig
+
         class << self
+          extend T::Sig
+
+          sig { params(table_name: String).returns(String) }
           def build_sql(table_name)
             <<~SQL
               WITH deleted AS (
@@ -28,6 +36,7 @@ module Que
         self.priority = 100
         self.queue = -> { Que::Scheduler.configuration.que_scheduler_queue }
 
+        sig { params(options: T::Hash[T.any(String, Symbol), T.anything]).void }
         def run(options)
           retain_row_count = options.symbolize_keys.fetch(:retain_row_count)
           Que::Scheduler::Db.transaction do
@@ -36,7 +45,7 @@ module Que
             Que::Scheduler::DbSupport.execute(DELETE_AUDIT_ENQUEUED_SQL, [retain_row_count])
             # This will delete all but `retain_row_count` oldest rows
             count = Que::Scheduler::DbSupport.execute(DELETE_AUDIT_SQL, [retain_row_count])
-            log = "#{self.class} cleared down #{count.first.fetch(:count)} rows"
+            log = "#{self.class} cleared down #{count.fetch(0).fetch(:count)} rows"
             ::Que.log(event: :"que-scheduler", message: log)
           end
         end

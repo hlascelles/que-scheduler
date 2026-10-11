@@ -1,3 +1,6 @@
+# typed: true
+
+require "sorbet-runtime"
 require_relative "audit"
 require_relative "db"
 require_relative "migrations"
@@ -6,11 +9,15 @@ module Que
   module Scheduler
     module StateChecks
       class << self
+        extend T::Sig
+
+        sig { void }
         def check
           assert_db_migrated
         end
 
         # rubocop:disable Metrics/MethodLength
+        sig { void }
         private def assert_db_migrated
           db_version = Que::Scheduler::Migrations.db_version
           return if db_version == Que::Scheduler::Migrations::MAX_VERSION
