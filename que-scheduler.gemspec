@@ -25,26 +25,21 @@ Gem::Specification.new do |spec|
   spec.files = Dir["{lib}/**/*"] + ["README.md"]
   spec.require_paths = ["lib"]
 
-  spec.required_ruby_version = ">= 3.1"
+  spec.required_ruby_version = ">= 4.0"
 
-  spec.add_dependency "activesupport", ">= 6.0"
+  spec.add_dependency "activesupport", ">= 8.0"
   spec.add_dependency "fugit", "~> 1.1", ">= 1.11.1" # 1.11.1 prevents https://github.com/floraison/fugit/issues/104
   spec.add_dependency "hashie", ">= 3", "< 6"
   spec.add_dependency "que", ">= 2.0", "< 3.0"
   spec.add_dependency "sorbet-runtime", ">= 0.5"
 
-  spec.add_development_dependency "activerecord", ">= 7.0", "< 9.0"
+  spec.add_development_dependency "activerecord", ">= 8.0", "< 9.0"
   spec.add_development_dependency "appraisal"
-  # Ruby 3.4 needs this gem for specs, otherwise we see "cannot load such file -- base64"
-  spec.add_development_dependency "base64"
   spec.add_development_dependency "climate_control"
   spec.add_development_dependency "combustion"
   spec.add_development_dependency "coveralls_reborn"
-  spec.add_development_dependency "database_cleaner"
   spec.add_development_dependency "dememoize"
   spec.add_development_dependency "fasterer"
-  # Ruby 3.4 needs this gem for specs, otherwise we see "cannot load such file -- mutex_m"
-  spec.add_development_dependency "mutex_m"
   spec.add_development_dependency "pg", ">= 1.0"
   spec.add_development_dependency "pry-byebug"
   spec.add_development_dependency "psych"

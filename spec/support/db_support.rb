@@ -65,17 +65,6 @@ module DbSupport
       ActiveRecord::Base.connection.table_exists?(Que::Scheduler::Audit::ENQUEUED_TABLE_NAME)
     end
 
-    # When a jsonb column is populated with an array, then when it is selected from the
-    # DB with Que.execute the value differs by Que. For Que 0.x it comes out as a String. For 1.x
-    # it is parsed into an array here: https://t.ly/byDJd. This helper equalises them.
-    def convert_args_column(db_jobs)
-      db_jobs.map do |row|
-        var = row[:args]
-        row[:args] = JSON.parse(var) if var.is_a?(String) && var.start_with?("[")
-        row
-      end
-    end
-
     def primary_key_exists?(table_name)
       result = Que::Scheduler::DbSupport.execute(<<~SQL)
         SELECT * FROM information_schema.table_constraints

@@ -5,7 +5,6 @@ que-scheduler
 [![specs workflow](https://github.com/hlascelles/que-scheduler/actions/workflows/specs.yml/badge.svg)](https://github.com/hlascelles/que-scheduler/actions)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![Coverage Status](https://coveralls.io/repos/github/hlascelles/que-scheduler/badge.svg?branch=master)](https://coveralls.io/github/hlascelles/que-scheduler?branch=master)
-[![Code Climate Maintainability](https://api.codeclimate.com/v1/badges/710d2fc5202f95d76e8a/maintainability)](https://codeclimate.com/github/hlascelles/que-scheduler/maintainability)
 
 ## Description
 
@@ -317,9 +316,10 @@ A full changelog can be found here: [CHANGELOG.md](https://github.com/hlascelles
 
 ## System requirements
 
-Your [postgres](https://www.postgresql.org/) database must be at least version 9.6.0.
+Your [postgres](https://www.postgresql.org/) database must be at least version 14. que-scheduler is tested against version 17.
 
-The latest version of que-scheduler supports Ruby 3.0 and above.
+The latest version of que-scheduler supports Ruby 4.0 and above, and Rails 8.0 and above.
+que-scheduler versions below 8.0.0 work with Ruby 3.1 and Rails 6.0.
 que-scheduler versions below 4.4.0 work with Ruby 2.7.
 que-scheduler versions below 4.2.3 work with Ruby 2.5 and Ruby 2.6.
 

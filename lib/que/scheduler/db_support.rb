@@ -19,14 +19,12 @@ module Que
         sig { params(enqueued_job: Que::Job).returns(Integer) }
         def job_id(enqueued_job) = T.cast(job_attributes(enqueued_job).fetch(:job_id), Integer)
 
-        # Between Que versions the result of Que execute changed keys from strings to symbols.
-        # Here we wrap the concept and make sure either way produces symbols
         sig do
           params(str: String, args: T::Array[T.anything])
             .returns(T::Array[T::Hash[Symbol, T.anything]])
         end
         def execute(str, args = [])
-          normalise_array_of_hashes(Que.execute(str, args))
+          T.cast(Que.execute(str, args), T::Array[T::Hash[Symbol, T.anything]])
         end
 
         sig do
@@ -54,11 +52,6 @@ module Que
         sig { returns(Gem::Version) }
         private def que_version_object
           @que_version_object ||= T.must(Gem.loaded_specs["que"]).version
-        end
-
-        sig { params(array: T::Array[T.anything]).returns(T::Array[T::Hash[Symbol, T.anything]]) }
-        private def normalise_array_of_hashes(array)
-          array.map { |row| T.cast(row, T::Hash[T.any(String, Symbol), T.anything]).to_h.transform_keys(&:to_sym) }
         end
       end
     end

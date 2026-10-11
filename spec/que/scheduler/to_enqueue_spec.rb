@@ -10,14 +10,13 @@ RSpec.describe Que::Scheduler::ToEnqueue do
 
       let(:test_time) { Time.zone.now.change(usec: 0) + 1.hour }
 
-      it "handles a float" do
-        result = described_class.send(:extract_scheduled_at, test_time.to_f)
-        expect(result).to eq(Que::Scheduler::TimeZone.time_zone.parse(test_time.to_s))
+      it "handles a string" do
+        result = described_class.send(:extract_scheduled_at, test_time.utc.iso8601(9))
+        expect(result).to eq(test_time)
       end
 
-      it "handles a string" do
-        result = described_class.send(:extract_scheduled_at, test_time.to_s)
-        expect(result).to eq(Que::Scheduler::TimeZone.time_zone.parse(test_time.to_s))
+      it "handles nil" do
+        expect(described_class.send(:extract_scheduled_at, nil)).to be_nil
       end
     end
   end
