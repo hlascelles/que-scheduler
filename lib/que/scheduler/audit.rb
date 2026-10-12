@@ -32,7 +32,7 @@ module Que
           params(
             scheduler_job_id: Integer,
             executed_at: Types::TIME,
-            enqueued_jobs: T::Array[Que::Scheduler::EnqueuedJobType]
+            enqueued_jobs: T::Array[Que::Scheduler::EnqueuedJob]
           ).void
         end
         def append(scheduler_job_id, executed_at, enqueued_jobs)
@@ -40,10 +40,11 @@ module Que
           enqueued_jobs.each do |j|
             inserted = ::Que::Scheduler::DbSupport.execute(
               INSERT_AUDIT_ENQUEUED,
-              [scheduler_job_id] +
-                j.values_at(:job_class, :queue, :priority, :args, :job_id, :run_at)
+              [scheduler_job_id, j.job_class, j.queue, j.priority, j.args, j.job_id, j.run_at]
             )
-            raise "Cannot save audit row #{scheduler_job_id} #{executed_at} #{j}" if inserted.empty?
+            next unless inserted.empty?
+
+            raise "Cannot save audit row #{scheduler_job_id} #{executed_at} #{j.inspect}"
           end
         end
       end

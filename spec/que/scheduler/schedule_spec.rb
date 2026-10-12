@@ -38,8 +38,8 @@ RSpec.describe Que::Scheduler::Schedule do
       end
       expect(Que::Scheduler.schedule.keys).to eq(YAML.safe_load(new_config_yaml).keys)
       job_config = Que::Scheduler.schedule["SpecifiedByClassTestJob"]
-      expect(job_config[:name]).to eq("SpecifiedByClassTestJob")
-      expect(job_config[:args_array]).to eq(["First", 1234, { "some_hash" => true }])
+      expect(job_config.name).to eq("SpecifiedByClassTestJob")
+      expect(job_config.args_array).to eq(["First", 1234, { "some_hash" => true }])
     end
 
     it "loads the schedule with all key types" do
@@ -89,6 +89,70 @@ RSpec.describe Que::Scheduler::Schedule do
       result = described_class.from_file("spec/config/que_schedule2.yml")
       expect(result.size).to eq(1)
       expect(result.keys.first).to eq("test_schedule_2")
+    end
+  end
+
+  describe "field validations" do
+    let(:valid_options) {
+      {
+        class: "HalfHourlyTestJob",
+        cron: "14 17 * * *",
+      }
+    }
+
+    def parse(options)
+      described_class.hash_item_to_defined_job("testing_job_definitions", options)
+    end
+
+    it "checks the cron is valid" do
+      expect do
+        parse(valid_options.merge(cron: "foo 17 * * *"))
+      end.to raise_error(/Invalid cron 'foo 17 \* \* \*' for 'testing_job_definitions'/)
+    end
+
+    it "allows crons with fugit compatible english words" do
+      job = parse(valid_options.merge(cron: "@weekly"))
+      expect(job.cron.to_cron_s).to eq("0 0 * * 0")
+    end
+
+    it "checks a cron is present" do
+      expect do
+        parse(valid_options.except(:cron))
+      end.to raise_error(/Invalid cron '' for 'testing_job_definitions'/)
+    end
+
+    it "allows crons with fugit compatible timezones" do
+      job = parse(valid_options.merge(cron: "0 7 * * * America/Los_Angeles"))
+      expect(job.cron.zone).to eq("America/Los_Angeles")
+    end
+
+    it "checks the queue is a string" do
+      expect do
+        parse(valid_options.merge(queue: 3_214_214))
+      end.to raise_error(/Invalid queue '3214214' for 'testing_job_definitions'/)
+    end
+
+    it "checks the priority is an integer" do
+      expect do
+        parse(valid_options.merge(priority: "foo"))
+      end.to raise_error(/Invalid priority 'foo' for 'testing_job_definitions'/)
+    end
+
+    it "checks the job_class is a supported job type" do
+      expect do
+        parse(valid_options.merge(class: "NotAQueJob"))
+      end.to raise_error(/Invalid job_class 'NotAQueJob' for 'testing_job_definitions'/)
+    end
+
+    it "checks the schedule_type is known" do
+      expect do
+        parse(valid_options.merge(schedule_type: "sometimes"))
+      end.to raise_error(/Invalid schedule_type 'sometimes' for 'testing_job_definitions'/)
+    end
+
+    it "parses the schedule_type" do
+      job = parse(valid_options.merge(schedule_type: :every_event))
+      expect(job.schedule_type).to eq(Que::Scheduler::ScheduleType::EVERY_EVENT)
     end
   end
 

@@ -1,3 +1,7 @@
+## 9.0.0 (2026-10-11)
+
+- BREAKING CHANGE: Replace Hashie with Sorbet T::Structs. `Que::Scheduler.schedule` now returns `DefinedJob` structs, so use eg `.name` instead of `[:name]`, and `schedule_type` is a `Que::Scheduler::ScheduleType` enum. Drop the hashie dependency [#610](https://github.com/hlascelles/que-scheduler/pull/610)
+
 ## 8.0.0 (2026-10-11)
 
 - BREAKING CHANGE: Require Ruby 4.0 and Rails 8.0, and remove code for older versions. Add Rails 8.1 specs. Test against Postgres 17, which raises the documented minimum to Postgres 14 [#604](https://github.com/hlascelles/que-scheduler/pull/604)

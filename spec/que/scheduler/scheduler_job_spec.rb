@@ -86,7 +86,10 @@ RSpec.describe Que::Scheduler::SchedulerJob do
     describe "#enqueue_required_jobs" do
       def test_enqueued(overdue_dictionary)
         result = Que::Scheduler::EnqueueingCalculator::Result.new(
-          missed_jobs: HashSupport.hash_to_enqueues(overdue_dictionary), job_dictionary: []
+          missed_jobs: overdue_dictionary.map { |options|
+            Que::Scheduler::ToEnqueue.new(run_at: Que::Scheduler::Db.now, **options)
+          },
+          job_dictionary: []
         )
         described_class.new({}).enqueue_required_jobs(result, [])
       end
@@ -113,12 +116,12 @@ RSpec.describe Que::Scheduler::SchedulerJob do
       end
 
       it "schedules one job with one String arg" do
-        test_enqueued([{ job_class: HalfHourlyTestJob, args: "foo" }])
+        test_enqueued([{ job_class: HalfHourlyTestJob, args: ["foo"] }])
         expect_one_result(["foo"], default_queue, default_priority)
       end
 
       it "schedules one job with one Hash arg" do
-        test_enqueued([{ job_class: HalfHourlyTestJob, args: { bar: "foo" } }])
+        test_enqueued([{ job_class: HalfHourlyTestJob, args: [{ bar: "foo" }] }])
         expect_one_result([{ bar: "foo" }], default_queue, default_priority)
       end
 
@@ -128,22 +131,22 @@ RSpec.describe Que::Scheduler::SchedulerJob do
       end
 
       it "schedules one job with one String arg and a queue" do
-        test_enqueued([{ job_class: HalfHourlyTestJob, args: "foo", queue: "baz" }])
+        test_enqueued([{ job_class: HalfHourlyTestJob, args: ["foo"], queue: "baz" }])
         expect_one_result(["foo"], "baz", default_priority)
       end
 
       it "schedules one job with one String arg and a priority" do
-        test_enqueued([{ job_class: HalfHourlyTestJob, args: "foo", priority: 10 }])
+        test_enqueued([{ job_class: HalfHourlyTestJob, args: ["foo"], priority: 10 }])
         expect_one_result(["foo"], default_queue, 10)
       end
 
       it "schedules one job with one Hash arg and a queue" do
-        test_enqueued([{ job_class: HalfHourlyTestJob, args: { bar: "foo" }, queue: "baz" }])
+        test_enqueued([{ job_class: HalfHourlyTestJob, args: [{ bar: "foo" }], queue: "baz" }])
         expect_one_result([{ bar: "foo" }], "baz", default_priority)
       end
 
       it "schedules one job with one Hash arg and a priority" do
-        test_enqueued([{ job_class: HalfHourlyTestJob, args: { bar: "foo" }, priority: 10 }])
+        test_enqueued([{ job_class: HalfHourlyTestJob, args: [{ bar: "foo" }], priority: 10 }])
         expect_one_result([{ bar: "foo" }], default_queue, 10)
       end
 
@@ -162,7 +165,7 @@ RSpec.describe Que::Scheduler::SchedulerJob do
           [
             {
               job_class: HalfHourlyTestJob,
-              args: { baz: 10, array_baz: ["foo"] },
+              args: [{ baz: 10, array_baz: ["foo"] }],
               queue: "bar",
               priority: 10,
             },

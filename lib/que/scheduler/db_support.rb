@@ -31,17 +31,12 @@ module Que
           params(
             clazz: T.class_of(Que::Job),
             job_options: T::Hash[Symbol, T.anything],
-            job_args: T.anything
+            job_args: T::Array[T.anything]
           ).returns(T.nilable(T.any(Que::Job, FalseClass)))
         end
         def enqueue_a_job(clazz, job_options = {}, job_args = [])
-          case job_args
-          when Hash
-            clazz.enqueue(job_args, job_options: job_options)
-          else
-            # Sorbet cannot type a splat of a value of unknown size
-            T.unsafe(clazz).enqueue(*job_args, job_options: job_options)
-          end
+          # Sorbet cannot type a splat of an array of unknown size
+          T.unsafe(clazz).enqueue(*job_args, job_options: job_options)
         end
 
         sig { returns(String) }

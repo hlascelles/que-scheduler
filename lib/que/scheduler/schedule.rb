@@ -3,6 +3,7 @@
 require "sorbet-runtime"
 require_relative "configuration"
 require_relative "defined_job"
+require_relative "defined_job_parser"
 require_relative "types"
 
 module Que
@@ -55,40 +56,11 @@ module Que
         sig do
           params(
             name: String,
-            defined_job_hash_in: T::Hash[T.any(String, Symbol), T.anything]
+            defined_job_hash_in: T::Hash[T.any(String, Symbol), Object]
           ).returns(DefinedJob)
         end
         def hash_item_to_defined_job(name, defined_job_hash_in)
-          defined_job_hash = defined_job_hash_in.stringify_keys
-          # Que stores arguments as a json array. If the args we have to provide are already an
-          # array we can can simply pass them through. If it is a single non-nil value, then we make
-          # an array with one item which is that value (this includes if it is a hash). It could
-          # also be a single nil value.
-          args_array =
-            if defined_job_hash.key?("args")
-              args = defined_job_hash["args"]
-              if args.is_a?(Array)
-                # An array of args was requested
-                args
-              else
-                # A single value, a nil, or a hash was requested. que expects this to
-                # be enqueued as an array of 1 item
-                [args]
-              end
-            else
-              # No args were requested
-              []
-            end
-
-          Que::Scheduler::DefinedJob.create(
-            name: name,
-            job_class: defined_job_hash["class"]&.to_s || name,
-            queue: defined_job_hash["queue"],
-            args_array: args_array,
-            priority: defined_job_hash["priority"],
-            cron: defined_job_hash["cron"],
-            schedule_type: defined_job_hash["schedule_type"]&.to_sym
-          )
+          DefinedJobParser.parse(name, defined_job_hash_in.stringify_keys)
         end
       end
     end
