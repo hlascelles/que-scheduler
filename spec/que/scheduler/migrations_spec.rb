@@ -18,6 +18,14 @@ RSpec.describe Que::Scheduler::Migrations do
       ActiveRecord::Base.connection.execute("SET CONSTRAINTS ALL IMMEDIATE")
       ::Que::Scheduler::StateChecks.check
 
+      expect(described_class.db_version).to eq(9)
+
+      migration_9_index = "que_scheduler_audit_enqueued_scheduler_job_id"
+
+      # Check 9 change down
+      check_index_existence(migration_9_index, true)
+      described_class.migrate!(version: 8)
+      check_index_existence(migration_9_index, false)
       expect(described_class.db_version).to eq(8)
 
       # Check 8 change down
@@ -130,10 +138,26 @@ RSpec.describe Que::Scheduler::Migrations do
       expect(DbSupport.primary_key_exists?("que_scheduler_audit_enqueued")).to be true
       expect(described_class.db_version).to eq(8)
 
+      # Check 9 change up
+      check_index_existence(migration_9_index, false)
+      described_class.migrate!(version: 9)
+      check_index_existence(migration_9_index, true)
+      expect(described_class.db_version).to eq(9)
+
       Que::Scheduler::StateChecks.check
     end
     # rubocop:enable RSpec/MultipleExpectations
     # rubocop:enable RSpec/ExampleLength
+
+    it "skips creating the migration 9 index if the user already created it" do
+      described_class.migrate!(version: 8)
+      Que::Scheduler::DbSupport.execute(<<~SQL)
+        CREATE INDEX que_scheduler_audit_enqueued_scheduler_job_id
+        ON que_scheduler_audit_enqueued USING btree (scheduler_job_id);
+      SQL
+      described_class.migrate!(version: 9)
+      expect(described_class.db_version).to eq(9)
+    end
 
     it "returns the right migration number if the job has been deliberately deleted" do
       Que::Scheduler::DbSupport.execute("DELETE FROM que_jobs")

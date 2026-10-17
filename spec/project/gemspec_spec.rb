@@ -1,6 +1,6 @@
 require "spec_helper"
 
-# rubocop:disable RSpec/DescribeClass
+# rubocop:disable-next RSpec/DescribeClass
 RSpec.describe "gemspec" do
   it "consistently targets a ruby version" do
     from_rubocop =
@@ -11,4 +11,3 @@ RSpec.describe "gemspec" do
     expect(from_rubocop).to eq(ci_rubies.first.to_s)
   end
 end
-# rubocop:enable RSpec/DescribeClass

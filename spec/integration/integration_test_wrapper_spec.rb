@@ -1,6 +1,6 @@
 require "spec_helper"
 
-# rubocop:disable RSpec/DescribeClass
+# rubocop:disable-next RSpec/DescribeClass
 RSpec.describe "integration tests" do
   def run_integration_test(dir, cmd)
     env = "QUE_VERSION=#{Que::Scheduler::DbSupport.que_version} "
@@ -30,4 +30,3 @@ RSpec.describe "integration tests" do
     end
   end
 end
-# rubocop:enable RSpec/DescribeClass

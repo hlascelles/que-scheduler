@@ -1,6 +1,6 @@
 require "spec_helper"
 
-# rubocop:disable RSpec/DescribeClass
+# rubocop:disable-next RSpec/DescribeClass
 RSpec.describe "github" do
   describe "workflows" do
     it "always uses SHA locked workflows" do
@@ -16,4 +16,3 @@ RSpec.describe "github" do
     end
   end
 end
-# rubocop:enable RSpec/DescribeClass
