@@ -1,3 +1,21 @@
+## 10.0.0 (2026-10-17)
+
+- BREAKING CHANGE: Add an index on `que_scheduler_audit_enqueued.scheduler_job_id`, which makes
+  `QueSchedulerAuditClearDownJob` much faster [#612](https://github.com/hlascelles/que-scheduler/pull/612).
+  This requires migration version "9" to be run.
+
+  ⚠️ Building the index blocks writes to `que_scheduler_audit_enqueued` while it runs, so one
+  scheduler run may be delayed until it finishes, and it will use some DB resources. Check how
+  large your table is before running this migration. To build the index your own way beforehand
+  (eg without blocking writes), run the following outside a transaction. Migration 9 will then
+  skip it as it already exists. If the build fails, drop the `INVALID` index it leaves behind
+  before retrying.
+
+  ```sql
+  CREATE INDEX CONCURRENTLY que_scheduler_audit_enqueued_scheduler_job_id
+    ON que_scheduler_audit_enqueued USING btree (scheduler_job_id);
+  ```
+
 ## 9.0.0 (2026-10-11)
 
 - BREAKING CHANGE: Replace Hashie with Sorbet T::Structs. `Que::Scheduler.schedule` now returns `DefinedJob` structs, so use eg `.name` instead of `[:name]`, and `schedule_type` is a `Que::Scheduler::ScheduleType` enum. Drop the hashie dependency [#610](https://github.com/hlascelles/que-scheduler/pull/610)

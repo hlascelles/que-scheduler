@@ -1,7 +1,7 @@
 PATH
   remote: ..
   specs:
-    que-scheduler (9.0.0)
+    que-scheduler (10.0.0)
       activesupport (>= 8.0)
       fugit (~> 1.1, >= 1.11.1)
       que (>= 2.0, < 3.0)
@@ -462,7 +462,7 @@ CHECKSUMS
   pry-byebug (3.12.0) sha256=594e094ae8a8390a7ad4c7b36ae36e13304ed02664c67417d108dc5f7213d1b7
   psych (5.5.0) sha256=4b245bbbd0f3238df8ccee766ebc1a6b062b10e4ee1d3284eb588739ba156a0a
   que (2.4.1) sha256=a7ba7679d13ef499da5de30a147f910e9e6d9d60cad15f8691a0b0b5bc758a7b
-  que-scheduler (9.0.0)
+  que-scheduler (10.0.0)
   raabro (1.5.0) sha256=3f998a7bc84f9c84df3ab580634d2e0a5bda4f0841168d56035f529c9877440a
   racc (1.8.1) sha256=4a7f6929691dbec8b5209a0b373bc2614882b55fc5d2e447a21aaa691303d62f
   rack (3.2.7) sha256=93e13e1c24f93556671d85d2d79fa228c3485815c50d7e2f265b5330c6528fb7

@@ -28,7 +28,7 @@ resque-scheduler files, but with additional features.
     ```ruby
     class CreateQueSchedulerSchema < ActiveRecord::Migration[6.0]
       def change
-        Que::Scheduler::Migrations.migrate!(version: 8)
+        Que::Scheduler::Migrations.migrate!(version: 9)
         Que::Scheduler::Migrations.reenqueue_scheduler_if_missing
       end
     end
@@ -216,7 +216,7 @@ performed.
 ```ruby
 class CreateQueSchedulerSchema < ActiveRecord::Migration[6.0]
   def change
-    Que::Scheduler::Migrations.migrate!(version: 8)
+    Que::Scheduler::Migrations.migrate!(version: 9)
     Que::Scheduler::Migrations.reenqueue_scheduler_if_missing
   end
 end
@@ -234,6 +234,7 @@ The changes in past migrations were:
 |    6    | Enforced single scheduler job at the trigger level                                  |
 |    7    | Prevent accidental deletion of scheduler job                                        |
 |    8    | Add primary key to audit. Note, this can be a slow migration if you have many rows! |
+|    9    | Index `que_scheduler_audit_enqueued.scheduler_job_id` to speed up audit clear down  |
 
 The changes to the DB ([DDL](https://en.wikipedia.org/wiki/Data_definition_language)) are all 
 captured in the structure.sql so will be re-run in correctly if squashed - except for the actual 
