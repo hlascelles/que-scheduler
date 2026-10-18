@@ -1,3 +1,9 @@
+## 10.1.0 (2026-10-18)
+
+- Support sub-minute schedules: the scheduler runs early when a seconds cron is due before the next
+  minute [#613](https://github.com/hlascelles/que-scheduler/pull/613). See "Sub-minute schedules"
+  in the README.
+
 ## 10.0.0 (2026-10-17)
 
 - BREAKING CHANGE: Add an index on `que_scheduler_audit_enqueued.scheduler_job_id`, which makes
