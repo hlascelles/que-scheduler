@@ -13,8 +13,8 @@ require_relative "to_enqueue"
 require_relative "db_support"
 require_relative "types"
 
-# The main job that runs every minute, determining what needs to be enqueued, enqueues the required
-# jobs, then re-enqueues itself.
+# The main job that runs every minute (or sooner if a job is due), determining what needs to be
+# enqueued, enqueues the required jobs, then re-enqueues itself.
 module Que
   module Scheduler
     class SchedulerJob < Que::Job
@@ -96,12 +96,11 @@ module Que
         Audit.append(job_id, scheduler_job_args.as_time, enqueued_jobs)
 
         # And rerun...
-        next_run_at = scheduler_job_args.as_time.beginning_of_minute + SCHEDULER_FREQUENCY
         enqueued_job = Que::Scheduler::DbSupport.enqueue_a_job(
           SchedulerJob,
           {
             queue: Que::Scheduler.configuration.que_scheduler_queue,
-            run_at: next_run_at,
+            run_at: next_run_at(scheduler_job_args.as_time),
           },
           [{ last_run_time: last_full_execution.iso8601, job_dictionary: job_dictionary }]
         )
@@ -109,6 +108,14 @@ module Que
         return if enqueued_job
 
         raise "SchedulerJob could not self-schedule. Has `.enqueue` been monkey patched?"
+      end
+
+      # Run again at the next minute, or sooner if a job (eg a seconds cron) is due before then
+      sig { params(as_time: Types::TIME).returns(Types::TIME) }
+      private def next_run_at(as_time)
+        next_minute = as_time.beginning_of_minute + SCHEDULER_FREQUENCY
+        due_sooner = Scheduler.schedule.values.filter_map { it.next_run_time(as_time, next_minute) }
+        T.must([next_minute, *due_sooner].min)
       end
     end
   end

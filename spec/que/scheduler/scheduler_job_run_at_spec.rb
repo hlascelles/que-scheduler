@@ -74,4 +74,47 @@ RSpec.describe Que::Scheduler::SchedulerJob do
       [Time.zone.parse("2017-11-08T13:15:00"), Time.zone.parse("2017-11-08T13:45:00")]
     )
   end
+
+  describe "the next scheduler run" do
+    # :reek:UtilityFunction
+    def configure_schedule(schedule)
+      Que::Scheduler.configure { |config| config.schedule = schedule }
+    end
+
+    # :reek:UtilityFunction
+    def scheduler_run_at
+      DbSupport.jobs_by_class(described_class).sole.fetch(:run_at)
+    end
+
+    it "is the next minute when no job is due sooner" do
+      run_scheduler(run_time - 15.minutes, %w[HalfHourlyTestJob])
+      expect(scheduler_run_at).to eq(Time.zone.parse("2017-11-08T13:51:00"))
+    end
+
+    it "is sooner when a seconds cron is due before the next minute" do
+      configure_schedule(fast: { class: "HalfHourlyTestJob", cron: "*/15 * * * * *" })
+      run_scheduler(run_time - 1.second, %w[fast])
+      expect(scheduler_run_at).to eq(Time.zone.parse("2017-11-08T13:50:45"))
+    end
+
+    it "is the next minute when a seconds cron is next due on the minute" do
+      configure_schedule(fast: { class: "HalfHourlyTestJob", cron: "0 * * * * *" })
+      run_scheduler(run_time - 1.second, %w[fast])
+      expect(scheduler_run_at).to eq(Time.zone.parse("2017-11-08T13:51:00"))
+    end
+
+    it "speeds up for a new seconds cron, then enqueues it on the following run" do
+      configure_schedule(fast: { class: "HalfHourlyTestJob", cron: "*/15 * * * * *" })
+      expect(run_scheduler(run_time - 1.minute, [])).to be_empty
+      expect(scheduler_run_at).to eq(Time.zone.parse("2017-11-08T13:50:45"))
+
+      Timecop.freeze(Time.zone.parse("2017-11-08T13:50:45.2")) do
+        DbSupport.mock_db_time_now
+        SyncJobWorker.work_job
+      end
+      jobs = DbSupport.jobs_by_class(expected_class_in_db(HalfHourlyTestJob))
+      expect(jobs.pluck(:run_at)).to eq([Time.zone.parse("2017-11-08T13:50:45")])
+      expect(scheduler_run_at).to eq(Time.zone.parse("2017-11-08T13:51:00"))
+    end
+  end
 end

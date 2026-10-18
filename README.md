@@ -96,6 +96,10 @@ SendBilling:
 SendCoupons:
   cron: "0 7 * * * America/Los_Angeles"
 
+# Use a seconds field (see "Sub-minute schedules" below)
+HealthCheck:
+  cron: "*/15 * * * * *"
+
 # Altogether now
 all_options_job:
   cron: "0 0 * * *"
@@ -136,6 +140,19 @@ A job can have a `schedule_type` assigned to it. Valid values are:
   
   This feature ensures that jobs which *must run* for a certain cron match will always eventually 
   execute, even after a total system crash, or even a DB backup restore.
+
+## Sub-minute schedules
+
+The scheduler normally runs once a minute. If a job's cron has a seconds field and is due before the next
+minute, the scheduler runs early to enqueue it on time, and returns to once a minute when nothing is
+due sooner. Note:
+
+1. Que only picks up jobs scheduled in the future when it polls, every 5 seconds by default. For
+   finer precision, lower Que's `poll_interval`.
+1. Every scheduler run is a DB transaction and writes a row to the audit table, so frequent schedules
+   add load and audit rows. Consider scheduling the [audit clear down job](#scheduler-audit).
+1. As with any new job, a new schedule takes effect on the scheduler's next run after deploy, so
+   up to a minute later.
 
 ## Gem configuration
 
