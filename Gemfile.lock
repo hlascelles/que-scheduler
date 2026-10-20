@@ -69,7 +69,7 @@ GEM
       term-ansicolor (>= 1.11)
       thor (>= 1.5)
       tins (>= 1.54)
-    crass (1.0.6)
+    crass (1.0.7)
     date (3.5.1)
     dememoize (0.2.0)
     diff-lcs (1.6.2)
