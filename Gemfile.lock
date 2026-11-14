@@ -281,7 +281,7 @@ GEM
       rexml (>= 3.2.6)
       sorbet-static-and-runtime (>= 0.5.10187)
       thor (>= 0.19.2)
-    sqlite3 (2.9.6-x86_64-linux-gnu)
+    sqlite3 (2.10.2-x86_64-linux-gnu)
     stringio (3.2.0)
     sync (0.5.0)
     tapioca (0.20.0)
